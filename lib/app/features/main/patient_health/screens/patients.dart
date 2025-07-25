@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nurahelp/app/features/main/patients/widgets/patient_info_tile.dart';
-import '../../../common/appbar/appbar_with_bell.dart';
-import '../../../common/custom_switch/custom_switch.dart';
-import '../../../utilities/constants/colors.dart';
+import 'package:nurahelp/app/features/main/patient_health/screens/widgets/patient_info_tile.dart';
+import '../../../../common/appbar/appbar_with_bell.dart';
+import '../../../../common/custom_switch/custom_switch.dart';
+import '../../../../utilities/constants/colors.dart';
+
 
 class PatientsScreen extends StatelessWidget {
   const PatientsScreen({super.key});

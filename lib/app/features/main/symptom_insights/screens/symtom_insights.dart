@@ -5,6 +5,7 @@ import 'package:nurahelp/app/features/main/symptom_insights/screens/widget/sympt
 import 'package:nurahelp/app/features/main/symptom_insights/screens/widget/symptoms_trend_chart.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import '../../../../common/appbar/appbar_with_bell.dart';
+import '../../../../common/button/custom_arrow_button.dart';
 import '../../dashboard/screens/widgets/chart/chart.dart';
 
 class SymptomInsightsScreen extends StatelessWidget {
@@ -26,36 +27,10 @@ class SymptomInsightsScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        IconButton(
-                          style: IconButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                color: AppColors.greyColor,
-                                width: 0.5,
-                              ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {},
-                          icon: Icon(Icons.arrow_back_ios_sharp),
-                        ),
+                        CustomArrowButton(icon: Icons.arrow_back_ios_sharp),
                         SizedBox(width: 10),
-                        IconButton(
-                          style: IconButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                color: AppColors.greyColor,
-                                width: 0.5,
-                              ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8),
-                              ),
-                            ),
-                          ),
-                          onPressed: () {},
-                          icon: Icon(Icons.arrow_forward_ios_sharp),
+                        CustomArrowButton(
+                          icon: Icons.arrow_forward_ios_sharp,
                         ),
                         SizedBox(width: 10),
                         Text('June 2025'),
@@ -291,4 +266,6 @@ class SymptomInsightsScreen extends StatelessWidget {
     );
   }
 }
+
+
 

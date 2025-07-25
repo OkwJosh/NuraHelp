@@ -31,7 +31,6 @@ class MessagesScreen extends StatelessWidget {
                       MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
                       MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
 
-
                     ],
                   ),
                 ),

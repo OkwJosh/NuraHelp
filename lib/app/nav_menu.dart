@@ -3,10 +3,11 @@ import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:iconify_flutter_plus/icons/material_symbols.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:nurahelp/app/features/main/patient_health/screens/patient_health.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'features/main/appointments/appointments.dart';
+import 'features/main/dashboard/screens/doctor_dashboard.dart';
 import 'features/main/dashboard/screens/dashboard.dart';
-import 'features/main/patients/patients.dart';
 import 'features/main/symptom_insights/screens/symtom_insights.dart';
 
 class NavigationMenu extends StatelessWidget {
@@ -76,6 +77,8 @@ class NavigationMenu extends StatelessWidget {
                         Divider(color: AppColors.greyColor.withOpacity(0.4)),
                         NavListTiles(title: "Nura Assistant", icon: Icon(Symbols.star), onPressed: () {  },),
                         SizedBox(height: 10),
+                        NavListTiles(title: "Messages", icon: Icon(Symbols.message_rounded), onPressed: () {  },),
+                        SizedBox(height: 10),
                         NavListTiles(title: 'Language & Voice', icon: Icon(Symbols.globe),showTrailing: true, onPressed: () {  },),
                         SizedBox(height: 10),
                         NavListTiles(title: 'Settings', icon: Icon(Symbols.settings), onPressed: () {  },),
@@ -143,7 +146,7 @@ class NavigationMenu extends StatelessWidget {
                     ),
                     GButton(
                       icon: Symbols.assignment,
-                      text: 'Appointment',
+                      text: 'Health',
                       padding: EdgeInsets.only(
                         right: 0,
                         bottom: 8,
@@ -166,7 +169,7 @@ class NavigationMenu extends StatelessWidget {
                     ),
                     GButton(
                       icon: Symbols.groups,
-                      text: 'Patients',
+                      text: 'Doctor',
                       padding: EdgeInsets.only(
                         right: 12,
                         bottom: 8,
@@ -284,8 +287,8 @@ class NavigationController extends GetxController {
 
   final screens = [
     const DashboardScreen(),
+    const PatientHealthScreen(),
     const AppointmentsScreen(),
-    const PatientsScreen(),
     const SymptomInsightsScreen(),
   ];
 }

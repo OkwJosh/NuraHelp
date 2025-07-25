@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-import '../../../../utilities/constants/colors.dart';
-import '../patient_info.dart';
+import '../../../../../utilities/constants/colors.dart';
+import '../patient_health.dart';
 
 class PatientInfoTile extends StatelessWidget {
   const PatientInfoTile({super.key});
@@ -10,8 +10,9 @@ class PatientInfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.white,
       child: InkWell(
-        onTap: () => Get.to(() => PatientInfo()),
+        onTap: () => Get.to(() => PatientHealthScreen()),
         child: Container(
           padding: const EdgeInsets.only(left: 15.0, top: 15, bottom: 15, right: 15),
           child: Row(
