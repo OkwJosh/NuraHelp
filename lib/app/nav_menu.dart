@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:iconify_flutter_plus/icons/material_symbols.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:nurahelp/app/features/main/patient_health/screens/patient_health.dart';
+import 'package:nurahelp/app/features/main/screens/patient_health/patient_health.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
-import 'features/main/appointments/appointments.dart';
-import 'features/main/dashboard/screens/doctor_dashboard.dart';
-import 'features/main/dashboard/screens/dashboard.dart';
-import 'features/main/symptom_insights/screens/symtom_insights.dart';
+import 'features/main/screens/appointments/appointments.dart';
+import 'features/main/screens/dashboard/dashboard.dart';
+import 'features/main/screens/doctors/doctors.dart';
+import 'features/main/screens/messages/messages.dart';
+import 'features/main/screens/settings/settings.dart';
+import 'features/main/screens/symptom_insights/symtom_insights.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -17,6 +18,172 @@ class NavigationMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+      bottomNavigationBar: Padding(
+        padding: EdgeInsets.only(bottom: 35,left: 15,right: 15),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 10,
+                spreadRadius: 1,
+                offset: const Offset(0, 4),
+                blurStyle: BlurStyle.outer,
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Obx(
+                () => GNav(
+              selectedIndex: controller.selectedIndex.value,
+              backgroundColor: Colors.white,
+              tabBackgroundColor: AppColors.secondaryColor,
+              tabBorderRadius: 8,
+              tabs: [
+                GButton(
+                  icon: Symbols.dashboard_2,
+                  margin: const EdgeInsets.only(left: 5),
+                  text: 'Dashboard',
+                  textStyle: TextStyle(
+                    fontFamily: "Poppins-Regular",
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                  iconColor: AppColors.greyColor,
+                  iconActiveColor: Colors.white,
+                  gap: 3,
+                  padding: EdgeInsets.only(
+                    right: 5,
+                    bottom: 8,
+                    top: 8,
+                    left: 5,
+                  ),
+                  onPressed: () {
+                    controller.selectedIndex.value = 0;
+                    controller.togglePanel.value = false;
+                  },
+                ),
+                GButton(
+                  icon: Symbols.assignment,
+                  text: 'Health',
+                  padding: EdgeInsets.only(
+                    right: 5,
+                    bottom: 8,
+                    top: 8,
+                    left: 5,
+                  ),
+                  gap: 3,
+                  textStyle: TextStyle(
+                    fontFamily: "Poppins-Regular",
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                  iconColor: AppColors.greyColor,
+                  iconActiveColor: Colors.white,
+                  onPressed: () {
+                    controller.selectedIndex.value = 1;
+                    controller.togglePanel.value = false;
+                  },
+                ),
+                GButton(
+                  icon: Symbols.groups,
+                  text: 'Doctors',
+                  padding: EdgeInsets.only(
+                    right: 5,
+                    bottom: 8,
+                    top: 8,
+                    left: 5,
+                  ),
+                  gap: 3,
+                  textStyle: TextStyle(
+                    fontFamily: "Poppins-Regular",
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                  iconColor: AppColors.greyColor,
+                  iconActiveColor: Colors.white,
+                  onPressed: () {
+                    controller.selectedIndex.value = 2;
+                    controller.togglePanel.value = false;
+                  },
+                ),
+                GButton(
+                  icon: Symbols.insert_chart,
+                  text: 'Insights',
+                  padding: EdgeInsets.only(
+                    right: 5,
+                    bottom: 8,
+                    top: 8,
+                    left: 5,
+                  ),
+                  gap: 5,
+                  textStyle: TextStyle(
+                    fontFamily: "Poppins-Regular",
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                  iconColor: AppColors.greyColor,
+                  iconActiveColor: Colors.white,
+                  onPressed: () {
+                    controller.selectedIndex.value = 3;
+                    controller.togglePanel.value = false;
+                  },
+                ),
+                GButton(
+                  icon: Symbols.assignment,
+                  text: 'Appointments',
+                  padding: EdgeInsets.only(
+                    right: 2,
+                    bottom: 8,
+                    top: 8,
+                    left: 2,
+                  ),
+                  gap: 2,
+                  textStyle: TextStyle(
+                    fontFamily: "Poppins-Regular",
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                  iconColor: AppColors.greyColor,
+                  iconActiveColor: Colors.white,
+                  onPressed: () {
+                    controller.selectedIndex.value = 4;
+                    controller.togglePanel.value = false;
+                  },
+                ),
+                GButton(
+                  icon: Symbols.menu,
+                  text: 'More',
+                  gap: 5,
+                  textStyle: TextStyle(
+                    fontFamily: "Poppins-Regular",
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                  margin: EdgeInsets.only(right: 5),
+                  padding: EdgeInsets.only(
+                    right: 12,
+                    bottom: 8,
+                    top: 8,
+                    left: 5,
+                  ),
+                  textColor: Colors.white,
+                  iconColor: AppColors.greyColor,
+                  iconActiveColor: Colors.white,
+                  onPressed: () => controller.togglePanel.value = true,
+                ),
+              ],
+            ),
+          ),
+
+        ),
+      ),
       body: Stack(
         children: [
           // Screens
@@ -77,11 +244,11 @@ class NavigationMenu extends StatelessWidget {
                         Divider(color: AppColors.greyColor.withOpacity(0.4)),
                         NavListTiles(title: "Nura Assistant", icon: Icon(Symbols.star), onPressed: () {  },),
                         SizedBox(height: 10),
-                        NavListTiles(title: "Messages", icon: Icon(Symbols.message_rounded), onPressed: () {  },),
+                        NavListTiles(title: "Messages", icon: Icon(Symbols.message_rounded), onPressed: () => Get.to(() => MessagesScreen()),),
                         SizedBox(height: 10),
                         NavListTiles(title: 'Language & Voice', icon: Icon(Symbols.globe),showTrailing: true, onPressed: () {  },),
                         SizedBox(height: 10),
-                        NavListTiles(title: 'Settings', icon: Icon(Symbols.settings), onPressed: () {  },),
+                        NavListTiles(title: 'Settings', icon: Icon(Symbols.settings), onPressed: () => Get.to(() => SettingsScreen()),),
                         SizedBox(height: 10),
                         NavListTiles(title: 'Logout', icon: Icon(Symbols.logout), onPressed: () {  },),
 
@@ -95,148 +262,7 @@ class NavigationMenu extends StatelessWidget {
             return SizedBox.shrink();
           }),
           // Floating Nav Bar Section
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 25,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    blurRadius: 10,
-                    spreadRadius: 1,
-                    offset: const Offset(0, 4),
-                    blurStyle: BlurStyle.outer,
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Obx(
-                () => GNav(
-                  selectedIndex: controller.selectedIndex.value,
-                  backgroundColor: Colors.white,
-                  tabBackgroundColor: AppColors.secondaryColor,
-                  tabBorderRadius: 8,
-                  tabs: [
-                    GButton(
-                      icon: Symbols.dashboard_2,
-                      margin: const EdgeInsets.only(left: 5),
-                      text: 'Dashboard',
-                      textStyle: TextStyle(
-                        fontFamily: "Poppins-Regular",
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                      iconColor: AppColors.greyColor,
-                      iconActiveColor: Colors.white,
-                      gap: 5,
-                      padding: EdgeInsets.only(
-                        right: 12,
-                        bottom: 8,
-                        top: 8,
-                        left: 12,
-                      ),
-                      onPressed: () {
-                        controller.selectedIndex.value = 0;
-                        controller.togglePanel.value = false;
-                      },
-                    ),
-                    GButton(
-                      icon: Symbols.assignment,
-                      text: 'Health',
-                      padding: EdgeInsets.only(
-                        right: 0,
-                        bottom: 8,
-                        top: 8,
-                        left: 0,
-                      ),
-                      gap: 0,
-                      textStyle: TextStyle(
-                        fontFamily: "Poppins-Regular",
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                      iconColor: AppColors.greyColor,
-                      iconActiveColor: Colors.white,
-                      onPressed: () {
-                        controller.selectedIndex.value = 1;
-                        controller.togglePanel.value = false;
-                      },
-                    ),
-                    GButton(
-                      icon: Symbols.groups,
-                      text: 'Doctor',
-                      padding: EdgeInsets.only(
-                        right: 12,
-                        bottom: 8,
-                        top: 8,
-                        left: 12,
-                      ),
-                      gap: 5,
-                      textStyle: TextStyle(
-                        fontFamily: "Poppins-Regular",
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                      iconColor: AppColors.greyColor,
-                      iconActiveColor: Colors.white,
-                      onPressed: () {
-                        controller.selectedIndex.value = 2;
-                        controller.togglePanel.value = false;
-                      },
-                    ),
-                    GButton(
-                      icon: Symbols.insert_chart,
-                      text: 'Insights',
-                      padding: EdgeInsets.only(
-                        right: 12,
-                        bottom: 8,
-                        top: 8,
-                        left: 12,
-                      ),
-                      gap: 5,
-                      textStyle: TextStyle(
-                        fontFamily: "Poppins-Regular",
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                      iconColor: AppColors.greyColor,
-                      iconActiveColor: Colors.white,
-                      onPressed: () {
-                        controller.selectedIndex.value = 3;
-                        controller.togglePanel.value = false;
-                      },
-                    ),
-                    GButton(
-                      icon: Symbols.menu,
-                      text: 'More',
-                      gap: 5,
-                      textStyle: TextStyle(
-                        fontFamily: "Poppins-Regular",
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                      margin: EdgeInsets.only(right: 5),
-                      padding: EdgeInsets.only(
-                        right: 12,
-                        bottom: 8,
-                        top: 8,
-                        left: 5,
-                      ),
-                      textColor: Colors.white,
-                      iconColor: AppColors.greyColor,
-                      iconActiveColor: Colors.white,
-                      onPressed: () => controller.togglePanel.value = true,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+
         ],
       ),
     );
@@ -263,7 +289,7 @@ class NavListTiles extends StatelessWidget {
     return Material(
       color: Colors.white,
       child: ListTile(
-        onTap: () => onPressed,
+        onTap: onPressed,
         minTileHeight: 0,
         contentPadding: EdgeInsets.only(left: 0),
         style: ListTileStyle.list,
@@ -288,7 +314,8 @@ class NavigationController extends GetxController {
   final screens = [
     const DashboardScreen(),
     const PatientHealthScreen(),
-    const AppointmentsScreen(),
+    const DoctorsScreen(),
     const SymptomInsightsScreen(),
+    const AppointmentsScreen(),
   ];
 }

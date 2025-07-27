@@ -5,20 +5,22 @@ import '../../utilities/constants/colors.dart';
 class AppDropdown extends StatefulWidget {
   AppDropdown({
     super.key,
-    required this.selectedValue,
+    this.selectedValue,
     required this.menuItems,
     this.height = 35,
     this.prefixIcon,
     this.showPrefixIcon = false,
-    this.prefixIconColor = Colors.purple
+    this.prefixIconColor = Colors.purple,
+    this.hintText,
   });
 
-  String selectedValue;
+  String? selectedValue;
   List<String> menuItems;
   final double height;
   final IconData? prefixIcon;
   final Color? prefixIconColor;
   final bool showPrefixIcon;
+  final String? hintText;
 
 
   @override
@@ -35,6 +37,7 @@ class _AppDropdownState extends State<AppDropdown> {
       child: IntrinsicWidth(
         child: DropdownButtonFormField(
           value: widget.selectedValue,
+          hint: Text(widget.hintText ?? 'Select an option',style: TextStyle(color: AppColors.greyColor.withOpacity(0.6),fontSize: 14),),
           icon: Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Icon(Icons.keyboard_arrow_down_sharp),

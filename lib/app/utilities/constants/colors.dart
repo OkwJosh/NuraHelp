@@ -12,4 +12,5 @@ class AppColors{
   static const Color greyColor = Color(0xFF575757);
   static const Color bluishWhiteColor = Color(0xFFF4F9FF);
   static const Color peachColor = Color(0xFFFFE6E7);
+  static const Color foundationBlack = Color(0xFF333333);
 }

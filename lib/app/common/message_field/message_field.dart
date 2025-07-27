@@ -22,8 +22,8 @@ class CustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: showBorder?Border.all(color: AppColors.secondaryColor.withOpacity(0.3)):Border(),
-        color: AppColors.secondaryColor.withOpacity(0.045),
+        border: showBorder?Border.all(color: AppColors.secondaryColor,width: 0.5):Border(),
+        color: AppColors.bluishWhiteColor,
         borderRadius: BorderRadius.circular(10),
       ),
       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -33,11 +33,11 @@ class CustomTextField extends StatelessWidget {
             minLines: 1,
             maxLines: 3,
             style: TextStyle(
-              color: AppColors.greyColor.withOpacity(0.8),
+              color: AppColors.foundationBlack,
               fontFamily: 'Poppins-ExtraLight',
-              fontSize: 14,
+              fontSize: 16,
             ),
-            cursorColor: AppColors.greyColor,
+            cursorColor: AppColors.foundationBlack,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.only(
                 left: 20,
@@ -55,7 +55,7 @@ class CustomTextField extends StatelessWidget {
                       style: TextStyle(
                         fontFamily: "Poppins-ExtraLight",
                         fontWeight: FontWeight.w600,
-                        color: AppColors.greyColor.withOpacity(0.8),
+                        color: AppColors.foundationBlack,
                       ),
                       textAlign: TextAlign.start,
                     ),
