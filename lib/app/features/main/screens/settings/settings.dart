@@ -175,6 +175,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Divider(),
                             SizedBox(height: 20),
                             Text('Notifications and Alerts'),
+                            SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -192,6 +193,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                               ],
                             ),
+                            SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -245,6 +247,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                               ],
                             ),
+                            SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -269,6 +272,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                               ],
                             ),
+                            SizedBox(height: 10),
                             TextButton(
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
@@ -289,6 +293,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 style: TextStyle(color: Colors.redAccent),
                               ),
                             ),
+                            SizedBox(height: 5),
                             SizedBox(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(

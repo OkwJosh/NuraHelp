@@ -47,12 +47,12 @@ class DirectMessagePage extends StatelessWidget {
                         onPressed: () => Get.to(()=> CallScreen()),
                         style: OutlinedButton.styleFrom(
                           side: BorderSide.none,
-                          padding: EdgeInsets.all(5),
+                          padding: EdgeInsets.all(2),
                           backgroundColor: AppColors.greyColor.withOpacity(0.1),
                           overlayColor: AppColors.greyColor,
                         ),
 
-                        child: SvgIcon(AppIcons.phone,size: 30,),
+                        child: SvgIcon(AppIcons.phone,size: 25,),
                       ),
                     ),
                     IconButton(onPressed: (){},icon: SvgIcon(AppIcons.ellipsis)),

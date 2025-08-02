@@ -9,6 +9,7 @@ class CustomTextFieldTheme{
 
   static final lightInputDecorationTheme = InputDecorationTheme(
     filled: true,
+
     fillColor: AppColors.primaryColor.withOpacity(0.7),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
@@ -40,7 +41,8 @@ class CustomTextFieldTheme{
     ),
     contentPadding: EdgeInsets.only(left: 10,right: 10,top: 15,bottom: 15),
     hintStyle: TextStyle(fontSize: 14,fontFamily: 'Poppins-ExtraLight',color: AppColors.black,letterSpacing: 0),
-    suffixIconColor: AppColors.black
+    suffixIconColor: AppColors.black,
+
 
   );
 
