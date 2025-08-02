@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconify_flutter_plus/icons/carbon.dart';
 import 'package:nurahelp/app/features/main/screens/doctors/about_doctor.dart';
+import 'package:nurahelp/app/utilities/constants/icons.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../utilities/constants/colors.dart';
 
 class DoctorCard extends StatelessWidget {
@@ -48,11 +50,7 @@ class DoctorCard extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 8,vertical: 5),
                         child: Row(
                           children: [
-                            Icon(
-                              Icons.star,
-                              size: 20,
-                              color: AppColors.secondaryColor,
-                            ),
+                            SvgIcon(AppIcons.reviewStar,size: 15),
                             SizedBox(width: 5),
                             Text('5.0')
                           ],
@@ -75,7 +73,11 @@ class DoctorCard extends StatelessWidget {
                 child: SizedBox(
                     height:50,
                     width: 50,
-                    child: ElevatedButton(onPressed: () => Get.to(()=>AboutDoctorScreen()), child: Iconify(Carbon.arrow_up_right,color: Colors.white,size: 25,))),
+                    child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 5,horizontal: 5)
+                        ),
+                        onPressed: () => Get.to(()=>AboutDoctorScreen()), child: SvgIcon(AppIcons.arrowUpRight,size: 25,))),
               )
             ],
           ),

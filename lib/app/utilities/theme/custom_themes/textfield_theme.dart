@@ -13,34 +13,34 @@ class CustomTextFieldTheme{
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide(
-        color: AppColors.greyColor.withOpacity(0.2),
-        width: 1,
+        color: AppColors.black300,
+        width: 0.3,
       ),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide(
-        color: AppColors.greyColor.withOpacity(0.2),
-        width: 1,
+        color: AppColors.black300,
+        width: 0.3,
       ),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide(
-        color: AppColors.greyColor.withOpacity(0.6),
-        width: 1,
+        color: AppColors.black300,
+        width: 0.3,
       ),
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
       borderSide: BorderSide(
         color: Colors.red,
-        width: 0.8,
+        width: 0.3,
       ),
     ),
     contentPadding: EdgeInsets.only(left: 10,right: 10,top: 15,bottom: 15),
-    hintStyle: TextStyle(fontSize: 14,fontFamily: 'Poppins-Regular',color: AppColors.greyColor.withOpacity(0.6),letterSpacing: 0),
-    suffixIconColor: Colors.grey[500]
+    hintStyle: TextStyle(fontSize: 14,fontFamily: 'Poppins-ExtraLight',color: AppColors.black,letterSpacing: 0),
+    suffixIconColor: AppColors.black
 
   );
 

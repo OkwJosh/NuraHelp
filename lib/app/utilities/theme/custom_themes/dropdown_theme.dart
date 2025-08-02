@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../constants/colors.dart';
+
 class CustomDropdownMenuTheme{
   CustomDropdownMenuTheme._();
   static final lightDropdownMenuTheme = DropdownMenuThemeData(
@@ -10,27 +12,27 @@ class CustomDropdownMenuTheme{
       shape: WidgetStateProperty.all(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: Colors.grey.shade300, width: 1),
+          side: BorderSide(color: AppColors.black, width: 0.3),
         ),
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: Colors.grey.shade100,
+      fillColor: AppColors.neutral,
       contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+        borderSide: BorderSide(color: AppColors.black, width: 0.3),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.grey.shade300),
+        borderSide: BorderSide(color: AppColors.black,width: 0.3),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.blue, width: 1.5),
+        borderSide: BorderSide(color: AppColors.black, width: 0.3),
       ),
     ),
-    textStyle: TextStyle(fontSize: 16, color: Colors.black),
+    textStyle: TextStyle(fontSize: 16, color: Colors.black,fontFamily: 'Poppins-Light'),
   );
 }

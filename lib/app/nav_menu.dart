@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:nurahelp/app/common/misc/coming_soon.dart';
+import 'package:nurahelp/app/features/auth/screens/login/login.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/patient_health.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
+import 'package:nurahelp/app/utilities/constants/icons.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import 'features/main/screens/appointments/appointments.dart';
 import 'features/main/screens/dashboard/dashboard.dart';
 import 'features/main/screens/doctors/doctors.dart';
-import 'features/main/screens/messages/messages.dart';
+import 'features/main/screens/messages_and_calls/messages.dart';
 import 'features/main/screens/settings/settings.dart';
 import 'features/main/screens/symptom_insights/symtom_insights.dart';
 
@@ -45,7 +49,7 @@ class NavigationMenu extends StatelessWidget {
               tabBorderRadius: 8,
               tabs: [
                 GButton(
-                  icon: Symbols.dashboard_2,
+                  icon: AppIcons.navDashboard,
                   margin: const EdgeInsets.only(left: 5),
                   text: 'Dashboard',
                   textStyle: TextStyle(
@@ -68,7 +72,7 @@ class NavigationMenu extends StatelessWidget {
                   },
                 ),
                 GButton(
-                  icon: Symbols.assignment,
+                  icon: AppIcons.navHeart,
                   text: 'Health',
                   padding: EdgeInsets.only(
                     right: 5,
@@ -91,7 +95,7 @@ class NavigationMenu extends StatelessWidget {
                   },
                 ),
                 GButton(
-                  icon: Symbols.groups,
+                  icon: Symbols.medical_services_rounded,
                   text: 'Doctors',
                   padding: EdgeInsets.only(
                     right: 5,
@@ -113,7 +117,7 @@ class NavigationMenu extends StatelessWidget {
                   },
                 ),
                 GButton(
-                  icon: Symbols.insert_chart,
+                  icon: AppIcons.navChart,
                   text: 'Insights',
                   padding: EdgeInsets.only(
                     right: 5,
@@ -135,7 +139,7 @@ class NavigationMenu extends StatelessWidget {
                   },
                 ),
                 GButton(
-                  icon: Symbols.assignment,
+                  icon: AppIcons.navClipboard,
                   text: 'Appointments',
                   padding: EdgeInsets.only(
                     right: 2,
@@ -158,7 +162,7 @@ class NavigationMenu extends StatelessWidget {
                   },
                 ),
                 GButton(
-                  icon: Symbols.menu,
+                  icon: AppIcons.navMore,
                   text: 'More',
                   gap: 5,
                   textStyle: TextStyle(
@@ -198,7 +202,7 @@ class NavigationMenu extends StatelessWidget {
               return Positioned(
                 left: 140,
                 right: 20,
-                bottom: 100,
+                bottom: 110,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -215,7 +219,7 @@ class NavigationMenu extends StatelessWidget {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.only(
-                      left: 5,
+                      left: 10,
                       right: 5,
                       top: 10,
                       bottom: 5,
@@ -228,29 +232,29 @@ class NavigationMenu extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 20,
-                              foregroundColor: AppColors.secondaryColor,
+                              backgroundColor: Colors.white,
+                              child: SvgIcon(AppIcons.profile),
                             ),
                             SizedBox(width: 15),
                             Text(
                               "Aldred N",
                               style: TextStyle(
-                                fontSize: 15,
+                                fontSize: 16,
                                 fontFamily: "Poppins-Regular",
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
                         ),
+                        SizedBox(height: 5),
                         Divider(color: AppColors.greyColor.withOpacity(0.4)),
-                        NavListTiles(title: "Nura Assistant", icon: Icon(Symbols.star), onPressed: () {  },),
+                        NavListTiles(title: "Nura Assistant", icon: SvgIcon(AppIcons.star,color: AppColors.greyColor), onPressed: () => Get.to(() => ComingSoon())),
                         SizedBox(height: 10),
-                        NavListTiles(title: "Messages", icon: Icon(Symbols.message_rounded), onPressed: () => Get.to(() => MessagesScreen()),),
+                        NavListTiles(title: "Messages", icon: SvgIcon(AppIcons.messages,color: AppColors.greyColor), onPressed: () => Get.to(() => MessagesScreen())),
                         SizedBox(height: 10),
-                        NavListTiles(title: 'Language & Voice', icon: Icon(Symbols.globe),showTrailing: true, onPressed: () {  },),
+                        NavListTiles(title: 'Settings', icon: SvgIcon(AppIcons.settings,color: AppColors.greyColor), onPressed: () => Get.to(() => SettingsScreen())),
                         SizedBox(height: 10),
-                        NavListTiles(title: 'Settings', icon: Icon(Symbols.settings), onPressed: () => Get.to(() => SettingsScreen()),),
-                        SizedBox(height: 10),
-                        NavListTiles(title: 'Logout', icon: Icon(Symbols.logout), onPressed: () {  },),
+                        NavListTiles(title: 'Logout', icon: SvgIcon(AppIcons.logout,color: AppColors.greyColor,size: 20,), onPressed: () => Get.offAll(() => LoginScreen())),
 
                         
                       ],
@@ -298,9 +302,9 @@ class NavListTiles extends StatelessWidget {
         iconColor: AppColors.greyColor,
         title: Text(title, maxLines: 1),
         titleTextStyle: TextStyle(
-          fontSize: 12,
-          fontFamily: "Poppins-Light",
-          color: Colors.black,
+          fontSize: 14,
+          fontFamily: "Poppins-Regular",
+          color: Colors.black.withOpacity(0.7),
         ),
       ),
     );

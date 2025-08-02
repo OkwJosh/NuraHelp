@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:nurahelp/app/common/custom_switch/custom_switch.dart';
 import 'package:nurahelp/app/features/main/screens/symptom_insights/widget/symptom_dropdown.dart';
 import 'package:nurahelp/app/features/main/screens/symptom_insights/widget/symptom_insights_list_tile.dart';
 import 'package:nurahelp/app/features/main/screens/symptom_insights/widget/symptoms_trend_chart.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
+import 'package:nurahelp/app/utilities/constants/icons.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../common/appbar/appbar_with_bell.dart';
-
-
 
 class SymptomInsightsScreen extends StatelessWidget {
   const SymptomInsightsScreen({super.key});
@@ -19,7 +21,7 @@ class SymptomInsightsScreen extends StatelessWidget {
         children: [
           Positioned(top: 0, left: 0, right: 0, child: AppBarWithBell()),
           Positioned.fill(
-            top: 100,
+            top: 110,
             child: Padding(
               padding: EdgeInsets.only(left: 15, right: 15),
               child: SingleChildScrollView(
@@ -58,7 +60,7 @@ class SymptomInsightsScreen extends StatelessWidget {
                                 spacing: 10,
                                 children: [
                                   OutlinedButton(
-                                    onPressed: () {},
+                                    onPressed: () => addNewSymptom(context),
                                     style: OutlinedButton.styleFrom(
                                       side: BorderSide(
                                         color: AppColors.secondaryColor,
@@ -78,7 +80,7 @@ class SymptomInsightsScreen extends StatelessWidget {
                                           'Add',
                                           style: TextStyle(
                                             color: AppColors.secondaryColor,
-                                              fontFamily: 'Poppins-Light'
+                                            fontFamily: 'Poppins-Light',
                                           ),
                                         ),
                                       ],
@@ -87,11 +89,18 @@ class SymptomInsightsScreen extends StatelessWidget {
                                   ElevatedButton(
                                     onPressed: () {},
                                     style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.symmetric(vertical: 10,horizontal: 15)
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 10,
+                                        horizontal: 15,
+                                      ),
                                     ),
                                     child: Text(
                                       'Submit',
-                                      style: TextStyle(color: Colors.white,fontSize: 14,fontFamily: 'Poppins-Light'),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 14,
+                                        fontFamily: 'Poppins-Light',
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -277,4 +286,73 @@ class SymptomInsightsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void addNewSymptom(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        backgroundColor: Colors.white,
+        elevation: 2,
+        insetPadding: EdgeInsets.symmetric(horizontal: 26),
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: SizedBox(
+            height: 250,
+            child: Column(
+              spacing: 16,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [SvgIcon(AppIcons.health)],
+                ),
+                Text(
+                  'Add Symptom',
+                  style: TextStyle(fontSize: 18, color: AppColors.black),
+                ),
+                TextField(
+                  cursorColor: Colors.black,
+                  style: TextStyle(color: AppColors.black,fontSize: 14,fontFamily: 'Poppins-ExtraLight'),
+                  decoration: InputDecoration(hintText: 'Symptom name',hintStyle: TextStyle(fontSize: 14)),
+                ),
+                SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      height: 45,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          overlayColor: AppColors.black,
+                          padding: EdgeInsets.symmetric(horizontal: 40),
+                        ),
+                        child: Text('Cancel',style: TextStyle(color: AppColors.black,fontSize: 14)),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 45,
+                      child: ElevatedButton(
+                        onPressed: (){},
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          overlayColor: Colors.white
+                        ),
+                        child: Text(
+                          'Add Symptom',
+                          style: TextStyle(fontSize: 14,color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }

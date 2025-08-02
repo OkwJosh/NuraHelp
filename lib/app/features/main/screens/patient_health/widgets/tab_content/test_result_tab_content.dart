@@ -18,13 +18,13 @@ class TestResultTabContent extends StatelessWidget {
             RoundedContainer(
               child: Text(
                 'Today',
-                style: TextStyle(fontFamily: 'Poppins-Regular', fontSize: 12),
+                style: TextStyle(fontFamily: 'Poppins-Light', fontSize: 12),
               ),
             ),
             SizedBox(width: 15),
             CustomArrowButton(icon: Icons.arrow_back_ios_sharp),
             SizedBox(width: 5),
-            Text('17 Jul 2024'),
+            Text('17 Jul 2024',style: TextStyle(fontFamily: 'Poppins-Light', fontSize: 14)),
             SizedBox(width: 5),
             CustomArrowButton(icon: Icons.arrow_forward_ios_sharp),
           ],
@@ -35,6 +35,7 @@ class TestResultTabContent extends StatelessWidget {
         TestResultCard(),
         SizedBox(height: 15),
         TestResultCard(),
+        SizedBox(height: 100),
       ],
     );
   }

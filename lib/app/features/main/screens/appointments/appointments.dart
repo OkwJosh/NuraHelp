@@ -1,3 +1,4 @@
+import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:flutter/material.dart';
 import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_content/canceled_appointment_tab.dart';
 import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_content/pending_appointment_tab.dart';
@@ -17,7 +18,7 @@ class AppointmentsScreen extends StatelessWidget {
         children: [
           Positioned(top: 0, left: 0, right: 0, child: AppBarWithBell()),
           Positioned.fill(
-            top: 100,
+            top: 110,
             child: Padding(
               padding: EdgeInsets.only(left: 15, right: 15),
               child: SingleChildScrollView(
@@ -33,30 +34,27 @@ class AppointmentsScreen extends StatelessWidget {
                                 indicatorColor: Colors.black,
                                 dividerColor: Colors.transparent,
                                 isScrollable: true,
+                                indicatorSize: TabBarIndicatorSize.tab,
                                 tabAlignment: TabAlignment.start,
                                 labelColor: Colors.black,
                                 unselectedLabelColor: Colors.grey[600],
                                 tabs: const [
-                                  Tab(child: Text("Upcoming",style: TextStyle(fontFamily: 'Poppins-Medium'),)),
-                                  Tab(child: Text("Pending",style: TextStyle(fontFamily: 'Poppins-Medium'),)),
-                                  Tab(child: Text("Canceled",style: TextStyle(fontFamily: 'Poppins-Medium'),)),
+                                  Tab(child: Text("Upcoming",style: TextStyle(fontFamily: 'Poppins-Regular'))),
+                                  Tab(child: Text("Pending",style: TextStyle(fontFamily: 'Poppins-Regular'),)),
+                                  Tab(child: Text("Canceled",style: TextStyle(fontFamily: 'Poppins-Regular'),)),
                                 ],
                               ),
                             ),
                             SizedBox(height: 16),
-                            // 🔹 TabBarView (newly added)
-                            SizedBox(
-                              height: 850,
-                              child: TabBarView(
-                                children: [
-                                  // Tab 1: Overview
-                                  UpcomingAppointmentTabContent(),
-                                  // Tab 2: Test Result
-                                  PendingAppointmentTabContent(),
-                                  // Tab 3: Medication
-                                  CanceledAppointmentTabContent(),
-                                ],
-                              ),
+                            AutoScaleTabBarView(
+                              children: [
+                                // Tab 1: Overview
+                                UpcomingAppointmentTabContent(),
+                                // Tab 2: Test Result
+                                PendingAppointmentTabContent(),
+                                // Tab 3: Medication
+                                CanceledAppointmentTabContent(),
+                              ],
                             ),
                           ],
                         ),

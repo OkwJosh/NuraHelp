@@ -17,28 +17,32 @@ class MedicationTabContent extends StatelessWidget {
       children: [
         SizedBox(height: 10),
         SizedBox(
-          height: 35,
-            width: 200,
-            child: CustomSwitch(firstOptionText: 'Ongoing', secondOptionText: 'History')),
+          height: 40,
+          width: 150,
+          child: CustomSwitch(
+            firstOptionText: 'Ongoing',
+            secondOptionText: 'History',
+          ),
+        ),
         SizedBox(height: 10),
         SizedBox(
-            height: 45,
-            child: AppSearchBar(hintText: 'Start typing medication name')),
+          height: 45,
+          child: AppSearchBar(hintText: 'Start typing medication name'),
+        ),
         SizedBox(height: 10),
         MedicationCard(),
         SizedBox(height: 10),
         MedicationCard(),
         SizedBox(height: 10),
         MedicationCard(),
+        SizedBox(height: 100),
       ],
     );
   }
 }
 
 class MedicationCard extends StatelessWidget {
-  const MedicationCard({
-    super.key,
-  });
+  const MedicationCard({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -52,23 +56,29 @@ class MedicationCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20,horizontal: 15),
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
           child: Column(
             children: [
               Row(
                 children: [
                   Icon(Symbols.pill),
-                  SizedBox(width: 10,),
+                  SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Amoxicillin 250mg'),
                       SizedBox(height: 2),
-                      Text('Antibiotic for bacterial infection',style: TextStyle(fontSize: 12,fontFamily: 'Poppins-ExtraLight'),)
+                      Text(
+                        'Antibiotic for bacterial infection',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontFamily: 'Poppins-ExtraLight',
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(width: 50),
-                  Iconify(Uil.ellipsis_v)
+                  Iconify(Uil.ellipsis_v),
                 ],
               ),
               SizedBox(height: 20),
@@ -76,16 +86,23 @@ class MedicationCard extends StatelessWidget {
                 children: [
                   RoundedContainer(
                     padding: 10,
-                      backgroundColor: AppColors.secondaryColor.withOpacity(0.15),
-                      child: Text('14 capsules',style: TextStyle(color: AppColors.deepSecondaryColor),)),
+                    backgroundColor: AppColors.secondaryColor.withOpacity(0.15),
+                    child: Text(
+                      '14 capsules',
+                      style: TextStyle(color: AppColors.deepSecondaryColor),
+                    ),
+                  ),
                   SizedBox(width: 25),
                   RoundedContainer(
-                      padding: 10,
-                      backgroundColor: AppColors.secondaryColor.withOpacity(0.15),
-                      child: Text('14 - 30 May, 2024',style: TextStyle(color: AppColors.deepSecondaryColor))),
+                    padding: 10,
+                    backgroundColor: AppColors.secondaryColor.withOpacity(0.15),
+                    child: Text(
+                      '14 - 30 May, 2024',
+                      style: TextStyle(color: AppColors.deepSecondaryColor),
+                    ),
+                  ),
                 ],
-              )
-
+              ),
             ],
           ),
         ),

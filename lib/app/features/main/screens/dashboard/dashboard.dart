@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nurahelp/app/common/appbar/appbar_with_bell.dart';
 import 'package:nurahelp/app/common/message_field/message_field.dart';
-import 'package:nurahelp/app/features/main/screens/dashboard/widgets/dashboard_card/dashboard_appointment_card.dart';
 import 'package:nurahelp/app/nav_menu.dart';
-
+import '../../../../common/appointment_card/appointment_card.dart';
 import '../../../../utilities/constants/colors.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -47,15 +46,15 @@ class DashboardScreen extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        DashboardAppointmentCard(),
+                        AppointmentCard(),
                         SizedBox(width: 10),
-                        DashboardAppointmentCard(),
+                        AppointmentCard(),
                         SizedBox(width: 10),
-                        DashboardAppointmentCard(),
+                        AppointmentCard(),
                       ],
                     ),
                   ),
-                  SizedBox(height: 180),
+                  SizedBox(height: 150),
                   Column(
                     children: [
                       Text(

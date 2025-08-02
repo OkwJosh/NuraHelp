@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../appointment_card.dart';
+import '../../../../../../common/appointment_card/appointment_card.dart';
+
 
 class CanceledAppointmentTabContent extends StatelessWidget {
   const CanceledAppointmentTabContent({super.key});
@@ -15,6 +16,7 @@ class CanceledAppointmentTabContent extends StatelessWidget {
             AppointmentCard(status: 'canceled',isVirtual: false,showStatus: true),
             SizedBox(height: 10),
             AppointmentCard(status: 'canceled',isVirtual: false,showStatus: true),
+            SizedBox(height: 100)
           ],
         ),
       ],

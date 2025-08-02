@@ -1,0 +1,41 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:lottie/lottie.dart';
+import 'package:nurahelp/app/features/auth/screens/login/login.dart';
+
+import '../../../../utilities/constants/colors.dart';
+
+class EmailSentScreen extends StatelessWidget {
+  const EmailSentScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top:80.0,right:15,left: 15),
+            child: Column(
+              children: [
+                Center(child: Lottie.asset('assets/animations/sent_email.json',width: 300,height: 300)),
+                SizedBox(height: 20),
+                Text('example@gmail.com',style: TextStyle(fontFamily: 'Poppins-SemiBold')),
+                SizedBox(height: 20),
+                Text('We\'ve sent a reset link to your email,\n you\'ll be redirected to a secure site to reset your password',textAlign: TextAlign.center,style: TextStyle(fontFamily: 'Poppins-Light')),
+                SizedBox(height: 25),
+                SizedBox(
+                  width: double.infinity,
+                    child: ElevatedButton(onPressed: () => Get.offAll(()=>LoginScreen(),transition: Transition.leftToRight), child: Text('Continue to Login',style: TextStyle(color: Colors.white)))),
+                SizedBox(height: 10),
+                TextButton(onPressed: (){}, child: Text('Resend email',style: TextStyle(color: AppColors.black))),
+              ],
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+}

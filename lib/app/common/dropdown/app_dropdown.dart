@@ -12,6 +12,8 @@ class AppDropdown extends StatefulWidget {
     this.showPrefixIcon = false,
     this.prefixIconColor = Colors.purple,
     this.hintText,
+    this.verticalPadding = 5,
+    this.borderRadius = 5,
   });
 
   String? selectedValue;
@@ -21,6 +23,8 @@ class AppDropdown extends StatefulWidget {
   final Color? prefixIconColor;
   final bool showPrefixIcon;
   final String? hintText;
+  final double verticalPadding;
+  final double borderRadius;
 
 
   @override
@@ -37,22 +41,22 @@ class _AppDropdownState extends State<AppDropdown> {
       child: IntrinsicWidth(
         child: DropdownButtonFormField(
           value: widget.selectedValue,
-          hint: Text(widget.hintText ?? 'Select an option',style: TextStyle(color: AppColors.greyColor.withOpacity(0.6),fontSize: 14),),
+          hint: Text(widget.hintText ?? 'Select an option',style: TextStyle(color: AppColors.black,fontSize: 14,fontFamily: 'Poppins-ExtraLight')),
           icon: Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: Icon(Icons.keyboard_arrow_down_sharp),
+            child: Icon(Icons.keyboard_arrow_down_sharp,color: AppColors.black,),
           ),
           iconSize: 20,
           dropdownColor: Colors.white,
           style: TextStyle(
-              fontFamily: "Poppins-Light",
+              fontFamily: "Poppins-ExtraLight",
               fontSize: 14,
-              color: Colors.black,
+              color: AppColors.black,
               overflow: TextOverflow.ellipsis
           ),
           decoration: InputDecoration(
             prefixIcon: widget.showPrefixIcon?Padding(
-              padding: const EdgeInsets.only(left:8.0,right: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 20),
               child: Icon(widget.prefixIcon,color: widget.prefixIconColor,size: 15,),
             ):null,
             prefixIconConstraints: BoxConstraints(
@@ -60,28 +64,28 @@ class _AppDropdownState extends State<AppDropdown> {
               maxWidth: 30,
             ),
             contentPadding: EdgeInsets.symmetric(
-              vertical: 5,
+              vertical: widget.verticalPadding,
               horizontal: 8
             ),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
               borderSide: BorderSide(
-                color: AppColors.greyColor
-                    .withOpacity(0.4),
+                width: 0.3,
+                  color: AppColors.black
               ),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
               borderSide: BorderSide(
-                color: AppColors.greyColor
-                    .withOpacity(0.4),
+                width: 0.3,
+                  color: AppColors.black
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(5),
+              borderRadius: BorderRadius.circular(widget.borderRadius),
               borderSide: BorderSide(
-                color: AppColors.greyColor
-                    .withOpacity(0.4),
+                width: 0.3,
+                color: AppColors.black
               ),
             ),
           ),
@@ -94,7 +98,7 @@ class _AppDropdownState extends State<AppDropdown> {
                   fontFamily: "Poppins-ExtraLight",
                   color: Colors.black,
                   overflow: TextOverflow.ellipsis,
-                  fontSize: 12,
+                  fontSize: 14,
                 ),
               ),
             );

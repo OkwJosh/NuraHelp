@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../appointment_card.dart';
+import '../../../../../../common/appointment_card/appointment_card.dart';
 
 
 class PendingAppointmentTabContent extends StatelessWidget {
@@ -16,6 +16,7 @@ class PendingAppointmentTabContent extends StatelessWidget {
             AppointmentCard(showStatus: true,isVirtual: false),
             SizedBox(height: 10),
             AppointmentCard(showStatus: true,isVirtual: false),
+            SizedBox(height: 100)
           ],
         )
       ],

@@ -12,7 +12,7 @@ class LoginForm extends StatelessWidget {
         TextField(
           decoration: InputDecoration(hintText: 'Email Address'),
         ),
-        SizedBox(height: 15),
+        SizedBox(height: 16),
         TextField(
           decoration: InputDecoration(
             hintText: 'Password',

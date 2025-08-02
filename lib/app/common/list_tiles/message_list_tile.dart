@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 
 import '../../utilities/constants/colors.dart';
+import '../../utilities/constants/icons.dart';
 
 class MessageListTile extends StatelessWidget {
   const MessageListTile({
@@ -27,7 +29,7 @@ class MessageListTile extends StatelessWidget {
       child: ListTile(
         onTap: onPressed,
         contentPadding: EdgeInsets.zero,
-        leading: CircleAvatar(radius: 20),
+        leading: CircleAvatar(radius: 20,backgroundColor: Colors.white,child: SvgIcon(AppIcons.profile),),
         title: Text(
           contactName,
           style: TextStyle(fontFamily: "Poppins-Regular", fontSize: 14),

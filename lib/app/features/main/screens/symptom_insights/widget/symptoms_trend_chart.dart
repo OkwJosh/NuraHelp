@@ -123,6 +123,9 @@ class _SymptomTrendChartState extends State<SymptomTrendChart> {
 
   LineChartData mainData() {
     return LineChartData(
+      lineTouchData: LineTouchData(
+        enabled: false
+      ),
       gridData: FlGridData(
         show: true,
         drawVerticalLine: false,

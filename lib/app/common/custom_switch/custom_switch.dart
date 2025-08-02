@@ -30,7 +30,7 @@ class _CustomSwitchState extends State<CustomSwitch> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.greyColor),
+        border: Border.all(color: AppColors.black,width: 0.3),
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       child: Row(
@@ -46,10 +46,11 @@ class _CustomSwitchState extends State<CustomSwitch> {
                 });
               },
               style: TextButton.styleFrom(
+                overlayColor: AppColors.black300,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 padding: EdgeInsets.zero,
                 backgroundColor: widget.firstOptionActive
-                    ? AppColors.deepSecondaryColor.withOpacity(0.3)
+                    ? AppColors.greyColor.withOpacity(0.1)
                     : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
@@ -80,10 +81,11 @@ class _CustomSwitchState extends State<CustomSwitch> {
                 });
               },
               style: TextButton.styleFrom(
+                overlayColor: AppColors.black300,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 padding:EdgeInsets.zero,
                 backgroundColor: widget.secondOptionActive
-                    ? AppColors.deepSecondaryColor.withOpacity(0.3)
+                    ? AppColors.greyColor.withOpacity(0.1)
                     : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: widget.numberOfOptions == 2
@@ -117,10 +119,11 @@ class _CustomSwitchState extends State<CustomSwitch> {
                   });
                 },
                 style: TextButton.styleFrom(
+                  overlayColor: AppColors.black300,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   padding: EdgeInsets.zero,
                   backgroundColor: widget.thirdOptionActive
-                      ? AppColors.deepSecondaryColor.withOpacity(0.3)
+                      ? AppColors.greyColor.withOpacity(0.1)
                       : Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(

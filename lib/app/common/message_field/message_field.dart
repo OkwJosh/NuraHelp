@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../utilities/constants/colors.dart';
+import '../../utilities/constants/icons.dart';
+import '../../utilities/constants/svg_icons.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -33,11 +35,11 @@ class CustomTextField extends StatelessWidget {
             minLines: 1,
             maxLines: 3,
             style: TextStyle(
-              color: AppColors.foundationBlack,
+              color: AppColors.black,
               fontFamily: 'Poppins-ExtraLight',
-              fontSize: 16,
+              fontSize: 14,
             ),
-            cursorColor: AppColors.foundationBlack,
+            cursorColor: AppColors.black,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.only(
                 left: 20,
@@ -54,17 +56,12 @@ class CustomTextField extends StatelessWidget {
                      hint!,
                       style: TextStyle(
                         fontFamily: "Poppins-ExtraLight",
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.foundationBlack,
+                        color: AppColors.black300,
                       ),
                       textAlign: TextAlign.start,
                     ),
                   ],
                 ),
-              ),
-              hintStyle: TextStyle(
-                color: AppColors.greyColor.withOpacity(0.6),
-                fontFamily: "Poppins",
               ),
               fillColor: Colors.transparent,
               filled: true,
@@ -76,16 +73,16 @@ class CustomTextField extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(onPressed: () {}, icon: Icon(Icons.attach_file),color: attachmentIconColor,),
+              IconButton(onPressed: () {}, icon: SvgIcon(AppIcons.attach,color: AppColors.black),color: attachmentIconColor,),
               Row(
                 children: [
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(Icons.mic_none_outlined,color: micIconColor,),
+                    icon: SvgIcon(AppIcons.mic,color: micIconColor,),
                   ),
                   IconButton(
                     onPressed: () {},
-                    icon: Icon(Icons.send, color: sendIconColor),
+                    icon: SvgIcon(AppIcons.send, color: sendIconColor),
                   ),
                 ],
               ),

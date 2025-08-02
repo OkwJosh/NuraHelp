@@ -18,7 +18,7 @@ class DoctorsScreen extends StatelessWidget {
         children: [
           Positioned(top: 0, left: 0, right: 0, child: AppBarWithBell()),
           Positioned.fill(
-            top: 130,
+            top: 120,
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),
               child: SingleChildScrollView(

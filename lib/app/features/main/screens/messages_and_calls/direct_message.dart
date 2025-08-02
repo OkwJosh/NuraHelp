@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/common/appbar/appbar.dart';
+import 'package:nurahelp/app/features/main/screens/messages_and_calls/call.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
+import 'package:nurahelp/app/utilities/constants/icons.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../common/message_field/message_field.dart';
 
 class DirectMessagePage extends StatelessWidget {
@@ -23,7 +26,7 @@ class DirectMessagePage extends StatelessWidget {
               leadingOnPressed: () => Get.back(),
               title: Row(
                 children: [
-                  CircleAvatar(radius: 20),
+                  CircleAvatar(radius: 20,backgroundColor: Colors.transparent,child: SvgIcon(AppIcons.profile)),
                   SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,16 +40,22 @@ class DirectMessagePage extends StatelessWidget {
               actions: [
                 Row(
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8)
+                    SizedBox(
+                      width: 45,
+                      height: 45,
+                      child: OutlinedButton(
+                        onPressed: () => Get.to(()=> CallScreen()),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide.none,
+                          padding: EdgeInsets.all(5),
+                          backgroundColor: AppColors.greyColor.withOpacity(0.1),
+                          overlayColor: AppColors.greyColor,
+                        ),
+
+                        child: SvgIcon(AppIcons.phone,size: 30,),
                       ),
-                      padding: EdgeInsets.all(5),
-                      child: Icon(Icons.phone_outlined,size: 30),
                     ),
-                    SizedBox(width: 10),
-                    IconButton(onPressed: (){},icon: Icon(Icons.more_vert,size: 30,weight: 2)),
+                    IconButton(onPressed: (){},icon: SvgIcon(AppIcons.ellipsis)),
                   ],
                 ),
               ],

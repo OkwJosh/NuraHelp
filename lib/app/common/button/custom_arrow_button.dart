@@ -16,8 +16,8 @@ class CustomArrowButton extends StatelessWidget {
       style: IconButton.styleFrom(
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: AppColors.greyColor,
-            width: 0.5,
+            color: AppColors.black,
+            width: 0.3,
           ),
           borderRadius: BorderRadius.all(
             Radius.circular(8),
@@ -25,7 +25,7 @@ class CustomArrowButton extends StatelessWidget {
         ),
       ),
       onPressed: () {},
-      icon: Icon(icon),
+      icon: Icon(icon,color: AppColors.black),
     );
   }
 }

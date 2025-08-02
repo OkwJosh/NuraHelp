@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../../common/button/custom_arrow_button.dart';
 import '../../../../../../common/rounded_containers/rounded_container.dart';
 import '../../../../../../utilities/constants/colors.dart';
+import '../../../../../../utilities/constants/icons.dart';
 
 class OverviewTabContent extends StatelessWidget {
   const OverviewTabContent({super.key});
@@ -18,13 +20,13 @@ class OverviewTabContent extends StatelessWidget {
             RoundedContainer(
               child: Text(
                 'Today',
-                style: TextStyle(fontFamily: 'Poppins-Regular', fontSize: 12),
+                style: TextStyle(fontFamily: 'Poppins-Light', fontSize: 12,color: AppColors.black),
               ),
             ),
             SizedBox(width: 15),
             CustomArrowButton(icon: Icons.arrow_back_ios_sharp),
             SizedBox(width: 5),
-            Text('17 Jul 2024'),
+            Text('17 Jul 2024',style: TextStyle(fontFamily: 'Poppins-Light'),),
             SizedBox(width: 5),
             CustomArrowButton(icon: Icons.arrow_forward_ios_sharp),
           ],
@@ -43,7 +45,8 @@ class OverviewTabContent extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(8)),
                     side: BorderSide(
-                      color: AppColors.greyColor.withOpacity(0.2),
+                      color: AppColors.black,
+                      width: 0.3
                     ),
                   ),
                 ),
@@ -73,7 +76,7 @@ class OverviewTabContent extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.greyColor.withOpacity(0.2)),
+            border: Border.all(color: AppColors.black300,width: 0.3),
           ),
           child: Padding(
             padding: const EdgeInsets.only(
@@ -89,7 +92,7 @@ class OverviewTabContent extends StatelessWidget {
                     RoundedContainer(
                       child: Row(
                         children: [
-                          Icon(Symbols.heart_plus_sharp),
+                          SvgIcon(AppIcons.heart, size: 20),
                           SizedBox(width: 10),
                           Text('Vitals'),
                         ],
@@ -102,7 +105,7 @@ class OverviewTabContent extends StatelessWidget {
                       padding: 10,
                       child: Text(
                         'June 17 ,2024',
-                        style: TextStyle(fontFamily: 'Poppins-Regular'),
+                        style: TextStyle(fontFamily: 'Poppins-Light'),
                       ),
                     ),
                   ],
@@ -118,7 +121,7 @@ class OverviewTabContent extends StatelessWidget {
                           'Blood glucose level',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.greyColor.withOpacity(0.8),
+                            color: AppColors.black300,
                             fontFamily: 'Poppins-Regular',
                           ),
                         ),
@@ -133,7 +136,7 @@ class OverviewTabContent extends StatelessWidget {
                           'Weight',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.greyColor.withOpacity(0.8),
+                            color: AppColors.black300,
                             fontFamily: 'Poppins-Regular',
                           ),
                         ),
@@ -152,7 +155,7 @@ class OverviewTabContent extends StatelessWidget {
                           'Heart rate',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.greyColor.withOpacity(0.8),
+                            color: AppColors.black300,
                             fontFamily: 'Poppins-Regular',
                           ),
                         ),
@@ -167,7 +170,7 @@ class OverviewTabContent extends StatelessWidget {
                           'Oxygen saturation',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.greyColor.withOpacity(0.8),
+                            color: AppColors.black300,
                             fontFamily: 'Poppins-Regular',
                           ),
                         ),
@@ -186,7 +189,7 @@ class OverviewTabContent extends StatelessWidget {
                           'Body temperature',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.greyColor.withOpacity(0.8),
+                            color: AppColors.black300,
                             fontFamily: 'Poppins-Regular',
                           ),
                         ),
@@ -201,7 +204,7 @@ class OverviewTabContent extends StatelessWidget {
                           'Blood pressure',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.greyColor.withOpacity(0.8),
+                            color: AppColors.black300,
                             fontFamily: 'Poppins-Regular',
                           ),
                         ),
@@ -218,7 +221,7 @@ class OverviewTabContent extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.greyColor.withOpacity(0.2)),
+            border: Border.all(color: AppColors.black300,width: 0.3),
           ),
           child: Padding(
             padding: const EdgeInsets.only(
@@ -235,7 +238,7 @@ class OverviewTabContent extends StatelessWidget {
                     RoundedContainer(
                       child: Row(
                         children: [
-                          Icon(Icons.paste),
+                          SvgIcon(AppIcons.clipboard),
                           SizedBox(width: 10),
                           Text('Medications'),
                         ],
@@ -248,7 +251,7 @@ class OverviewTabContent extends StatelessWidget {
                       padding: 10,
                       child: Text(
                         'June 17 ,2024',
-                        style: TextStyle(fontFamily: 'Poppins-Regular'),
+                        style: TextStyle(fontFamily: 'Poppins-Light'),
                       ),
                     ),
                   ],
@@ -263,7 +266,7 @@ class OverviewTabContent extends StatelessWidget {
                       '2 Pills. 02:00 PM',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.greyColor.withOpacity(0.8),
+                        color: AppColors.black300,
                         fontFamily: 'Poppins-Regular',
                       ),
                     ),
@@ -281,7 +284,7 @@ class OverviewTabContent extends StatelessWidget {
                       'No observations or notes',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.greyColor.withOpacity(0.8),
+                        color: AppColors.black300,
                         fontFamily: 'Poppins-Regular',
                       ),
                     ),
@@ -292,7 +295,7 @@ class OverviewTabContent extends StatelessWidget {
                       '1 Pill. 02:20 PM',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.greyColor.withOpacity(0.8),
+                        color: AppColors.black300,
                         fontFamily: 'Poppins-Regular',
                       ),
                     ),
@@ -310,18 +313,17 @@ class OverviewTabContent extends StatelessWidget {
                       'Patient observed to be having seizures. Indever given to reduce blood pressure',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.greyColor.withOpacity(0.8),
+                        color: AppColors.black300,
                         fontFamily: 'Poppins-Regular',
                       ),
                     ),
                   ],
                 ),
-
-
               ],
             ),
           ),
         ),
+        SizedBox(height: 100),
       ],
     );
   }

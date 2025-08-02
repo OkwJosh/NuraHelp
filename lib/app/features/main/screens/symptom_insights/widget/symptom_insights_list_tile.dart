@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../utilities/constants/colors.dart';
+import '../../../../../utilities/constants/icons.dart';
 
 class SymptomInsightListTile extends StatelessWidget {
   const SymptomInsightListTile({
@@ -24,11 +26,11 @@ class SymptomInsightListTile extends StatelessWidget {
           children: [
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.greenAccent,
+                borderRadius: BorderRadius.circular(5),
+                color: Colors.greenAccent.withOpacity(0.3),
               ),
               padding: EdgeInsets.all(5),
-              child: Icon(Icons.cast, size: 25),
+              child: SvgIcon(AppIcons.broadcast,size: 25,)
             ),
             SizedBox(width: 10),
             Expanded(

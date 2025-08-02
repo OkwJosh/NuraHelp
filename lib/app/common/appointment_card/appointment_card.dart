@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
-import 'package:iconify_flutter_plus/icons/carbon.dart';
-import 'package:iconify_flutter_plus/icons/majesticons.dart';
-import 'package:iconify_flutter_plus/icons/uil.dart';
-import 'package:material_symbols_icons/symbols.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 
-import '../../../../../utilities/constants/colors.dart';
+import '../../utilities/constants/colors.dart';
+import '../../utilities/constants/icons.dart';
+
 
 
 
@@ -30,7 +28,7 @@ class AppointmentCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
-        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+        padding: EdgeInsets.symmetric(horizontal: 15,vertical: 20),
         child: Column(
           children: [
             Row(
@@ -38,13 +36,13 @@ class AppointmentCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    CircleAvatar(radius: 20),
+                    CircleAvatar(radius: 20,backgroundColor: Colors.white,child: SvgIcon(AppIcons.profile),),
                     SizedBox(width: 10),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Dr John Smith',style: TextStyle(fontSize: 14,fontFamily: "Poppins-Regular")),
-                        Text('Cardiologist',style: TextStyle(fontFamily: "Poppins-ExtraLight",fontSize: 12)),
+                        Text('Cardiologist',style: TextStyle(fontFamily: "Poppins-ExtraLight",fontSize: 12,color: AppColors.black300)),
                       ],
                     ),
                   ],
@@ -69,8 +67,8 @@ class AppointmentCard extends StatelessWidget {
                         ),
                       ),
                     ) :
-                        SizedBox(),
-                    IconButton(onPressed: (){}, icon: Iconify(Uil.ellipsis_v)),
+                    SizedBox(),
+                    IconButton(onPressed: (){},icon: SvgIcon(AppIcons.ellipsis))
                   ],
                 )
               ],
@@ -84,17 +82,17 @@ class AppointmentCard extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Iconify(Carbon.calendar,color: AppColors.secondaryColor),
+                        SvgIcon(AppIcons.calender,size: 20,),
                         SizedBox(width: 10),
-                        Text('12 Nov,12:00 - 12:45 PM',style: TextStyle(fontSize: 12,fontFamily: "Poppins-ExtraLight"))
+                        Text('12 Nov,12:00 - 12:45 PM',style: TextStyle(fontSize: 12,fontFamily: "Poppins-ExtraLight",color: AppColors.black300))
                       ],
                     ),
-                    SizedBox(height: 5),
+                    SizedBox(height: 10),
                     Row(
                       children: [
-                        Icon(Symbols.desktop_mac,color: AppColors.secondaryColor),
+                        SvgIcon(AppIcons.computer,size: 20),
                         SizedBox(width: 10),
-                        Text(isVirtual?'Virtual Visit':'In-person visit',style: TextStyle(fontSize: 12,fontFamily: "Poppins-ExtraLight"))
+                        Text(isVirtual?'Virtual Visit':'In-person visit',style: TextStyle(fontSize: 12,fontFamily: "Poppins-ExtraLight",color: AppColors.black300))
                       ],
                     )
                   ],
@@ -107,7 +105,7 @@ class AppointmentCard extends StatelessWidget {
                         padding: EdgeInsets.symmetric(horizontal: 15)
                     ), child: Row(
                       children: [
-                        Iconify(Majesticons.video_camera_line,color: Colors.white),
+                        SvgIcon(AppIcons.camera,color: Colors.white),
                         SizedBox(width: 3),
                         Text('Join',style: TextStyle(color: Colors.white)),
                       ],
@@ -116,7 +114,7 @@ class AppointmentCard extends StatelessWidget {
                   ),
                 )
                     :
-                    SizedBox.shrink(),
+                SizedBox.shrink(),
               ],
             ),
           ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconify_flutter_plus/icons/uil.dart';
+import 'package:nurahelp/app/utilities/constants/icons.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../utilities/constants/colors.dart';
 
 class TestResultCard extends StatelessWidget {
@@ -47,7 +49,7 @@ class TestResultCard extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.visibility, color: Colors.white),
+                            SvgIcon(AppIcons.eye,color: Colors.white),
                             SizedBox(width: 5),
                             Text(
                               'View report',
@@ -70,7 +72,7 @@ class TestResultCard extends StatelessWidget {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.download, color: AppColors.secondaryColor),
+                            SvgIcon(AppIcons.download,color: AppColors.secondaryColor),
                             SizedBox(width: 5),
                             Text(
                               'Download',
@@ -81,7 +83,12 @@ class TestResultCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Iconify(Uil.ellipsis_v),
+                  SizedBox(width: 5),
+                  IconButton(
+                      style: IconButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                      ),
+                      onPressed: (){}, icon: SvgIcon(AppIcons.ellipsis))
                 ],
               ),
             ],

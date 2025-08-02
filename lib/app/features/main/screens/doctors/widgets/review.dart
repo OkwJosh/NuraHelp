@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+import 'package:nurahelp/app/utilities/constants/icons.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 
 import '../../../../../utilities/constants/colors.dart';
 
@@ -23,7 +25,7 @@ class Reviews extends StatelessWidget {
             Row(
               spacing: 15,
               children: [
-                CircleAvatar(radius: 20),
+                CircleAvatar(radius: 20,backgroundColor: Colors.transparent,child: SvgIcon(AppIcons.profile)),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -37,9 +39,11 @@ class Reviews extends StatelessWidget {
               ],
             ),
             RatingStars(
+              starBuilder: (index, color) => SvgIcon(AppIcons.reviewStar,color: color),
               valueLabelVisibility: false,
               starColor: AppColors.secondaryColor,
               starSize: 15,
+              starSpacing: 3,
               value: 5,
             ),
           ],
