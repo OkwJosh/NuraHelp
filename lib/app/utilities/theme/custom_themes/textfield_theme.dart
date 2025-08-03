@@ -9,7 +9,6 @@ class CustomTextFieldTheme{
 
   static final lightInputDecorationTheme = InputDecorationTheme(
     filled: true,
-
     fillColor: AppColors.primaryColor.withOpacity(0.7),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),

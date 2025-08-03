@@ -32,46 +32,6 @@ class OverviewTabContent extends StatelessWidget {
           ],
         ),
         SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            SizedBox(
-              width: 85,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(horizontal: 15),
-                  backgroundColor: Colors.transparent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    side: BorderSide(
-                      color: AppColors.black,
-                      width: 0.3
-                    ),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      'Add',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontFamily: "Poppins-Light",
-                        color: Colors.black,
-                      ),
-                    ),
-                    Icon(
-                      Icons.keyboard_arrow_down_sharp,
-                      size: 20,
-                      color: Colors.black,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-        SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,

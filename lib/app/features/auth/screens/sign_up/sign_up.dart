@@ -47,62 +47,6 @@ class SignUpScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 25),
                     SignUpForm(),
-                    SizedBox(height: 10),
-                    Text(
-                      'What best describes you?',
-                      style: TextStyle(
-                        fontFamily: 'Poppins-Light',
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox.square(
-                          dimension: 20,
-                          child: Checkbox(
-                            value: (true),
-                            onChanged: (value) {},
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Text('Doctor-Patient Sharing Consent',style: TextStyle(fontSize: 14,color: AppColors.black,fontFamily: 'Poppins-Light'),),
-                      ],
-                    ),
-                    SizedBox(height: 18),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        SizedBox.square(
-                          dimension: 20,
-                          child: Checkbox(
-                            value: (true),
-                            onChanged: (value) {},
-                            materialTapTargetSize:
-                            MaterialTapTargetSize.shrinkWrap,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Text('Nura AI Access to Personal Data',style: TextStyle(fontSize: 14,color: AppColors.black,fontFamily: 'Poppins-Light'),),
-                      ],
-                    ),
-                    SizedBox(height: 24),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: ()  => Get.to(() => ConfirmEmailScreen(),transition: Transition.rightToLeft),
-                        child: Text(
-                          'Create Account',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Poppins-SemiBold',
-                          ),
-                        ),
-                      ),
-                    ),
                     SizedBox(height: 20),
                     Center(
                       child: GestureDetector(

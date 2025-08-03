@@ -41,30 +41,6 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 24),
               LoginForm(),
-              SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: () => Get.to(()=>ForgetPasswordScreen(),transition: Transition.rightToLeft),
-                    child: Text(
-                      'Forgot password?',
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        fontSize: 12,
-                        letterSpacing: 0,
-                        fontFamily: 'Poppins-Light',
-                        color: AppColors.black,
-                        decorationColor: AppColors.black,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                  child: ElevatedButton(onPressed: () => Get.offAll(() => NavigationMenu()), child: Text('Login',style: TextStyle(fontFamily: 'Poppins-Medium',color: Colors.white),))),
               SizedBox(height: 26),
               Center(
                 child: GestureDetector(
