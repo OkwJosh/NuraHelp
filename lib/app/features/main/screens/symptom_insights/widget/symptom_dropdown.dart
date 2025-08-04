@@ -15,7 +15,7 @@ class SymptomDropdown extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(symptomName,style: TextStyle(fontSize: 12,fontFamily: 'Poppins-Regular')),
+        Text(symptomName,style: TextStyle(fontSize: 14,fontFamily: 'Poppins-Medium')),
         SizedBox(height: 5),
         Row(
           children: [

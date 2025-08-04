@@ -39,7 +39,7 @@ class CustomTextFieldTheme{
       ),
     ),
     contentPadding: EdgeInsets.only(left: 10,right: 10,top: 15,bottom: 15),
-    hintStyle: TextStyle(fontSize: 14,fontFamily: 'Poppins-ExtraLight',color: AppColors.black,letterSpacing: 0),
+    hintStyle: TextStyle(fontSize: 14,fontFamily: 'Poppins-Light',color: AppColors.black,letterSpacing: 0),
     suffixIconColor: AppColors.black,
 
 

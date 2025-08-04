@@ -66,7 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             SizedBox(height: 20),
                             Text(
                               'Voice & Language Preferences',
-                              style: TextStyle(fontSize: 14),
+                              style: TextStyle(fontSize: 16,fontFamily: 'Poppins-Semibold'),
                             ),
                             SizedBox(height: 15),
                             Row(
@@ -75,7 +75,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 Text(
                                   'Enable "Hey Nura" Voice Wake',
                                   style: TextStyle(
-                                    fontFamily: 'Poppins-Light',
                                     fontSize: 14,
                                   ),
                                 ),
@@ -93,7 +92,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 Text(
                                   'Voice feedback',
                                   style: TextStyle(
-                                    fontFamily: 'Poppins-Light',
                                     fontSize: 14,
                                   ),
                                 ),
@@ -108,7 +106,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Voice Command Sensitivity',style: TextStyle(fontFamily: 'Poppins-Light'),),
+                                Text('Voice Command Sensitivity'),
                                 Row(
                                   children: [
                                     Expanded(
@@ -156,7 +154,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 20),
+                            SizedBox(height: 15),
                             Row(
                               children: [
                                 Expanded(
@@ -174,17 +172,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             SizedBox(height: 20),
                             Divider(),
                             SizedBox(height: 20),
-                            Text('Notifications and Alerts'),
+                            Text('Notifications and Alerts',style: TextStyle(fontFamily: 'Poppins-SemiBold',fontSize: 16)),
                             SizedBox(height: 10),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   'Appointment Reminders',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Light',
-                                    fontSize: 14,
-                                  ),
                                 ),
                                 Switch(
                                   value: true,
@@ -199,10 +193,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               children: [
                                 Text(
                                   'Message Alerts',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Light',
-                                    fontSize: 14,
-                                  ),
                                 ),
                                 Row(
                                   spacing: 10,
@@ -229,16 +219,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             SizedBox(height: 20),
                             Divider(),
                             SizedBox(height: 20),
-                            Text('Security and Access'),
+                            Text('Security and Access',style: TextStyle(fontSize: 16,fontFamily: 'Poppins-SemiBold')),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   'Two-Factor Authentication',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Light',
-                                    fontSize: 14,
-                                  ),
                                 ),
                                 Switch(
                                   value: true,
@@ -253,10 +239,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               children: [
                                 Text(
                                   'Export Account Data',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Light',
-                                    fontSize: 14,
-                                  ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(right: 20),
@@ -280,7 +262,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               onPressed: () {},
                               child: Text(
                                 'Change Password',
-                                style: TextStyle(color: Colors.black),
+                                style: TextStyle(color: Colors.black,fontFamily: 'Poppins-Medium'),
                               ),
                             ),
                             TextButton(
@@ -290,7 +272,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               onPressed: () {},
                               child: Text(
                                 'Delete Account',
-                                style: TextStyle(color: Colors.redAccent),
+                                style: TextStyle(color: Colors.redAccent,fontFamily: 'Poppins-Medium'),
                               ),
                             ),
                             SizedBox(height: 5),
@@ -304,7 +286,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   'Save and Update',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 12,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),

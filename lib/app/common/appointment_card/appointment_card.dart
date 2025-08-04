@@ -1,19 +1,28 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 
 import '../../utilities/constants/colors.dart';
 import '../../utilities/constants/icons.dart';
 
-
-
-
-class AppointmentCard extends StatelessWidget {
-  const AppointmentCard({super.key, this.isVirtual = true,this.showStatus = false, this.status = 'pending'});
+class AppointmentCard extends StatefulWidget {
+  AppointmentCard({
+    super.key,
+    this.isVirtual = true,
+    this.showStatus = false,
+    this.status = 'pending',
+  });
 
   final bool isVirtual;
   final bool showStatus;
   final String status;
+  bool showOptionsClicked = false;
 
+  @override
+  State<AppointmentCard> createState() => _AppointmentCardState();
+}
+
+class _AppointmentCardState extends State<AppointmentCard> {
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -28,93 +37,184 @@ class AppointmentCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           color: Colors.white,
         ),
-        padding: EdgeInsets.symmetric(horizontal: 15,vertical: 20),
-        child: Column(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+        child: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
               children: [
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CircleAvatar(radius: 20,backgroundColor: Colors.white,child: SvgIcon(AppIcons.profile),),
-                    SizedBox(width: 10),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundColor: Colors.white,
+                          child: SvgIcon(AppIcons.profile),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Dr John Smith',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontFamily: "Poppins-Medium",
+                              ),
+                            ),
+                            Text(
+                              'Cardiologist',
+                              style: TextStyle(
+                                fontFamily: "Poppins-Light",
+                                fontSize: 14,
+                                color: AppColors.black300,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        widget.showStatus
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  color: widget.status == "pending"
+                                      ? AppColors.warning50
+                                      : AppColors.error50,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 8,
+                                  ),
+                                  child: Row(
+                                    spacing: 5,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor:
+                                            widget.status == "pending"
+                                            ? Colors.orangeAccent
+                                            : Colors.redAccent,
+                                        radius: 5,
+                                      ),
+                                      widget.status == "pending"
+                                          ? Text(
+                                              'Pending',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontFamily: 'Poppins-Regular',
+                                                color: AppColors.warning500,
+                                                letterSpacing: -1,
+                                              ),
+                                            )
+                                          : Text(
+                                              'Canceled',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontFamily: 'Poppins-Regular',
+                                                color: AppColors.error400,
+                                                letterSpacing: -1,
+                                              ),
+                                            ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : SizedBox(),
+                        widget.status == 'canceled'
+                            ? SizedBox.shrink()
+                            : PopupMenuButton(
+                                icon: SvgIcon(AppIcons.ellipsis),
+                                color: Colors.white,
+                                elevation: 2,
+                                itemBuilder: (context) {
+                                  return [
+                                    PopupMenuItem(
+                                      child: Text(
+                                        'Cancel appointment',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins-Regular',
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ];
+                                },
+                              ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Dr John Smith',style: TextStyle(fontSize: 14,fontFamily: "Poppins-Regular")),
-                        Text('Cardiologist',style: TextStyle(fontFamily: "Poppins-ExtraLight",fontSize: 12,color: AppColors.black300)),
-                      ],
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    showStatus?
-                    Container(
-                      decoration: BoxDecoration(
-                        color: status == "pending"?Colors.orangeAccent.withOpacity(0.3):Colors.redAccent.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(padding: EdgeInsets.symmetric(horizontal: 8,vertical: 8),
-                        child: Row(
-                          spacing: 5,
+                        Row(
                           children: [
-                            CircleAvatar(backgroundColor: status == "pending"?Colors.orangeAccent:Colors.redAccent,radius: 5,),
-                            status == "pending"?
-                            Text('Pending',style: TextStyle(fontSize: 12,fontFamily: 'Poppins-Light',color: Colors.orangeAccent),):
-                            Text('Canceled',style: TextStyle(fontSize: 12,fontFamily: 'Poppins-Light',color: Colors.red))
+                            SvgIcon(AppIcons.calender, size: 20),
+                            SizedBox(width: 10),
+                            Text(
+                              '12 Nov,12:00 - 12:45 PM',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: "Poppins-Light",
+                                color: AppColors.black300,
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    ) :
-                    SizedBox(),
-                    IconButton(onPressed: (){},icon: SvgIcon(AppIcons.ellipsis))
-                  ],
-                )
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        SvgIcon(AppIcons.calender,size: 20,),
-                        SizedBox(width: 10),
-                        Text('12 Nov,12:00 - 12:45 PM',style: TextStyle(fontSize: 12,fontFamily: "Poppins-ExtraLight",color: AppColors.black300))
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            SvgIcon(AppIcons.computer, size: 20),
+                            SizedBox(width: 10),
+                            Text(
+                              widget.isVirtual
+                                  ? 'Virtual Visit'
+                                  : 'In-person visit',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: "Poppins-Light",
+                                color: AppColors.black300,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                    SizedBox(height: 10),
-                    Row(
-                      children: [
-                        SvgIcon(AppIcons.computer,size: 20),
-                        SizedBox(width: 10),
-                        Text(isVirtual?'Virtual Visit':'In-person visit',style: TextStyle(fontSize: 12,fontFamily: "Poppins-ExtraLight",color: AppColors.black300))
-                      ],
-                    )
+                    widget.isVirtual
+                        ? SizedBox(
+                            height: 45,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 15),
+                              ),
+                              child: Row(
+                                children: [
+                                  SvgIcon(AppIcons.camera, color: Colors.white),
+                                  SizedBox(width: 3),
+                                  Text(
+                                    'Join',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        : SizedBox.shrink(),
                   ],
                 ),
-                isVirtual?
-                SizedBox(
-                  height: 45,
-                  child: ElevatedButton(onPressed: (){},
-                    style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(horizontal: 15)
-                    ), child: Row(
-                      children: [
-                        SvgIcon(AppIcons.camera,color: Colors.white),
-                        SizedBox(width: 3),
-                        Text('Join',style: TextStyle(color: Colors.white)),
-                      ],
-                    ),
-
-                  ),
-                )
-                    :
-                SizedBox.shrink(),
               ],
             ),
           ],

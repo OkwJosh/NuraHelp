@@ -25,7 +25,7 @@ class MessagesScreen extends StatelessWidget {
               child: Row(
                 children: [
                   IconButton(onPressed: () => Get.offAll(() => NavigationMenu()), icon: Icon(Icons.arrow_back_ios)),
-                  Text('Messages',style: TextStyle(fontSize: 18),)
+                  Text('Messages',style: TextStyle(fontSize: 18,fontFamily: 'Poppins-SemiBold'),)
                 ],
               ),
             ),),
@@ -41,16 +41,6 @@ class MessagesScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       MessageListTile(onPressed: () => Get.to(()=> DirectMessagePage()), contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
-                      MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
                       MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
                       MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),
                       MessageListTile(onPressed: (){}, contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),

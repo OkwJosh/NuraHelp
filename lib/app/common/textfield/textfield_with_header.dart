@@ -14,9 +14,9 @@ class TextFieldWithHeader extends StatelessWidget {
       spacing: 5,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(headerText,style: TextStyle(fontFamily: 'Poppins-Light',color: AppColors.greyColor,fontSize: 13),),
+        Text(headerText,style: TextStyle(fontFamily: 'Poppins-Regular',color: AppColors.black300,fontSize: 14)),
         SizedBox(
-          height: 45,
+          height: 52,
         child: TextField()),
       ],
     );

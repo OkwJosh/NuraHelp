@@ -41,7 +41,7 @@ class _AppDropdownState extends State<AppDropdown> {
       child: IntrinsicWidth(
         child: DropdownButtonFormField(
           value: widget.selectedValue,
-          hint: Text(widget.hintText ?? 'Select an option',style: TextStyle(color: AppColors.black,fontSize: 14,fontFamily: 'Poppins-ExtraLight')),
+          hint: Text(widget.hintText ?? 'Select an option',style: TextStyle(color: AppColors.black,fontSize: 14,fontFamily: 'Poppins-Light')),
           icon: Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Icon(Icons.keyboard_arrow_down_sharp,color: AppColors.black,),
@@ -49,7 +49,7 @@ class _AppDropdownState extends State<AppDropdown> {
           iconSize: 20,
           dropdownColor: Colors.white,
           style: TextStyle(
-              fontFamily: "Poppins-ExtraLight",
+              fontFamily: "Poppins-Light",
               fontSize: 14,
               color: AppColors.black,
               overflow: TextOverflow.ellipsis

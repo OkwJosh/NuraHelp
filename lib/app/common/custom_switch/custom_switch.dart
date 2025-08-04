@@ -63,8 +63,8 @@ class _CustomSwitchState extends State<CustomSwitch> {
                 widget.firstOptionText,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 12,
-                  fontFamily: "Poppins-ExtraLight",
+                  fontSize: 14,
+                  fontFamily: "Poppins-Regular",
                 ),
               ),
             ),
@@ -100,8 +100,8 @@ class _CustomSwitchState extends State<CustomSwitch> {
                 widget.secondOptionText,
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 12,
-                  fontFamily: "Poppins-ExtraLight",
+                  fontSize: 14,
+                  fontFamily: "Poppins-Regular",
                 ),
               ),
             ),
@@ -136,8 +136,8 @@ class _CustomSwitchState extends State<CustomSwitch> {
                   widget.thirdOptionText,
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: 12,
-                    fontFamily: "Poppins-ExtraLight",
+                    fontSize: 14,
+                    fontFamily: "Poppins-Regular",
                   ),
                 ),
               ),

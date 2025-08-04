@@ -19,10 +19,10 @@ class AboutInfoColumn extends StatelessWidget {
           spacing: 5,
           children: [
             icon,
-            Text(headerText,style: TextStyle(fontSize: 12,fontFamily: "Poppins-Regular")),
+            Text(headerText,style: TextStyle(fontSize: 16,fontFamily: "Poppins-Regular")),
           ],
         ),
-        Text(bodyText,style: TextStyle(fontFamily: 'Poppins-ExtraLight',fontSize: 12),)
+        Text(bodyText,style: TextStyle(fontFamily: 'Poppins-Light',fontSize: 16),)
       ],
     );
   }

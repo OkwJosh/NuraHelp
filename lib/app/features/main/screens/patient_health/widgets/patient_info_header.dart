@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../common/dropdown/app_dropdown.dart';
+import '../../../../../utilities/constants/colors.dart';
 
 class PatientInfoHeader extends StatelessWidget {
   const PatientInfoHeader({
@@ -22,8 +23,9 @@ class PatientInfoHeader extends StatelessWidget {
                 Text(
                   'Dianne Russell',
                   style: TextStyle(
-                    fontFamily: "Poppins-Medium",
-                    fontSize: 15,
+                    fontFamily: "Poppins-Semibold",
+                    fontSize: 16,
+                    color: AppColors.black600
                   ),
                 ),
                 Row(
@@ -31,24 +33,24 @@ class PatientInfoHeader extends StatelessWidget {
                     Text(
                       'Female',
                       style: TextStyle(
-                        fontFamily: "Poppins-ExtraLight",
-                        fontSize: 12,
+                        fontFamily: "Poppins-Regular",
+                        fontSize: 14,
                       ),
                     ),
                     SizedBox(width: 10),
                     Text(
                       'Age 32',
                       style: TextStyle(
-                        fontFamily: "Poppins-ExtraLight",
-                        fontSize: 12,
+                        fontFamily: "Poppins-Regular",
+                        fontSize: 14,
                       ),
                     ),
                     SizedBox(width: 10),
                     Text(
                       'O+',
                       style: TextStyle(
-                        fontFamily: "Poppins-ExtraLight",
-                        fontSize: 12,
+                        fontFamily: "Poppins-Regular",
+                        fontSize: 14,
                       ),
                     ),
                   ],
@@ -58,11 +60,7 @@ class PatientInfoHeader extends StatelessWidget {
           ],
         ),
         SizedBox(height: 5),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            ],
-          ),
+
       ],
     );
   }

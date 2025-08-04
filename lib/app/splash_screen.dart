@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/sign_up.dart';
-import 'package:nurahelp/app/utilities/constants/colors.dart'; // If you're using GetX for navigation
+import 'package:nurahelp/app/utilities/constants/colors.dart';
+
+import 'features/auth/screens/login/login.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,8 +30,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    Timer(const Duration(milliseconds: 4600), () {
-      Get.offAll(()=>SignUpScreen(),transition: Transition.fadeIn,duration: Duration(seconds: 2)); // or Navigator.pushReplacement...
+    Timer(const Duration(milliseconds: 4200), () {
+      Get.offAll(()=>LoginScreen(),transition: Transition.fadeIn,duration: Duration(seconds: 2)); // or Navigator.pushReplacement...
     });
   }
 

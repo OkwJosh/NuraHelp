@@ -20,7 +20,7 @@ class ProfileInfoSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Personal Info'),
+            Text('Personal Info',style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 16),),
             OutlinedButton(
               onPressed: () => Get.to(() => EditPersonalInformation()),
               style: OutlinedButton.styleFrom(
@@ -58,16 +58,16 @@ class ProfileInfoSection extends StatelessWidget {
             Text(
               'Full Name',
               style: TextStyle(
-                fontFamily: 'Poppins-ExtraLight',
+                fontFamily: 'Poppins-Regular',
                 color: AppColors.greyColor,
-                fontSize: 13,
+                fontSize: 15,
               ),
             ),
             Text(
               'John H. Doe',
               style: TextStyle(
-                fontFamily: 'Poppins-Light',
-                fontSize: 14,
+                fontFamily: 'Poppins-Medium',
+                fontSize: 16,
               ),
             ),
           ],
@@ -80,16 +80,16 @@ class ProfileInfoSection extends StatelessWidget {
             Text(
               'Date of Birth',
               style: TextStyle(
-                fontFamily: 'Poppins-ExtraLight',
+                fontFamily: 'Poppins-Regular',
                 color: AppColors.greyColor,
-                fontSize: 13,
+                fontSize: 15,
               ),
             ),
             Text(
               '20th August, 2000',
               style: TextStyle(
-                fontFamily: 'Poppins-Light',
-                fontSize: 14,
+                fontFamily: 'Poppins-Medium',
+                fontSize: 16,
               ),
             ),
           ],
@@ -102,16 +102,16 @@ class ProfileInfoSection extends StatelessWidget {
             Text(
               'Phone Number',
               style: TextStyle(
-                fontFamily: 'Poppins-ExtraLight',
-                fontSize: 13,
+                fontFamily: 'Poppins-Regular',
+                fontSize: 15,
                 color: AppColors.greyColor,
               ),
             ),
             Text(
               '0123456789',
               style: TextStyle(
-                fontFamily: 'Poppins-Light',
-                fontSize: 14,
+                fontFamily: 'Poppins-Medium',
+                fontSize: 16,
               ),
             ),
           ],
@@ -124,16 +124,16 @@ class ProfileInfoSection extends StatelessWidget {
             Text(
               'Email Address',
               style: TextStyle(
-                fontFamily: 'Poppins-ExtraLight',
+                fontFamily: 'Poppins-Regular',
                 color: AppColors.greyColor,
-                fontSize: 13,
+                fontSize: 15,
               ),
             ),
             Text(
               'example@gmail.com',
               style: TextStyle(
-                fontFamily: 'Poppins-Light',
-                fontSize: 14,
+                fontFamily: 'Poppins-Medium',
+                fontSize: 16,
               ),
             ),
           ],
@@ -146,9 +146,9 @@ class ProfileInfoSection extends StatelessWidget {
             Text(
               'Linked Doctor(s)',
               style: TextStyle(
-                  fontFamily: 'Poppins-ExtraLight',
-                  color: AppColors.greyColor,
-                  fontSize: 13
+                  fontFamily: 'Poppins-Regular',
+                  color: AppColors.black300,
+                  fontSize: 15
               ),
             ),
             Row(
@@ -158,10 +158,12 @@ class ProfileInfoSection extends StatelessWidget {
                 Text(
                   'Dr John Smith',
                   style: TextStyle(
-                    fontFamily: 'Poppins-Light',
+                    fontFamily: 'Poppins-Medium',
+                    fontSize: 16
                   ),
                 ),
               ],
+
             ),
           ],
         ),

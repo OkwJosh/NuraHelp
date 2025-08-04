@@ -8,9 +8,15 @@ import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../utilities/constants/colors.dart';
 import '../../../../utilities/constants/icons.dart';
 
-class FirstTimeOnBoardingScreen extends StatelessWidget {
+class FirstTimeOnBoardingScreen extends StatefulWidget {
   const FirstTimeOnBoardingScreen({super.key});
 
+  @override
+  State<FirstTimeOnBoardingScreen> createState() => _FirstTimeOnBoardingScreenState();
+}
+
+class _FirstTimeOnBoardingScreenState extends State<FirstTimeOnBoardingScreen> {
+  bool isChecked = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,14 +37,15 @@ class FirstTimeOnBoardingScreen extends StatelessWidget {
             children: [
               Text(
                 'First-Time\nOnboarding',
-                style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 32),
+                style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 38),
               ),
               SizedBox(height: 10),
               Text(
                 'please fill in your details below',
                 style: TextStyle(
-                  fontFamily: 'Poppins-ExtraLight',
-                  fontSize: 14,
+                  fontFamily: 'Poppins-Regular',
+                  color: AppColors.black300,
+                  fontSize: 16,
                 ),
               ),
               SizedBox(height: 32),
@@ -50,16 +57,15 @@ class FirstTimeOnBoardingScreen extends StatelessWidget {
                       child: Text(
                         'Add profile picture',
                         style: TextStyle(
-                          fontFamily: 'Poppins-Light',
-                          fontSize: 14,
-                          color: AppColors.black,
+                          fontFamily: 'Poppins-Regular',
+                          fontSize: 16,
+                          color: AppColors.black300,
                         ),
                       ),
                       style: TextButton.styleFrom(
                         overlayColor: Colors.black.withOpacity(0.2),
                       ),
                     ),
-                    SizedBox(height: 15),
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
@@ -68,8 +74,8 @@ class FirstTimeOnBoardingScreen extends StatelessWidget {
                         ),
                       ),
                       padding: EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 10,
+                        vertical: 15,
+                        horizontal: 15,
                       ),
                       child: CircleAvatar(
                         radius: 70,
@@ -82,10 +88,10 @@ class FirstTimeOnBoardingScreen extends StatelessWidget {
               ),
               SizedBox(height: 32),
               SizedBox(
-                height: 65,
+                height: 56,
                 width: double.infinity,
                 child: AppDropdown(menuItems: ['English', 'French'],
-                verticalPadding: 20,
+                verticalPadding: 15,
                   hintText: 'Choose Language Preference',
                   borderRadius: 10,
 
@@ -149,8 +155,12 @@ class FirstTimeOnBoardingScreen extends StatelessWidget {
                   SizedBox.square(
                     dimension: 20,
                     child: Checkbox(
-                      value: (true),
-                      onChanged: (value) {},
+                      value: isChecked,
+                      onChanged: (value) {
+                        setState((){
+                          isChecked = value!;
+                        });
+                      },
                       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                   ),
@@ -158,9 +168,9 @@ class FirstTimeOnBoardingScreen extends StatelessWidget {
                   Text(
                     'Enable \"Hey Nura\" voice activation (optional)',
                     style: TextStyle(
-                      fontSize: 13,
-                      fontFamily: 'Poppins-Light',
-                      letterSpacing: 0,
+                      fontSize: 14,
+                      fontFamily: 'Poppins-Regular',
+                      letterSpacing: -1,
                     ),
                   ),
                 ],
@@ -176,8 +186,8 @@ class FirstTimeOnBoardingScreen extends StatelessWidget {
                   child: Text(
                     'Go to Dashboard',
                     style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: 'Poppins-Regular',
+                      fontSize: 16,
+                      fontFamily: 'Poppins-Medium',
                       color: Colors.white,
                       letterSpacing: 0,
                     ),

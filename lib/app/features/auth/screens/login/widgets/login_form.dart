@@ -43,9 +43,9 @@ class LoginForm extends StatelessWidget {
                   'Forgot password?',
                   style: TextStyle(
                     decoration: TextDecoration.underline,
-                    fontSize: 12,
+                    fontSize: 14,
                     letterSpacing: 0,
-                    fontFamily: 'Poppins-Light',
+                    fontFamily: 'Poppins-Regular',
                     color: AppColors.black,
                     decorationColor: AppColors.black,
                   ),
@@ -56,7 +56,7 @@ class LoginForm extends StatelessWidget {
           SizedBox(height: 24),
           SizedBox(
               width: double.infinity,
-              child: ElevatedButton(onPressed: () => Get.offAll(() => NavigationMenu()), child: Text('Login',style: TextStyle(fontFamily: 'Poppins-Medium',color: Colors.white),))),
+              child: ElevatedButton(onPressed: () => Get.offAll(() => NavigationMenu()), child: Text('Login',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize:16,color: Colors.white),))),
         ],
       ),
     );

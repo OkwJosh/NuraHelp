@@ -27,7 +27,7 @@ class LoginScreen extends StatelessWidget {
                   Text(
                     'Welcome back!',
                     style: TextStyle(
-                      fontFamily: 'Poppins-SemiBold',
+                      fontFamily: 'Poppins-Medium',
                       fontSize: 24,
                       letterSpacing: 0,
                     ),
@@ -48,11 +48,11 @@ class LoginScreen extends StatelessWidget {
                   child: Text.rich(
                     TextSpan(
                       text: 'Don\'t have an account?',
-                      style: TextStyle(fontFamily: 'Poppins-Light',fontSize: 12,letterSpacing: 0,color: AppColors.black),
+                      style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 14,letterSpacing: 0,color: AppColors.black),
                       children: [
                         TextSpan(
                           text: ' Sign Up',
-                          style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 12,letterSpacing: 0,color: AppColors.secondaryColor),
+                          style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 14,letterSpacing: 0,color: AppColors.secondaryColor),
                         )
                       ]
                     )

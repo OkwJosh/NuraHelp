@@ -52,7 +52,7 @@ class DoctorCard extends StatelessWidget {
                           children: [
                             SvgIcon(AppIcons.reviewStar,size: 15),
                             SizedBox(width: 5),
-                            Text('5.0')
+                            Text('5.0',style: TextStyle(fontSize: 16),)
                           ],
                         ),
                       ),
@@ -64,8 +64,8 @@ class DoctorCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Dr. Mia Miller',style: TextStyle(fontFamily: "Poppins-Regular")),
-                  Text('Pediatrician',style: TextStyle(fontFamily: "Poppins-ExtraLight",fontSize: 12)),
+                  Text('Dr. Mia Miller',style: TextStyle(fontFamily: "Poppins-Medium",fontSize: 16)),
+                  Text('Pediatrician',style: TextStyle(fontFamily: "Poppins-Regular",fontSize: 14,color: AppColors.lightgrey)),
                 ],
               ),
               Transform.translate(

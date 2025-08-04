@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:nurahelp/app/common/search_bar/search_bar.dart';
 import 'package:nurahelp/app/features/main/screens/notification/notification.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
@@ -9,11 +10,11 @@ import '../../utilities/constants/colors.dart';
 
 class AppBarWithBell extends StatelessWidget {
   const AppBarWithBell({
-    this.showBackArrow = false,
-    super.key,
+  this.showSearchBar = true,
+    super.key
   });
 
-  final bool showBackArrow;
+  final bool showSearchBar;
 
 
 
@@ -22,7 +23,7 @@ class AppBarWithBell extends StatelessWidget {
     return Material(
       elevation: 0.5,
       child: Container(
-        height: 90,
+        height: 110,
         decoration: BoxDecoration(
             color: Colors.white
         ),
@@ -31,10 +32,16 @@ class AppBarWithBell extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              showBackArrow?
-              IconButton(onPressed: (){}, icon: Icon(Icons.arrow_back_ios,size: 25,)):
+              showSearchBar?
+              Expanded(child: AppSearchBar(hintText: 'Hey Nura, type to ask anything')):
                   SizedBox.shrink(),
-              IconButton(onPressed:() => Get.to(() => NotificationScreen()),icon: SvgIcon(AppIcons.notification,color: AppColors.black,)),
+              SizedBox(width: 10),
+              Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.black,width: 0.3)
+                  ),
+                  child: IconButton(onPressed:() => Get.to(() => NotificationScreen()),icon: SvgIcon(AppIcons.notification,color: AppColors.black,size: 25,))),
             ],
           ),
         ),

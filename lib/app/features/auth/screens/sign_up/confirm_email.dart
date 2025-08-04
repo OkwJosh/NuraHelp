@@ -30,13 +30,13 @@ class ConfirmEmailScreen extends StatelessWidget {
                     Text(
                       'Confirm your email',
                       style: TextStyle(
-                        fontFamily: 'Poppins-SemiBold',
-                        fontSize: 22,
+                        fontFamily: 'Poppins-Medium',
+                        fontSize: 24,
                       ),
                     ),
                     SizedBox(height: 10),
                     Text.rich(
-                      style: TextStyle(fontFamily: 'Poppins-ExtraLight'),
+                      style: TextStyle(fontFamily: 'Poppins-Regular',color: AppColors.black300,fontSize: 16),
                       TextSpan(
                         text: 'We sent a code to',
                         children: [
@@ -44,16 +44,17 @@ class ConfirmEmailScreen extends StatelessWidget {
                             text: ' example@gmail.com',
                             style: TextStyle(
                               color: AppColors.secondaryColor,
-                              fontFamily: 'Poppins-Light',
+                              fontFamily: 'Poppins-Medium',fontSize: 16
                             ),
                             children: [
                               TextSpan(
                                 style: TextStyle(
-                                  fontFamily: 'Poppins-ExtraLight',
-                                  color: Colors.black,
+                                  fontFamily: 'Poppins-Regular',
+                                  color: AppColors.black300,
+                                    fontSize: 16
                                 ),
                                 text:
-                                    '\nAfter confirming you email,you can continue\nyour account creation process',
+                                    '\nAfter confirming you email,you can continue your account creation process',
                               ),
                             ],
                           ),
@@ -64,16 +65,16 @@ class ConfirmEmailScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 24),
                 CustomOtpField(),
-                SizedBox(height: 10),
+                SizedBox(height: 16),
                 Center(
                   child: Text.rich(
-                    style: TextStyle(color: AppColors.black,fontSize: 14,fontFamily: 'Poppins-ExtraLight'),
+                    style: TextStyle(color: AppColors.black,fontSize: 16,fontFamily: 'Poppins-Regular'),
                     TextSpan(
                       text: 'Resending in',
                       children:[
                         TextSpan(
                           text: ' 60s',
-                          style: TextStyle(color: AppColors.secondaryColor,fontFamily: 'Poppins-Bold')
+                          style: TextStyle(color: AppColors.secondaryColor,fontFamily: 'Poppins-Medium',fontSize: 16)
                         )
                   ]
                     )

@@ -31,8 +31,8 @@ class TestResultCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Complete Blood Count (CBC)'),
-              Text('02 Jan,2024'),
+              Text('Complete Blood Count (CBC)',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16)),
+              Text('02 Jan,2024',style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 14,color: AppColors.black300)),
               SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -43,7 +43,7 @@ class TestResultCard extends StatelessWidget {
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(
-                            horizontal: 15,
+                            horizontal: 10,
                             vertical: 10,
                           ),
                         ),
@@ -53,12 +53,12 @@ class TestResultCard extends StatelessWidget {
                             SizedBox(width: 5),
                             Text(
                               'View report',
-                              style: TextStyle(color: Colors.white,fontSize: 12),
+                              style: TextStyle(color: Colors.white,fontSize: 14),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(width: 10),
+                      SizedBox(width: 5),
                       OutlinedButton(
                         onPressed: () {},
                         style: OutlinedButton.styleFrom(
@@ -66,7 +66,7 @@ class TestResultCard extends StatelessWidget {
                               color: AppColors.secondaryColor
                           ),
                           padding: EdgeInsets.symmetric(
-                            horizontal: 15,
+                            horizontal:10,
                             vertical: 10,
                           ),
                         ),
@@ -76,7 +76,7 @@ class TestResultCard extends StatelessWidget {
                             SizedBox(width: 5),
                             Text(
                               'Download',
-                              style: TextStyle(color: AppColors.secondaryColor,fontSize: 12),
+                              style: TextStyle(color: AppColors.secondaryColor,fontSize: 14),
                             ),
                           ],
                         ),

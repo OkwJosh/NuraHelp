@@ -32,14 +32,14 @@ class MessageListTile extends StatelessWidget {
         leading: CircleAvatar(radius: 20,backgroundColor: Colors.white,child: SvgIcon(AppIcons.profile),),
         title: Text(
           contactName,
-          style: TextStyle(fontFamily: "Poppins-Regular", fontSize: 14),
+          style: TextStyle(fontFamily: "Poppins-Medium", fontSize: 14),
         ),
         subtitle: Text(
           lastMessage,
           style: TextStyle(
-            fontFamily: "Poppins-ExtraLight",
+            fontFamily: "Poppins-Light",
             color: AppColors.greyColor,
-            fontSize: 12,
+            fontSize: 14,
           ),
         ),
         trailing: Transform.translate(

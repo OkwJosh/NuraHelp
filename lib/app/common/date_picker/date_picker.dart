@@ -74,7 +74,7 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
               : '20-8-2002',
           style: TextStyle(
             color: AppColors.black,
-            fontFamily: selectedDate != null?'Poppins-Regular':'Poppins-ExtraLight'
+            fontFamily: selectedDate != null?'Poppins-Regular':'Poppins-Light'
           ),
         ),
       ),

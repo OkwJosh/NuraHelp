@@ -32,7 +32,7 @@ class PatientHealthScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     PatientInfoHeader(),
-                    Divider(color: AppColors.black,thickness: 0.3),
+                    Divider(color: AppColors.black300,thickness: 0.3),
                     SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -44,49 +44,16 @@ class PatientHealthScreen extends StatelessWidget {
                               children: [
                                 Text(
                                   'example@gmail.com',
-                                  style: TextStyle(fontFamily: 'Poppins-Light'),
+                                  style: TextStyle(fontFamily: 'Poppins-Regular'),
                                 ),
                                 SizedBox(height: 8),
                                 Text(
                                   '(234) 912 345 8080',
-                                  style: TextStyle(fontFamily: 'Poppins-Light'),
+                                  style: TextStyle(fontFamily: 'Poppins-Regular'),
                                 ),
                               ],
                             ),
                           ],
-                        ),
-                        OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: BorderSide.none,
-                            ),
-                            side: BorderSide(
-                              width: 0.3,
-                              color: AppColors.black,
-                            ),
-                            padding: EdgeInsets.only(
-                              left: 10,
-                              right: 10,
-                              top: 10,
-                              bottom: 10,
-                            ),
-                          ),
-                          child: Row(
-                            children: [
-                              SvgIcon(AppIcons.edit),
-                              SizedBox(width: 5),
-                              Text(
-                                'Edit',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Light',
-                                  fontSize: 12,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
                       ],
                     ),
@@ -98,7 +65,6 @@ class PatientHealthScreen extends StatelessWidget {
                           Container(
                             color:  AppColors.primaryColor,
                             child: TabBar(
-
                               indicatorColor: Colors.black,
                               dividerColor: Colors.transparent,
                               isScrollable: true,
@@ -107,9 +73,9 @@ class PatientHealthScreen extends StatelessWidget {
                               labelColor: Colors.black,
                               unselectedLabelColor: AppColors.black300,
                               tabs: const [
-                                Tab(child: Text("Overview",style: TextStyle(fontFamily: 'Poppins-Regular',),)),
-                                Tab(child: Text("Test Result",style: TextStyle(fontFamily: 'Poppins-Regular'),)),
-                                Tab(child: Text("Medication",style: TextStyle(fontFamily: 'Poppins-Regular'),)),
+                                Tab(child: Text("Overview",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
+                                Tab(child: Text("Test Result",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
+                                Tab(child: Text("Medication",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
                               ],
                             ),
                           ),

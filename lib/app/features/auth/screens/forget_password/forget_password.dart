@@ -21,19 +21,19 @@ class ForgetPasswordScreen extends StatelessWidget {
                 GestureDetector(
                     onTap:()=> Get.back(),
                     child: Icon(Icons.arrow_back_ios_new_sharp, size: 20)),
-                SizedBox(height: 40),
+                SizedBox(height: 24),
                 Text(
                   'Forgot Password',
                   style: TextStyle(
-                    fontSize: 22,
-                    fontFamily: 'Poppins-SemiBold',
+                    fontSize: 24,
+                    fontFamily: 'Poppins-Medium',
                   ),
                 ),
                 Text(
                   'Don’t worry, it happens to the best of us \nJust enter your email, and we’ll send\nyou a reset link',
-                  style: TextStyle(fontSize: 13, fontFamily: 'Poppins-Regular'),
+                  style: TextStyle(fontSize: 14, fontFamily: 'Poppins-Regular'),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 24),
                 TextField(
                   cursorColor: Colors.black,
                   style: TextStyle(
@@ -42,12 +42,12 @@ class ForgetPasswordScreen extends StatelessWidget {
                   ),
                   decoration: InputDecoration(hintText: 'Enter email'),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => Get.to(() => EmailSentScreen(),transition: Transition.rightToLeft),
-                    child: Text('Send Email',style: TextStyle(color: Colors.white,),),
+                    onPressed: () => Get.offAll(() => EmailSentScreen(),transition: Transition.rightToLeft),
+                    child: Text('Send Email',style: TextStyle(color: Colors.white,fontSize: 16,fontFamily: 'Poppins-Medium'),),
                   ),
                 ),
               ],

@@ -66,7 +66,7 @@ class EditPersonalInformation extends StatelessWidget {
                                     ),
                                   ),
                                   SizedBox(height: 10),
-                                  TextButton(onPressed: (){},child: Text('Change Profile Picture',style: TextStyle(fontFamily: 'Poppins-Light',color: AppColors.black,fontSize: 12))),
+                                  TextButton(onPressed: (){},child: Text('Change Profile Picture',style: TextStyle(fontFamily: 'Poppins-Regular',color: AppColors.black,fontSize: 14))),
                                 ],
                               ),
                             ),
@@ -86,7 +86,8 @@ class EditPersonalInformation extends StatelessWidget {
                                   'Save and Update',
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 12,
+                                    fontFamily: 'Poppins-Medium',
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),

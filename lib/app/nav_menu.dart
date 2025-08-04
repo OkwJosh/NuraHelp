@@ -21,6 +21,40 @@ class NavigationMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
+    
+    void showLogoutDialog(){
+      showDialog(context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: Colors.white,
+            insetPadding: EdgeInsets.all(10),
+            title: Text('Logout Confirmation',style: TextStyle(fontSize: 18),),
+            content: SizedBox(
+              height: 100,
+              child: Column(
+                children: [
+                  Text('Are you sure you want to log out?'),
+                  SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      TextButton(onPressed: ()=>Navigator.pop(context),child: Text('Cancel',style: TextStyle(color: AppColors.black))),
+                      SizedBox(width: 40),
+                      SizedBox(
+                          height: 45,
+                          child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(horizontal: 15),
+                              ),
+                              onPressed: ()=>Get.offAll(()=>LoginScreen()), child: Text('Log out',style: TextStyle(color: Colors.white),)))
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+      );
+    }
+    
     return Scaffold(
       extendBodyBehindAppBar: true,
       extendBody: true,
@@ -55,6 +89,7 @@ class NavigationMenu extends StatelessWidget {
                   textStyle: TextStyle(
                     fontFamily: "Poppins-Regular",
                     fontWeight: FontWeight.w500,
+                    fontSize: 12,
                     color: Colors.white,
                   ),
                   iconColor: AppColors.greyColor,
@@ -85,7 +120,7 @@ class NavigationMenu extends StatelessWidget {
                     fontFamily: "Poppins-Regular",
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                   iconColor: AppColors.greyColor,
                   iconActiveColor: Colors.white,
@@ -108,6 +143,7 @@ class NavigationMenu extends StatelessWidget {
                     fontFamily: "Poppins-Regular",
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
+                    fontSize: 12,
                   ),
                   iconColor: AppColors.greyColor,
                   iconActiveColor: Colors.white,
@@ -152,7 +188,7 @@ class NavigationMenu extends StatelessWidget {
                     fontFamily: "Poppins-Regular",
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
-                    fontSize: 14,
+                    fontSize: 12,
                   ),
                   iconColor: AppColors.greyColor,
                   iconActiveColor: Colors.white,
@@ -168,6 +204,7 @@ class NavigationMenu extends StatelessWidget {
                   textStyle: TextStyle(
                     fontFamily: "Poppins-Regular",
                     fontWeight: FontWeight.w500,
+                    fontSize: 12,
                     color: Colors.white,
                   ),
                   margin: EdgeInsets.only(right: 5),
@@ -248,13 +285,13 @@ class NavigationMenu extends StatelessWidget {
                         ),
                         SizedBox(height: 5),
                         Divider(color: AppColors.greyColor.withOpacity(0.4)),
-                        NavListTiles(title: "Nura Assistant", icon: SvgIcon(AppIcons.star,color: AppColors.greyColor), onPressed: () => Get.to(() => ComingSoon())),
+                        NavListTiles(title: "Nura Assistant", icon: SvgIcon(AppIcons.star,color: AppColors.greyColor,size: 30,), onPressed: () => Get.to(() => ComingSoon())),
                         SizedBox(height: 10),
                         NavListTiles(title: "Messages", icon: SvgIcon(AppIcons.messages,color: AppColors.greyColor), onPressed: () => Get.to(() => MessagesScreen())),
                         SizedBox(height: 10),
                         NavListTiles(title: 'Settings', icon: SvgIcon(AppIcons.settings,color: AppColors.greyColor), onPressed: () => Get.to(() => SettingsScreen())),
                         SizedBox(height: 10),
-                        NavListTiles(title: 'Logout', icon: SvgIcon(AppIcons.logout,color: AppColors.greyColor,size: 20,), onPressed: () => Get.offAll(() => LoginScreen())),
+                        NavListTiles(title: 'Log out', icon: SvgIcon(AppIcons.logout,color: AppColors.greyColor,size: 20,), onPressed: () => showLogoutDialog()),
 
                         
                       ],

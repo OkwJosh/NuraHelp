@@ -47,39 +47,15 @@ class AboutDoctorScreen extends StatelessWidget {
                               unselectedLabelColor: Colors.grey[600],
                               labelPadding: EdgeInsets.symmetric(horizontal: 20),
                               tabs: const [
-                                Tab(child: Text("About",style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 14),)),
-                                Tab(child: Text("Reviews",style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 14),)),
+                                Tab(child: Text("About",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
+                                Tab(child: Text("Reviews",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
                               ],
                             ),
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 16),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('13 reviews'),
-                          TextButton(
-                            onPressed: () {},
-                            child: Row(
-                              spacing: 5,
-                              children: [
-                                SvgIcon(AppIcons.review),
-                                Text(
-                                  'Leave a review',
-                                  style: TextStyle(color: AppColors.secondaryColor),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Divider(color: Colors.black26),
-                    SizedBox(height: 10),
+                    SizedBox(height: 40),
                     //  TabBarView (newly added)
                     AutoScaleTabBarView(
                       children: [

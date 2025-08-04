@@ -35,7 +35,7 @@ class AppointmentsScreen extends StatelessWidget {
                                 dividerColor: Colors.transparent,
                                 isScrollable: true,
                                 indicatorSize: TabBarIndicatorSize.tab,
-                                tabAlignment: TabAlignment.start,
+                                tabAlignment: TabAlignment.center,
                                 labelColor: Colors.black,
                                 unselectedLabelColor: Colors.grey[600],
                                 tabs: const [

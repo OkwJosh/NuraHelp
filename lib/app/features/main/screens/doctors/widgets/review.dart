@@ -29,10 +29,10 @@ class Reviews extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(patientName,style: TextStyle(fontFamily: 'Poppins-Light'),),
+                    Text(patientName,style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),),
                     Text(
                       date,
-                      style: TextStyle(fontFamily: 'Poppins-ExtraLight',fontSize: 12),
+                      style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 16,color: AppColors.black300),
                     ),
                   ],
                 ),
@@ -42,7 +42,7 @@ class Reviews extends StatelessWidget {
               starBuilder: (index, color) => SvgIcon(AppIcons.reviewStar,color: color),
               valueLabelVisibility: false,
               starColor: AppColors.secondaryColor,
-              starSize: 15,
+              starSize: 20,
               starSpacing: 3,
               value: 5,
             ),
@@ -50,7 +50,7 @@ class Reviews extends StatelessWidget {
         ),
         Text(
           reviewBody,
-          style: TextStyle(fontFamily: 'Poppins-ExtraLight',fontSize: 12),
+          style: TextStyle(fontFamily: 'Poppins-Light',fontSize: 16),
 
         ),
       ],

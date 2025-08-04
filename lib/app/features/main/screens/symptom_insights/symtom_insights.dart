@@ -48,7 +48,7 @@ class SymptomInsightsScreen extends StatelessWidget {
                             children: [
                               Text(
                                 'Log Today\'s Symptoms',
-                                style: TextStyle(fontSize: 16),
+                                style: TextStyle(fontSize: 18,fontFamily: 'Poppins-SemiBold'),
                               ),
                               SizedBox(height: 15),
                               SymptomDropdown(symptomName: 'Pain'),
@@ -59,47 +59,54 @@ class SymptomInsightsScreen extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 spacing: 10,
                                 children: [
-                                  OutlinedButton(
-                                    onPressed: () => addNewSymptom(context),
-                                    style: OutlinedButton.styleFrom(
-                                      side: BorderSide(
-                                        color: AppColors.secondaryColor,
-                                      ),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      spacing: 3,
-                                      children: [
-                                        Icon(
-                                          Icons.add,
+                                  SizedBox(
+                                    height:48,
+                                    child: OutlinedButton(
+                                      onPressed: () => addNewSymptom(context),
+                                      style: OutlinedButton.styleFrom(
+                                        side: BorderSide(
                                           color: AppColors.secondaryColor,
                                         ),
-                                        Text(
-                                          'Add',
-                                          style: TextStyle(
-                                            color: AppColors.secondaryColor,
-                                            fontFamily: 'Poppins-Light',
-                                          ),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 15,
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {},
-                                    style: ElevatedButton.styleFrom(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: 10,
-                                        horizontal: 15,
+                                      ),
+                                      child: Row(
+                                        spacing: 3,
+                                        children: [
+                                          Icon(
+                                            Icons.add,
+                                            color: AppColors.secondaryColor,
+                                          ),
+                                          Text(
+                                            'Add',
+                                            style: TextStyle(
+                                              color: AppColors.secondaryColor,
+                                              fontFamily: 'Poppins-Medium',
+                                              fontSize: 16
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    child: Text(
-                                      'Submit',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontFamily: 'Poppins-Light',
+                                  ),
+                                  SizedBox(
+                                    height: 48,
+                                    child: ElevatedButton(
+                                      onPressed: () {},
+                                      style: ElevatedButton.styleFrom(
+                                        padding: EdgeInsets.symmetric(
+                                          vertical: 10,
+                                          horizontal: 15,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Submit',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins-Medium',
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -135,8 +142,8 @@ class SymptomInsightsScreen extends StatelessWidget {
                                     child: Text(
                                       "Symptom Trends",
                                       style: TextStyle(
-                                        fontFamily: "Poppins-Regular",
-                                        fontSize: 16,
+                                        fontFamily: "Poppins-Medium",
+                                        fontSize: 20,
                                       ),
                                     ),
                                   ),
@@ -169,8 +176,9 @@ class SymptomInsightsScreen extends StatelessWidget {
                                         Text(
                                           'Key title goes here',
                                           style: TextStyle(
-                                            fontSize: 12,
-                                            fontFamily: 'Poppins-ExtraLight',
+                                              fontSize: 14,
+                                              fontFamily: 'Poppins-Regular',
+                                              letterSpacing: 0
                                           ),
                                         ),
                                       ],
@@ -185,8 +193,9 @@ class SymptomInsightsScreen extends StatelessWidget {
                                         Text(
                                           'Key title goes here',
                                           style: TextStyle(
-                                            fontSize: 12,
-                                            fontFamily: 'Poppins-ExtraLight',
+                                              fontSize: 14,
+                                              fontFamily: 'Poppins-Regular',
+                                              letterSpacing: 0
                                           ),
                                         ),
                                       ],
@@ -209,8 +218,9 @@ class SymptomInsightsScreen extends StatelessWidget {
                                         Text(
                                           'Key title goes here',
                                           style: TextStyle(
-                                            fontSize: 12,
-                                            fontFamily: 'Poppins-ExtraLight',
+                                              fontSize: 14,
+                                              fontFamily: 'Poppins-Regular',
+                                              letterSpacing: 0
                                           ),
                                         ),
                                       ],
@@ -225,8 +235,9 @@ class SymptomInsightsScreen extends StatelessWidget {
                                         Text(
                                           'Key title goes here',
                                           style: TextStyle(
-                                            fontSize: 12,
-                                            fontFamily: 'Poppins-ExtraLight',
+                                              fontSize: 14,
+                                              fontFamily: 'Poppins-Regular',
+                                              letterSpacing: 0
                                           ),
                                         ),
                                       ],
@@ -237,22 +248,6 @@ class SymptomInsightsScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Transform.translate(
-                      offset: Offset(-10, 0),
-                      child: Row(
-                        children: [
-                          Checkbox(value: false, onChanged: (value) {}),
-                          Text(
-                            'Set alerts for worsening patients',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Poppins-Light',
-                            ),
-                          ),
-                        ],
                       ),
                     ),
                     SizedBox(height: 10),
@@ -310,7 +305,7 @@ void addNewSymptom(BuildContext context) {
                 ),
                 Text(
                   'Add Symptom',
-                  style: TextStyle(fontSize: 18, color: AppColors.black),
+                  style: TextStyle(fontSize: 18, color: AppColors.black,fontFamily: 'Poppins-SemiBold'),
                 ),
                 TextField(
                   cursorColor: Colors.black,

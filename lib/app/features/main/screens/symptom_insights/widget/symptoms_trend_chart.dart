@@ -56,29 +56,29 @@ class _SymptomTrendChartState extends State<SymptomTrendChart> {
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(fontFamily: "Poppins-ExtraLight", fontSize: 12);
+    const style = TextStyle(fontFamily: "Poppins-Medium", fontSize: 10);
     Widget text;
     switch (value.toInt()) {
       case 1:
-        text = const Text('Mon', style: style);
+        text = const Text('MON', style: style);
         break;
       case 3:
-        text = const Text('Tue', style: style);
+        text = const Text('TUE', style: style);
         break;
       case 5:
-        text = const Text('Wed', style: style);
+        text = const Text('WED', style: style);
         break;
       case 7:
-        text = const Text('Thu', style: style);
+        text = const Text('THU', style: style);
         break;
       case 9:
-        text = const Text('Fri', style: style);
+        text = const Text('FRI', style: style);
         break;
       case 11:
-        text = const Text('Sat', style: style);
+        text = const Text('SAT', style: style);
         break;
       case 13:
-        text = const Text('Sun', style: style);
+        text = const Text('SUN', style: style);
         break;
 
       default:
@@ -93,7 +93,7 @@ class _SymptomTrendChartState extends State<SymptomTrendChart> {
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(fontFamily: "Poppins-ExtraLight", fontSize: 12);
+    const style = TextStyle(fontFamily: "Poppins-Light", fontSize: 10);
     String text;
     switch (value.toInt()) {
       case 1:

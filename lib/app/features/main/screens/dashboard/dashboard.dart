@@ -13,7 +13,7 @@ class DashboardScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          Positioned(top: 0, left: 0, right: 0, child: AppBarWithBell()),
+          Positioned(top: 0, left: 0, right: 0, child: AppBarWithBell(showSearchBar: false)),
           Positioned.fill(
             top: 120,
             child: Padding(
@@ -22,19 +22,25 @@ class DashboardScreen extends StatelessWidget {
                 child:Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    width: double.infinity,
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    child: Center(
-                      child: Text(
-                        'Welcome back,Aldred!',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-SemiBold',
-                          fontSize: 18,
+                  Material(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    elevation: 0.2,
+                    child: Container(
+                      height: 65,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      width: double.infinity,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      child: Center(
+                        child: Text(
+                          'Welcome back,Aldred!',
+                          style: TextStyle(
+                            fontFamily: 'Poppins-SemiBold',
+                            fontSize: 18,
+                          ),
                         ),
                       ),
                     ),
@@ -59,7 +65,7 @@ class DashboardScreen extends StatelessWidget {
                     children: [
                       Text(
                         'What\'s on the agenda today ?',
-                        style: TextStyle(fontSize: 20,fontFamily: "Poppins-Regular"),
+                        style: TextStyle(fontSize: 24,fontFamily: "Poppins-Medium",letterSpacing: -2),
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 15),

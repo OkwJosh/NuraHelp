@@ -49,7 +49,7 @@ class SignUpForm extends StatelessWidget {
             ),
           );
         }),
-        SizedBox(height: 16),
+        SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -71,12 +71,12 @@ class SignUpForm extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.black,
-                fontFamily: 'Poppins-Light',
+                fontFamily: 'Poppins-Regular',
               ),
             ),
           ],
         ),
-        SizedBox(height: 18),
+        SizedBox(height: 20),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -98,7 +98,7 @@ class SignUpForm extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.black,
-                fontFamily: 'Poppins-Light',
+                fontFamily: 'Poppins-Regular',
               ),
             ),
           ],
@@ -112,7 +112,8 @@ class SignUpForm extends StatelessWidget {
               'Create Account',
               style: TextStyle(
                 color: Colors.white,
-                fontFamily: 'Poppins-SemiBold',
+                fontSize: 16,
+                fontFamily: 'Poppins-Medium',
               ),
             ),
           ),

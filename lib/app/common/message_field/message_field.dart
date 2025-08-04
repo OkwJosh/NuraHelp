@@ -35,9 +35,9 @@ class CustomTextField extends StatelessWidget {
             minLines: 1,
             maxLines: 3,
             style: TextStyle(
-              color: AppColors.black,
-              fontFamily: 'Poppins-ExtraLight',
-              fontSize: 14,
+              color: AppColors.black200,
+              fontFamily: 'Poppins-Light',
+              fontSize: 16,
             ),
             cursorColor: AppColors.black,
             decoration: InputDecoration(

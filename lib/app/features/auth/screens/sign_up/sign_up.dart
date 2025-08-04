@@ -31,8 +31,8 @@ class SignUpScreen extends StatelessWidget {
                         Text(
                           'Set Up Your Nura Account',
                           style: TextStyle(
-                            fontSize: 22,
-                            fontFamily: 'Poppins-SemiBold',
+                            fontSize: 24,
+                            fontFamily: 'Poppins-Medium',
                           ),
                         ),
                         SizedBox(height: 5),
@@ -40,25 +40,25 @@ class SignUpScreen extends StatelessWidget {
                           'form is pre-filled and editable',
                           style: TextStyle(
                             fontSize: 14,
-                            fontFamily: 'Poppins-Light',
+                            fontFamily: 'Poppins-Regular',
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 25),
+                    SizedBox(height: 24),
                     SignUpForm(),
-                    SizedBox(height: 20),
+                    SizedBox(height: 26),
                     Center(
                       child: GestureDetector(
                         onTap: () => Get.to(()=>LoginScreen(),transition: Transition.leftToRight),
                         child: Text.rich(
                             TextSpan(
                                 text: 'Already have an account?',
-                                style: TextStyle(fontFamily: 'Poppins-Light',fontSize: 12,letterSpacing: 0,color: AppColors.black),
+                                style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 14,letterSpacing: 0,color: AppColors.black),
                                 children: [
                                   TextSpan(
                                     text: ' Log in',
-                                    style: TextStyle(fontFamily: 'Poppins-Light',fontSize: 12,letterSpacing: 0,color: AppColors.secondaryColor),
+                                    style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 14,letterSpacing: 0,color: AppColors.secondaryColor),
                                   )
                                 ]
                             )

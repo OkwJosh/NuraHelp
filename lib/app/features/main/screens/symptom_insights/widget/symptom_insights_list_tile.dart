@@ -38,8 +38,8 @@ class SymptomInsightListTile extends StatelessWidget {
                 'Pain, fatigue and GIT symptoms have increased by 2% over the last 1 week',
                 maxLines: 2,
                 style: TextStyle(
-                  fontFamily: "Poppins-Light",
-                  fontSize: 13,
+                  fontFamily: "Poppins-Regular",
+                  fontSize: 14,
                 ),
                 softWrap: true,
               ),

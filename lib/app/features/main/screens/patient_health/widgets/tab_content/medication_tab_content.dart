@@ -5,6 +5,8 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:nurahelp/app/common/custom_switch/custom_switch.dart';
 import 'package:nurahelp/app/common/rounded_containers/rounded_container.dart';
 import 'package:nurahelp/app/common/search_bar/search_bar.dart';
+import 'package:nurahelp/app/utilities/constants/icons.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../../utilities/constants/colors.dart';
 
 class MedicationTabContent extends StatelessWidget {
@@ -18,7 +20,7 @@ class MedicationTabContent extends StatelessWidget {
         SizedBox(height: 10),
         SizedBox(
           height: 40,
-          width: 150,
+          width: 170,
           child: CustomSwitch(
             firstOptionText: 'Ongoing',
             secondOptionText: 'History',
@@ -61,23 +63,25 @@ class MedicationCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Symbols.pill),
+                  SvgIcon(AppIcons.medication,size: 32),
                   SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Amoxicillin 250mg'),
+                      Text('Amoxicillin 250mg',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 15)),
                       SizedBox(height: 2),
                       Text(
                         'Antibiotic for bacterial infection',
                         style: TextStyle(
-                          fontSize: 12,
-                          fontFamily: 'Poppins-ExtraLight',
+                          fontSize: 14,
+                          fontFamily: 'Poppins-Regular',
+                          color: AppColors.black300,
+                          letterSpacing: -0.3
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(width: 50),
+                  SizedBox(width: 20),
                   Iconify(Uil.ellipsis_v),
                 ],
               ),
@@ -86,7 +90,7 @@ class MedicationCard extends StatelessWidget {
                 children: [
                   RoundedContainer(
                     padding: 10,
-                    backgroundColor: AppColors.secondaryColor.withOpacity(0.15),
+                    backgroundColor: AppColors.lightsecondaryColor,
                     child: Text(
                       '14 capsules',
                       style: TextStyle(color: AppColors.deepSecondaryColor),
@@ -95,10 +99,10 @@ class MedicationCard extends StatelessWidget {
                   SizedBox(width: 25),
                   RoundedContainer(
                     padding: 10,
-                    backgroundColor: AppColors.secondaryColor.withOpacity(0.15),
+                    backgroundColor: AppColors.lightsecondaryColor,
                     child: Text(
                       '14 - 30 May, 2024',
-                      style: TextStyle(color: AppColors.deepSecondaryColor),
+                      style: TextStyle(color: AppColors.deepSecondaryColor,fontSize: 16,letterSpacing: 0),
                     ),
                   ),
                 ],
