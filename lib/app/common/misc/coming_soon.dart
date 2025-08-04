@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart%20';
+import 'package:flutter/material.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 
 class ComingSoon extends StatelessWidget {

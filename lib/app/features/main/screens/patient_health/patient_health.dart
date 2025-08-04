@@ -1,17 +1,12 @@
 import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:flutter/material.dart';
-import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/patient_info_header.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/tab_content/medication_tab_content.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/tab_content/overview_tab_content.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/tab_content/test_result_tab_content.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
-import 'package:nurahelp/app/utilities/constants/icons.dart';
-import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
-
 import '../../../../common/appbar/appbar_with_bell.dart';
-import '../../../../common/button/chip_button.dart';
-import '../../../../common/button/custom_arrow_button.dart';
+
 
 class PatientHealthScreen extends StatelessWidget {
   const PatientHealthScreen({super.key});
