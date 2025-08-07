@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:nurahelp/app/features/auth/controllers/forgot_password_controller/forget_password_controller.dart';
+import 'package:nurahelp/app/utilities/validators/validation.dart';
 
 import '../../../../utilities/constants/colors.dart';
 import 'email_sent.dart';
@@ -9,6 +11,8 @@ class ForgetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final forgetPasswordController = Get.put(ForgetPasswordController());
+
     return Scaffold(
       body: Column(
         children: [
@@ -34,19 +38,24 @@ class ForgetPasswordScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 14, fontFamily: 'Poppins-Regular'),
                 ),
                 SizedBox(height: 24),
-                TextField(
-                  cursorColor: Colors.black,
-                  style: TextStyle(
-                    color: AppColors.black,
-                    fontFamily: 'Poppins-Light',
+                Form(
+                  key: forgetPasswordController.formKey,
+                  child: TextFormField(
+                    validator: (value) => AppValidator.validateEmail(value?.trim()),
+                    controller: forgetPasswordController.forgetPasswordTextController,
+                    cursorColor: Colors.black,
+                    style: TextStyle(
+                      color: AppColors.black,
+                      fontFamily: 'Poppins-Light',
+                    ),
+                    decoration: InputDecoration(hintText: 'Enter email'),
                   ),
-                  decoration: InputDecoration(hintText: 'Enter email'),
                 ),
                 SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () => Get.offAll(() => EmailSentScreen(),transition: Transition.rightToLeft),
+                    onPressed: () => forgetPasswordController.sendResetPasswordLink(),
                     child: Text('Send Email',style: TextStyle(color: Colors.white,fontSize: 16,fontFamily: 'Poppins-Medium'),),
                   ),
                 ),
