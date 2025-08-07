@@ -19,17 +19,20 @@ class MyApp extends StatelessWidget {
     return DevicePreview(
       enabled: kIsWeb,
       builder: (context) =>
-          GetMaterialApp(
-              theme: CustomAppTheme.lightTheme,
-              useInheritedMediaQuery: true,
-              initialRoute: '/splash',
-              getPages: [
-                GetPage(name: '/splash', page: () => const SplashScreen()),
-                GetPage(name: '/login', page: () => const LoginScreen()),
-                GetPage(name: '/signup', page: ()=> const SignUpScreen()),
-              ],
-              builder: DevicePreview.appBuilder,
-              // home: LoginScreen()
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: TextScaler.noScaling),
+            child: GetMaterialApp(
+                theme: CustomAppTheme.lightTheme,
+                useInheritedMediaQuery: true,
+                initialRoute: '/splash',
+                getPages: [
+                  GetPage(name: '/splash', page: () => const SplashScreen()),
+                  GetPage(name: '/login', page: () => const LoginScreen()),
+                  GetPage(name: '/signup', page: ()=> const SignUpScreen()),
+                ],
+                builder: DevicePreview.appBuilder,
+                // home: LoginScreen()
+            ),
           ),
     );
   }

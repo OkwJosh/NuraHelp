@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nurahelp/app/features/auth/controllers/login_controllers/login_controller.dart';
+import 'package:nurahelp/app/utilities/validators/validation.dart';
 
 import '../../../../../nav_menu.dart';
 import '../../../../../utilities/constants/colors.dart';
@@ -17,14 +18,17 @@ class LoginForm extends StatelessWidget {
   Widget build(BuildContext context) {
     final loginController = Get.put(LoginController());
     return Form(
+      key: loginController.formKey,
       child: Column(
         children: [
           TextFormField(
             decoration: InputDecoration(hintText: 'Email Address'),
+            validator: (value) => AppValidator.validateEmail(value),
           ),
           SizedBox(height: 16),
           Obx(
             () => TextFormField(
+              validator: (value) => AppValidator.validateTextField('Password', value),
               obscureText: loginController.hidePassword.value,
               obscuringCharacter: '*',
               decoration: InputDecoration(
@@ -56,7 +60,7 @@ class LoginForm extends StatelessWidget {
           SizedBox(height: 24),
           SizedBox(
               width: double.infinity,
-              child: ElevatedButton(onPressed: () => Get.offAll(() => NavigationMenu()), child: Text('Login',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize:16,color: Colors.white),))),
+              child: ElevatedButton(onPressed: loginController.loginWithEmailAndPassword, child: Text('Login',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize:16,color: Colors.white),))),
         ],
       ),
     );

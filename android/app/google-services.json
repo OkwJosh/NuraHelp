@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "205476088949",
+    "project_id": "nura-31b7b",
+    "storage_bucket": "nura-31b7b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:205476088949:android:a30a19d49915aa1b73bc3c",
+        "android_client_info": {
+          "package_name": "com.example.nurahelp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "205476088949-e3cr32botd5405im6soajvipdto7ncv5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.nurahelp",
+            "certificate_hash": "195dd15a822af4ccdfc78cb71ff5901decb15cf7"
+          }
+        },
+        {
+          "client_id": "205476088949-nt05qn71h165dtioqpkv7cdchsdiklji.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnBZuu6sexRpv3Ah5Qs6Piw7NPfz3oNQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "205476088949-nt05qn71h165dtioqpkv7cdchsdiklji.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "205476088949-rvevgk479d2ib5ir9mu8ndoo6aea7kue.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.nurahelp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

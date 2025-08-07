@@ -63,7 +63,7 @@ class PatientHealthScreen extends StatelessWidget {
                               indicatorColor: Colors.black,
                               dividerColor: Colors.transparent,
                               isScrollable: true,
-                              tabAlignment: TabAlignment.start,
+                              tabAlignment: TabAlignment.center,
                               indicatorSize: TabBarIndicatorSize.tab,
                               labelColor: Colors.black,
                               unselectedLabelColor: AppColors.black300,

@@ -170,7 +170,7 @@ class _FirstTimeOnBoardingScreenState extends State<FirstTimeOnBoardingScreen> {
                     style: TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins-Regular',
-                      letterSpacing: -1,
+                      letterSpacing: 0,
                     ),
                   ),
                 ],
