@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/features/auth/controllers/forgot_password_controller/forget_password_controller.dart';
 import 'package:nurahelp/app/utilities/validators/validation.dart';
-
 import '../../../../utilities/constants/colors.dart';
-import 'email_sent.dart';
 
 class ForgetPasswordScreen extends StatelessWidget {
   const ForgetPasswordScreen({super.key});
@@ -42,7 +40,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                   key: forgetPasswordController.formKey,
                   child: TextFormField(
                     validator: (value) => AppValidator.validateEmail(value?.trim()),
-                    controller: forgetPasswordController.forgetPasswordTextController,
+                    controller: forgetPasswordController.email,
                     cursorColor: Colors.black,
                     style: TextStyle(
                       color: AppColors.black,

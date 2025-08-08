@@ -50,7 +50,7 @@ class SignUpScreen extends StatelessWidget {
                     SizedBox(height: 26),
                     Center(
                       child: GestureDetector(
-                        onTap: () => Get.offAll(()=>LoginScreen(),transition: Transition.leftToRight),
+                        onTap: () => Get.offAll(()=>LoginScreen(),transition: Transition.leftToRight,),
                         child: Text.rich(
                             TextSpan(
                                 text: 'Already have an account?',

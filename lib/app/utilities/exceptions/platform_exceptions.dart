@@ -1,8 +1,8 @@
 /// Exception class for handling various platform-related errors.
-class PgPlatformException implements Exception {
+class AppPlatformException implements Exception {
   final String code;
 
-  PgPlatformException(this.code);
+  AppPlatformException(this.code);
 
   String get message {
     switch (code) {

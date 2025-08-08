@@ -4,8 +4,6 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nurahelp/app/features/auth/controllers/login_controllers/login_controller.dart';
 import 'package:nurahelp/app/utilities/validators/validation.dart';
-
-import '../../../../../nav_menu.dart';
 import '../../../../../utilities/constants/colors.dart';
 import '../../forget_password/forget_password.dart';
 
@@ -22,13 +20,15 @@ class LoginForm extends StatelessWidget {
       child: Column(
         children: [
           TextFormField(
+            controller: loginController.email,
             decoration: InputDecoration(hintText: 'Email Address'),
-            validator: (value) => AppValidator.validateEmail(value),
+            validator: (value) => AppValidator.validateEmail(value?.trim()),
           ),
           SizedBox(height: 16),
           Obx(
             () => TextFormField(
-              validator: (value) => AppValidator.validateTextField('Password', value),
+              controller: loginController.password,
+              validator: (value) => AppValidator.validateTextField('Password', value?.trim()),
               obscureText: loginController.hidePassword.value,
               obscuringCharacter: '*',
               decoration: InputDecoration(

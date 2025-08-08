@@ -5,6 +5,7 @@ import 'package:get/get_navigation/src/routes/default_transitions.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/sign_up.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 
+import 'bindings/general_bindings.dart';
 import 'features/auth/screens/login/login.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     _controller.forward();
 
     Timer(const Duration(milliseconds: 4200), () {
-      Get.offAll(()=>LoginScreen(),transition: Transition.fadeIn,duration: Duration(seconds: 2)); // or Navigator.pushReplacement...
+      Get.offAll(()=>LoginScreen(),transition: Transition.fadeIn,duration: Duration(seconds: 2),binding: GeneralBindings()); // or Navigator.pushReplacement...
     });
   }
 

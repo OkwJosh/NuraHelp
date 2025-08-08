@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:lottie/lottie.dart';
+import 'package:nurahelp/app/features/auth/controllers/forgot_password_controller/forget_password_controller.dart';
 import 'package:nurahelp/app/features/auth/screens/login/login.dart';
 
 import '../../../../utilities/constants/colors.dart';
 
 class EmailSentScreen extends StatelessWidget {
-  const EmailSentScreen({super.key});
+  const EmailSentScreen({super.key,required this.email});
+
+  final String email;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class EmailSentScreen extends StatelessWidget {
               children: [
                 Center(child: Lottie.asset('assets/animations/sent_email.json',width: 300,height: 300)),
                 SizedBox(height: 20),
-                Text('example@gmail.com',style: TextStyle(fontFamily: 'Poppins-Medium')),
+                Text(email,style: TextStyle(fontFamily: 'Poppins-Medium')),
                 SizedBox(height: 20),
                 Text('We\'ve sent a reset link to your email,\n you\'ll be redirected to a secure site to reset your password',textAlign: TextAlign.center,style: TextStyle(fontFamily: 'Poppins-Regular')),
                 SizedBox(height: 25),

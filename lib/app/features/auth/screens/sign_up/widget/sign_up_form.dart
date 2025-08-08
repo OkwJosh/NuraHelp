@@ -18,18 +18,21 @@ class SignUpForm extends StatelessWidget {
       child: Column(
         children: [
           TextFormField(
+            controller: signUpController.fullName,
             validator: (value) => AppValidator.validateTextField('Name', value?.trim()),
             decoration: InputDecoration(hintText: 'John Doe'),
             cursorColor: AppColors.black,
           ),
           SizedBox(height: 12),
           TextFormField(
+            controller: signUpController.email,
             validator: (value) => AppValidator.validateEmail(value?.trim()),
             decoration: InputDecoration(hintText: 'example@gmail.com'),
             cursorColor: AppColors.black,
           ),
           SizedBox(height: 12),
           TextFormField(
+            controller: signUpController.phoneNumber,
             validator: (value) =>
                 AppValidator.validatePhoneNumber(value?.trim()),
             decoration: InputDecoration(hintText: '09123639400'),
@@ -42,6 +45,7 @@ class SignUpForm extends StatelessWidget {
           SizedBox(height: 12),
           Obx(() {
             return TextFormField(
+              controller: signUpController.password,
               validator: (value) => AppValidator.validatePassword(value?.trim()),
               cursorColor: AppColors.black,
               obscureText: signUpController.hidePassword.value,

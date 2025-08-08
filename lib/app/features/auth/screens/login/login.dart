@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:nurahelp/app/features/auth/screens/forget_password/forget_password.dart';
 import 'package:nurahelp/app/features/auth/screens/login/widgets/login_form.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/sign_up.dart';
-
-import '../../../../nav_menu.dart';
 import '../../../../utilities/constants/colors.dart';
 
 class LoginScreen extends StatelessWidget {

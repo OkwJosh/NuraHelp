@@ -1,16 +1,16 @@
 /// Custom exception class to handle various Firebase-related errors.
-class PgFirebaseException implements Exception {
+class AppFirebaseException implements Exception {
   /// The error code associated with the exception.
   final String code;
 
   /// Constructor that takes an error code.
-  PgFirebaseException(this.code);
+  AppFirebaseException(this.code);
 
   /// Get the corresponding error message based on the error code.
   String get message {
     switch (code) {
       case 'unknown':
-        return 'An unknown Firebase error occurred. Please try again.';
+        return 'An unknown error occurred. Please try again.';
       case 'invalid-custom-token':
         return 'The custom token format is incorrect. Please check your custom token.';
       case 'custom-token-mismatch':

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../utilities/constants/colors.dart';
 
 class SignUpProgressBar extends StatelessWidget {
   const SignUpProgressBar({
