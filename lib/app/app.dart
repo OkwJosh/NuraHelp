@@ -7,7 +7,7 @@ import 'package:nurahelp/app/features/auth/screens/login/login.dart';
 import 'package:nurahelp/app/splash_screen.dart';
 import 'package:nurahelp/app/utilities/theme/theme.dart';
 
-import 'bindings/general_bindings.dart';
+import 'bindings/network_bindings.dart';
 import 'features/auth/screens/sign_up/sign_up.dart';
 
 
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
                 initialRoute: '/splash',
                 getPages: [
                   GetPage(name: '/splash', page: () => const SplashScreen()),
-                  GetPage(name: '/login', page: () => const LoginScreen(),binding: GeneralBindings()),
+                  GetPage(name: '/login', page: () => const LoginScreen(),binding: NetworkBindings()),
                   GetPage(name: '/signup', page: ()=> const SignUpScreen()),
                 ],
                 builder: DevicePreview.appBuilder,

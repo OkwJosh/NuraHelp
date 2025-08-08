@@ -5,6 +5,7 @@ import 'package:nurahelp/app/data/repositories/auth_repository.dart';
 import 'package:nurahelp/app/utilities/loaders/loaders.dart';
 import 'package:nurahelp/app/utilities/popups/screen_loader.dart';
 
+import '../../../../data/services/app_service.dart';
 import '../../../../data/services/network_manager.dart';
 import '../../screens/sign_up/confirm_email.dart';
 
@@ -22,6 +23,7 @@ class SignUpController extends GetxController{
   final phoneNumber = TextEditingController();
   final password = TextEditingController();
   final _auth = Get.put(AuthenticationRepository());
+  final otpAuth = AppService.instance;
 
 
 
@@ -43,10 +45,9 @@ class SignUpController extends GetxController{
 
       AppScreenLoader.stopLoading();
       AppToasts.successSnackBar(title: 'Congrats',message: 'Your account was created successfully');
-      Get.to(() => ConfirmEmailScreen(),transition: Transition.rightToLeft);
-      
-      
-      
+      otpAuth.requestOtp(email.text.trim());
+      Get.to(() => ConfirmEmailScreen(email: email.text.trim(),),transition: Transition.rightToLeft);
+
     }
     catch(e){
       AppScreenLoader.stopLoading();

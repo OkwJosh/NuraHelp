@@ -1,11 +1,10 @@
 import 'package:get/get.dart';
-import 'package:nurahelp/app/data/services/network_manager.dart';
+import 'package:nurahelp/app/data/services/app_service.dart';
 
-class GeneralBindings extends Bindings{
+class GeneralBinding extends Bindings{
 
   @override
-  void dependencies() {
-    Get.put(AppNetworkManager(),permanent: true);
+  void dependencies(){
+    Get.put(AppService(),permanent: true);
   }
-
 }
