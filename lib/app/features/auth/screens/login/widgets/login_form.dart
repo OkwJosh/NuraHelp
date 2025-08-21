@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/routes/transitions_type.dart';
 import 'package:nurahelp/app/features/auth/controllers/login_controllers/login_controller.dart';
 import 'package:nurahelp/app/utilities/validators/validation.dart';
 import '../../../../../utilities/constants/colors.dart';

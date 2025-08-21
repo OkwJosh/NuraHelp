@@ -37,7 +37,7 @@ class MessagesScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       AppSearchBar(
-                        hintText: "Search type of Keywords",
+                        hintText: 'Search type of Keywords',
                       ),
                       SizedBox(height: 20),
                       MessageListTile(onPressed: () => Get.to(()=> DirectMessagePage()), contactName: 'Charles Dickson', lastMessage: 'It\'s Official, Thank you', unreadMessagesNumber: 3,backgroundColor: Colors.transparent),

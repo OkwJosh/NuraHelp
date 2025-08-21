@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
-import 'package:iconify_flutter_plus/icons/uil.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../utilities/constants/colors.dart';

@@ -59,7 +59,7 @@ class _AppChartState extends State<AppChart> {
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(fontFamily: "Poppins-ExtraLight", fontSize: 12);
+    const style = TextStyle(fontFamily: 'Poppins-ExtraLight', fontSize: 12);
     Widget text;
     switch (value.toInt()) {
       case 1:
@@ -84,7 +84,7 @@ class _AppChartState extends State<AppChart> {
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
 
-    const style = TextStyle(fontFamily: "Poppins-ExtraLight", fontSize: 12);
+    const style = TextStyle(fontFamily: 'Poppins-ExtraLight', fontSize: 12);
     String text;
     switch (value.toInt()) {
       case 1:

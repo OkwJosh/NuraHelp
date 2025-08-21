@@ -6,13 +6,12 @@ import '../../utilities/constants/colors.dart';
 
 class CustomDatePicker extends FormField<DateTime> {
   CustomDatePicker({
-    Key? key,
+    super.key,
     required String label,
     required Function(DateTime) onDateSelected,
     required bool showError,
     DateTime? initialDate,
   }) : super(
-    key: key,
     initialValue: initialDate,
     validator: (value) {
       if (value == null) {
@@ -76,11 +75,11 @@ class CustomDatePicker extends FormField<DateTime> {
           ),
           child: Text(
             state.value != null
-                ? "${state.value!.day}-${state.value!.month}-${state.value!.year}"
+                ? '${state.value!.day}-${state.value!.month}-${state.value!.year}'
                 : '10-12-2005',
             style: TextStyle(
               color: AppColors.black,
-              fontFamily: state.value != null ? 'Poppins-Regular' : 'Poppins-Light',
+              fontFamily: state.value != null ? 'Poppins-Medium' : 'Poppins-Light',
             ),
           ),
         ),

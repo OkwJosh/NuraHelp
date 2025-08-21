@@ -9,6 +9,7 @@ class CustomCheckBox {
       if (states.contains(WidgetState.selected)) {
         return AppColors.secondaryColor;
       }
+      return null;
     }),
     splashRadius: 10,
 

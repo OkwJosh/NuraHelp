@@ -5,6 +5,7 @@ import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_con
 import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_content/upcoming_appointment_tab.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import '../../../../common/appbar/appbar_with_bell.dart';
+import '../../../../data/models/patient_model.dart';
 
 
 class AppointmentsScreen extends StatelessWidget {
@@ -39,9 +40,9 @@ class AppointmentsScreen extends StatelessWidget {
                                 labelColor: Colors.black,
                                 unselectedLabelColor: Colors.grey[600],
                                 tabs: const [
-                                  Tab(child: Text("Upcoming",style: TextStyle(fontFamily: 'Poppins-Regular'))),
-                                  Tab(child: Text("Pending",style: TextStyle(fontFamily: 'Poppins-Regular'),)),
-                                  Tab(child: Text("Canceled",style: TextStyle(fontFamily: 'Poppins-Regular'),)),
+                                  Tab(child: Text('Upcoming',style: TextStyle(fontFamily: 'Poppins-Regular'))),
+                                  Tab(child: Text('Pending',style: TextStyle(fontFamily: 'Poppins-Regular'),)),
+                                  Tab(child: Text('Canceled',style: TextStyle(fontFamily: 'Poppins-Regular'),)),
                                 ],
                               ),
                             ),

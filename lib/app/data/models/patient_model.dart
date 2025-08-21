@@ -1,44 +1,64 @@
 class PatientModel {
-  final String id;
-  String fullName;
+  String? id;
+  String name;
   String email;
-  String phoneNumber;
-  int age;
+  String phone;
+  int? age;
   String? profilePicture;
+  final String? inviteCode;
+  DateTime? birthInfo;
 
   PatientModel({
-    required this.id,
-    required this.fullName,
+    this.id,
+    required this.name,
     required this.email,
-    required this.phoneNumber,
-    required this.age,
-    required this.profilePicture,
+    required this.phone,
+    this.age,
+    this.profilePicture,
+    this.inviteCode,
+    this.birthInfo
   });
 
-  List<String> get nameParts => fullName.split("");
+  List<String>? get nameParts => name.split(' ');
 
-  String get firstName => nameParts[0];
+  String? get firstName => nameParts?[0];
 
-  String get lastName => nameParts[1];
+  String? get lastName => nameParts?[1];
 
-  static PatientModel empty() => PatientModel(
-    id: '',
-    fullName: '',
-    email: '',
-    phoneNumber: '',
-    age: 0,
-    profilePicture: '',
-  );
 
-  Map<String,dynamic> toJson(){
+
+  static PatientModel empty() =>
+      PatientModel(
+        id: '',
+        name: '',
+        email: '',
+        phone: '',
+        age: 0,
+        profilePicture: '',
+        inviteCode: '',
+
+      );
+
+  Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'fullName':fullName,
-      'email':email,
-      'phoneNumber':phoneNumber,
-      'age':age,
-      'profilePicture':profilePicture,
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'age': age,
+      'profilePicture': profilePicture,
+      'inviteCode': inviteCode,
     };
+  }
+
+  factory PatientModel.fromJson(Map<String, dynamic> json){
+    return PatientModel(
+        id: json['_id'],
+        name: json['name'],
+        email: json['email'],
+        phone: json['phone'],
+        age: json['age'],
+        profilePicture: json['profilePicture'],
+    );
   }
 
 

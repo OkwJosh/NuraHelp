@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/features/auth/screens/login/login.dart';
-import 'package:nurahelp/app/features/auth/screens/sign_up/confirm_email.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/widget/sign_up_form.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/widget/sign_up_progress_bar.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';

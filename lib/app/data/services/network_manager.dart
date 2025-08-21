@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/utilities/loaders/loaders.dart';
 
@@ -12,6 +10,7 @@ class AppNetworkManager extends GetxController {
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   final Rx<ConnectivityResult> connectionStatus = ConnectivityResult.none.obs;
   ConnectivityResult? _previousState;
+  bool startNetworkUpdate = false;
 
   @override
   void onInit() {
@@ -39,11 +38,13 @@ class AppNetworkManager extends GetxController {
 
     // Lost internet
     if (!hasInternet && hadInternet || !hasInternet) {
+      startNetworkUpdate = true;
       AppToasts.warningSnackBar(title: 'No Internet Connection',message: 'Connect to the internet to continue');
+      // _previousState = connectionStatus.value;
     }
 
     // Internet restored
-    if (hasInternet && !hadInternet) {
+    if (hasInternet && !hadInternet && startNetworkUpdate == true) {
       AppToasts.successSnackBar(title: 'Internet Connection is Back',message: 'The internet has been restored');
     }
 
@@ -64,8 +65,4 @@ class AppNetworkManager extends GetxController {
 
 
 
-  @override
-  void onClose() {
-    super.onClose();
-  }
 }

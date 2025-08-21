@@ -1,37 +1,41 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:nurahelp/app/data/models/settings_model/settings_model.dart';
+
+import '../../utilities/exceptions/firebase_exceptions.dart';
+import '../../utilities/exceptions/platform_exceptions.dart';
+import '../models/login_response.dart';
 
 class AppService {
   static AppService get instance => Get.find();
   final String baseUrl = dotenv.env['NEXT_PUBLIC_API_URL']!;
 
-  Future<Map<String, String>> _getHeaders() async {
-    final user = FirebaseAuth.instance.currentUser;
-    final token = await user?.getIdToken();
-
-    return {if (token != null) 'Authorization': 'Bearer $token'};
+  Future<Map<String, String>> _getHeaders(User? user) async {
+    final token = await user?.getIdToken(true);
+    return {
+      if (token != null) 'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+      'Accept': '*/*',
+    };
   }
-
-  // Future<Map<String,dynamic>> savePatientRecord(PatientModel patient) async{
-  //
-  //   final url = Uri.parse('$baseUrl/');
-  //
-  // }
 
   Future<void> requestOtp(String email) async {
     final url = Uri.parse('$baseUrl/api/v1/get_otp');
 
     final response = await http.post(
       url,
-      headers: {"Content-Type":'application/json',
-      'Accept':'*/*'
-      },
-      body: jsonEncode({"email": email}));
+      headers: {'Content-Type': 'application/json', 'Accept': '*/*'},
+      body: jsonEncode({'email': email}),
+    );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
@@ -47,9 +51,7 @@ class AppService {
 
     final response = await http.post(
       url,
-      headers: {"Content-Type":'application/json',
-        'Accept':'*/*'
-      },
+      headers: {'Content-Type': 'application/json', 'Accept': '*/*'},
       body: jsonEncode({'email': email, 'otp': otp.trim()}),
     );
 
@@ -58,6 +60,98 @@ class AppService {
     } else {
       throw Exception(
         'Failed to verify otp. Status code == ${response.statusCode}',
+      );
+    }
+  }
+
+  Future<void> savePatientRecord(PatientModel patient, User? user) async {
+    final url = Uri.parse('$baseUrl/patient/auth/v1/register');
+    final response = await http.post(
+      url,
+      headers: await _getHeaders(user),
+      body: json.encode({
+        'name': patient.name,
+        'email': patient.email,
+        'phone': patient.phone,
+        'age': patient.age,
+        'profilePicture': patient.profilePicture,
+        'inviteCode': patient.inviteCode,
+      }),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      user?.delete();
+      throw Exception(
+        'Failed to save details to db. Status code l= ${response.statusCode}',
+      );
+    }
+  }
+
+  Future<PatientModel> fetchPatientRecord(User? user) async {
+    final url = Uri.parse('$baseUrl/patient/auth/v1/profile');
+    final response = await http.get(url, headers: await _getHeaders(user));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return LoginResponse.fromJson(data).patient;
+    } else {
+      throw Exception('Failed to fetch patient record ${response.statusCode}');
+    }
+  }
+
+  Future<Map<String, dynamic>> updatePatientField({
+    User? user,
+    PatientModel? patient,
+  }) async {
+    final url = Uri.parse('$baseUrl/patient/auth/v1/update');
+
+    final response = await http.put(
+      url,
+      headers: await _getHeaders(user),
+      body: jsonEncode({'setting': patient?.toJson()}),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    } else {
+      throw Exception(
+        'Failed to save details to db. '
+        'Status code = ${response.statusCode}, '
+        'Response body = ${response.body}',
+      );
+    }
+  }
+
+  Future<String> uploadImage(String path, XFile image) async {
+    try {
+      final ref = FirebaseStorage.instance.ref(path).child(image.name);
+      await ref.putFile(File(image.path));
+      final url = await ref.getDownloadURL();
+      return url;
+    } on FirebaseException catch (e) {
+      throw AppFirebaseException(e.code).message;
+    } on FormatException catch (_) {
+      throw const FormatException();
+    } on PlatformException catch (e) {
+      throw AppPlatformException(e.code).message;
+    } catch (e) {
+      throw 'Something went wrong.Please try again';
+    }
+  }
+
+  Future<void> savePatientSettings(SettingsModel settings, User? user) async {
+    final url = Uri.parse('$baseUrl/patient/auth/v1/update');
+    final response = await http.put(
+      url,
+      headers: await _getHeaders(user),
+      body: json.encode({'setting':settings.toJson()}),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(
+        'Failed to save settings. status code = ${response.statusCode}',
       );
     }
   }

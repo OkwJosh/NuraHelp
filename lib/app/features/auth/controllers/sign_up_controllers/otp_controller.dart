@@ -7,6 +7,7 @@ import 'package:nurahelp/app/features/auth/screens/sign_up/onboarding.dart';
 import 'package:nurahelp/app/utilities/popups/screen_loader.dart';
 
 import '../../../../data/services/app_service.dart';
+import '../../../../data/services/network_manager.dart';
 import '../../../../utilities/loaders/loaders.dart';
 
 class OtpController extends GetxController {
@@ -48,7 +49,13 @@ class OtpController extends GetxController {
 
   Future<void> verifyOtp() async {
     AppScreenLoader.openLoadingDialog('Verifying OTP ...');
-
+    final isConnected = await AppNetworkManager.instance.isConnected();
+    if (!isConnected) {
+      AppScreenLoader.stopLoading();
+      AppToasts.warningSnackBar(title: 'No Internet Connection',
+          message: 'Connect to the internet to continue');
+      return;
+    }
     if(otpCode.text.length < 6){
       AppScreenLoader.stopLoading();
       AppToasts.errorSnackBar(

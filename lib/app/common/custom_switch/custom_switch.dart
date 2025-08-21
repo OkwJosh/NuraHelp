@@ -64,7 +64,7 @@ class _CustomSwitchState extends State<CustomSwitch> {
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 14,
-                  fontFamily: "Poppins-Regular",
+                  fontFamily: 'Poppins-Regular',
                 ),
               ),
             ),
@@ -101,7 +101,7 @@ class _CustomSwitchState extends State<CustomSwitch> {
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 14,
-                  fontFamily: "Poppins-Regular",
+                  fontFamily: 'Poppins-Regular',
                 ),
               ),
             ),
@@ -137,7 +137,7 @@ class _CustomSwitchState extends State<CustomSwitch> {
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 14,
-                    fontFamily: "Poppins-Regular",
+                    fontFamily: 'Poppins-Regular',
                   ),
                 ),
               ),

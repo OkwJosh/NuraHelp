@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:nurahelp/app/data/services/app_service.dart';
 import 'package:nurahelp/app/utilities/exceptions/firebase_auth_exceptions.dart';
 import 'package:nurahelp/app/utilities/exceptions/firebase_exceptions.dart';
 import 'package:nurahelp/app/utilities/exceptions/format_exceptions.dart';
@@ -70,6 +69,26 @@ class AuthenticationRepository {
     } catch (e) {
       throw 'Something went wrong, please try again';
     }
+  }
+
+  Future<void> logout() async{
+    try{
+      return await _auth.signOut();
+    } on FirebaseAuthException catch (e) {
+      throw AppFirebaseAuthException(e.code).message;
+    } on FirebaseException catch (e) {
+      throw AppFirebaseException(e.code).message;
+    } on FormatException catch (_) {
+      throw AppFormatException();
+    }
+    on PlatformException catch (e) {
+      throw AppPlatformException(e.code).message;
+    } catch (e) {
+      throw 'Something went wrong, please try again';
+    }
+
+
+
   }
 
 

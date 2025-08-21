@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/src/routes/default_transitions.dart';
-import 'package:nurahelp/app/features/auth/screens/sign_up/sign_up.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 
 import 'bindings/network_bindings.dart';

@@ -61,7 +61,7 @@ class DirectMessagePage extends StatelessWidget {
               ],
             ),
           ),
-          Positioned(bottom: 20, right: 0, left: 0, child: CustomTextField()),
+          Positioned(bottom: 20, right: 0, left: 0, child: CustomTextField(onSendButtonPressed: () {  }, onMicButtonPressed: () {  }, onAttachButtonPressed: () {  })),
         ],
       ),
     );

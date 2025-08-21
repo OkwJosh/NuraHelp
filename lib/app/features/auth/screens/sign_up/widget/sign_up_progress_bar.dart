@@ -17,31 +17,31 @@ class SignUpProgressBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Container(
-          child: Text(''),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: firstBarColor
           ),
           width: 100,
           height: 5,
+          child: Text(''),
         ),
         Container(
-          child: Text(''),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: secondBarColor
           ),
           width: 100,
           height: 5,
+          child: Text(''),
         ),
         Container(
-          child: Text(''),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: thirdBarColor
           ),
           width: 100,
           height: 5,
+          child: Text(''),
         ),
       ],
     );

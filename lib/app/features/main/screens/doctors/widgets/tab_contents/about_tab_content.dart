@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
-import '../../../../../../utilities/constants/colors.dart';
 import '../../../../../../utilities/constants/texts.dart';
 import '../about_info.dart';
 

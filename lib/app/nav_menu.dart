@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
-import 'package:nurahelp/app/common/misc/coming_soon.dart';
-import 'package:nurahelp/app/features/auth/screens/login/login.dart';
+import 'package:nurahelp/app/data/models/patient_model.dart';
+import 'package:nurahelp/app/features/auth/controllers/sign_up_controllers/sign_up_controller.dart';
+import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/patient_health.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
@@ -12,6 +13,7 @@ import 'features/main/screens/appointments/appointments.dart';
 import 'features/main/screens/dashboard/dashboard.dart';
 import 'features/main/screens/doctors/doctors.dart';
 import 'features/main/screens/messages_and_calls/messages.dart';
+import 'features/main/screens/nura_bot/nura_bot.dart';
 import 'features/main/screens/settings/settings.dart';
 import 'features/main/screens/symptom_insights/symtom_insights.dart';
 
@@ -21,6 +23,8 @@ class NavigationMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(NavigationController());
+    final _authController = Get.put(SignUpController());
+    final patientController = Get.find<PatientController>();
     
     void showLogoutDialog(){
       showDialog(context: context,
@@ -45,7 +49,7 @@ class NavigationMenu extends StatelessWidget {
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(horizontal: 15),
                               ),
-                              onPressed: ()=>Get.offAll(()=>LoginScreen()), child: Text('Log out',style: TextStyle(color: Colors.white),)))
+                              onPressed: ()=> _authController.logout(), child: Text('Log out',style: TextStyle(color: Colors.white),)))
                     ],
                   )
                 ],
@@ -87,7 +91,7 @@ class NavigationMenu extends StatelessWidget {
                   margin: const EdgeInsets.only(left: 5),
                   text: 'Dashboard',
                   textStyle: TextStyle(
-                    fontFamily: "Poppins-Regular",
+                    fontFamily: 'Poppins-Regular',
                     fontWeight: FontWeight.w500,
                     fontSize: 12,
                     color: Colors.white,
@@ -117,7 +121,7 @@ class NavigationMenu extends StatelessWidget {
                   ),
                   gap: 3,
                   textStyle: TextStyle(
-                    fontFamily: "Poppins-Regular",
+                    fontFamily: 'Poppins-Regular',
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
                     fontSize: 12,
@@ -140,7 +144,7 @@ class NavigationMenu extends StatelessWidget {
                   ),
                   gap: 3,
                   textStyle: TextStyle(
-                    fontFamily: "Poppins-Regular",
+                    fontFamily: 'Poppins-Regular',
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
                     fontSize: 12,
@@ -163,7 +167,7 @@ class NavigationMenu extends StatelessWidget {
                   ),
                   gap: 5,
                   textStyle: TextStyle(
-                    fontFamily: "Poppins-Regular",
+                    fontFamily: 'Poppins-Regular',
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
                   ),
@@ -185,7 +189,7 @@ class NavigationMenu extends StatelessWidget {
                   ),
                   gap: 2,
                   textStyle: TextStyle(
-                    fontFamily: "Poppins-Regular",
+                    fontFamily: 'Poppins-Regular',
                     fontWeight: FontWeight.w500,
                     color: Colors.white,
                     fontSize: 12,
@@ -202,7 +206,7 @@ class NavigationMenu extends StatelessWidget {
                   text: 'More',
                   gap: 5,
                   textStyle: TextStyle(
-                    fontFamily: "Poppins-Regular",
+                    fontFamily: 'Poppins-Regular',
                     fontWeight: FontWeight.w500,
                     fontSize: 12,
                     color: Colors.white,
@@ -274,10 +278,10 @@ class NavigationMenu extends StatelessWidget {
                             ),
                             SizedBox(width: 15),
                             Text(
-                              "Aldred N",
+                              '${patientController.patient.value.name.split(" ").first} ${patientController.patient.value.nameParts?[1].split("").first.toUpperCase()}',
                               style: TextStyle(
                                 fontSize: 16,
-                                fontFamily: "Poppins-Regular",
+                                fontFamily: 'Poppins-Regular',
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -285,9 +289,9 @@ class NavigationMenu extends StatelessWidget {
                         ),
                         SizedBox(height: 5),
                         Divider(color: AppColors.greyColor.withOpacity(0.4)),
-                        NavListTiles(title: "Nura Assistant", icon: SvgIcon(AppIcons.star,color: AppColors.greyColor,size: 30,), onPressed: () => Get.to(() => ComingSoon())),
+                        NavListTiles(title: 'Nura Assistant', icon: SvgIcon(AppIcons.star,color: AppColors.greyColor,size: 30,), onPressed: () => Get.to(() => NuraBot())),
                         SizedBox(height: 10),
-                        NavListTiles(title: "Messages", icon: SvgIcon(AppIcons.messages,color: AppColors.greyColor), onPressed: () => Get.to(() => MessagesScreen())),
+                        NavListTiles(title: 'Messages', icon: SvgIcon(AppIcons.messages,color: AppColors.greyColor), onPressed: () => Get.to(() => MessagesScreen())),
                         SizedBox(height: 10),
                         NavListTiles(title: 'Settings', icon: SvgIcon(AppIcons.settings,color: AppColors.greyColor), onPressed: () => Get.to(() => SettingsScreen())),
                         SizedBox(height: 10),
@@ -340,7 +344,7 @@ class NavListTiles extends StatelessWidget {
         title: Text(title, maxLines: 1),
         titleTextStyle: TextStyle(
           fontSize: 14,
-          fontFamily: "Poppins-Regular",
+          fontFamily: 'Poppins-Regular',
           color: Colors.black.withOpacity(0.7),
         ),
       ),
@@ -350,13 +354,17 @@ class NavListTiles extends StatelessWidget {
 
 class NavigationController extends GetxController {
   final Rx<int> selectedIndex = 0.obs;
+
   final Rx<bool> togglePanel = false.obs;
 
   final screens = [
-    const DashboardScreen(),
+    DashboardScreen(),
     const PatientHealthScreen(),
     const DoctorsScreen(),
     const SymptomInsightsScreen(),
     const AppointmentsScreen(),
   ];
+
+
+  
 }

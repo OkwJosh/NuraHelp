@@ -50,6 +50,8 @@ class OverviewTabContent extends StatelessWidget {
                 Row(
                   children: [
                     RoundedContainer(
+                      padding: 10,
+                      borderRadius: 10,
                       child: Row(
                         children: [
                           SvgIcon(AppIcons.heart, size: 20),
@@ -57,8 +59,6 @@ class OverviewTabContent extends StatelessWidget {
                           Text('Vitals',style: TextStyle(fontSize: 16,fontFamily: 'Poppins-Medium'),),
                         ],
                       ),
-                      padding: 10,
-                      borderRadius: 10,
                     ),
                     SizedBox(width: 15),
                     RoundedContainer(
@@ -196,6 +196,8 @@ class OverviewTabContent extends StatelessWidget {
                 Row(
                   children: [
                     RoundedContainer(
+                      padding: 10,
+                      borderRadius: 10,
                       child: Row(
                         children: [
                           SvgIcon(AppIcons.clipboard),
@@ -203,8 +205,6 @@ class OverviewTabContent extends StatelessWidget {
                           Text('Test Results',style: TextStyle(fontSize: 16,fontFamily:'Poppins-Medium',)),
                         ],
                       ),
-                      padding: 10,
-                      borderRadius: 10,
                     ),
                     SizedBox(width: 15),
                     RoundedContainer(
@@ -274,6 +274,8 @@ class OverviewTabContent extends StatelessWidget {
                 Row(
                   children: [
                     RoundedContainer(
+                      padding: 10,
+                      borderRadius: 10,
                       child: Row(
                         children: [
                           SvgIcon(AppIcons.clipboard),
@@ -281,8 +283,6 @@ class OverviewTabContent extends StatelessWidget {
                           Text('Medications',style: TextStyle(fontSize: 16,fontFamily:'Poppins-Medium'),),
                         ],
                       ),
-                      padding: 10,
-                      borderRadius: 10,
                     ),
                     SizedBox(width: 15),
                     RoundedContainer(

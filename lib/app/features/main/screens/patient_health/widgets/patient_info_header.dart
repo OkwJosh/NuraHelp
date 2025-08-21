@@ -23,7 +23,7 @@ class PatientInfoHeader extends StatelessWidget {
                 Text(
                   'Dianne Russell',
                   style: TextStyle(
-                    fontFamily: "Poppins-Semibold",
+                    fontFamily: 'Poppins-Semibold',
                     fontSize: 16,
                     color: AppColors.black600
                   ),
@@ -33,7 +33,7 @@ class PatientInfoHeader extends StatelessWidget {
                     Text(
                       'Female',
                       style: TextStyle(
-                        fontFamily: "Poppins-Regular",
+                        fontFamily: 'Poppins-Regular',
                         fontSize: 14,
                       ),
                     ),
@@ -41,7 +41,7 @@ class PatientInfoHeader extends StatelessWidget {
                     Text(
                       'Age 32',
                       style: TextStyle(
-                        fontFamily: "Poppins-Regular",
+                        fontFamily: 'Poppins-Regular',
                         fontSize: 14,
                       ),
                     ),
@@ -49,7 +49,7 @@ class PatientInfoHeader extends StatelessWidget {
                     Text(
                       'O+',
                       style: TextStyle(
-                        fontFamily: "Poppins-Regular",
+                        fontFamily: 'Poppins-Regular',
                         fontSize: 14,
                       ),
                     ),

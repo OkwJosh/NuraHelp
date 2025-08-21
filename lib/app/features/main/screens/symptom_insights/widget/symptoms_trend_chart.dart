@@ -56,7 +56,7 @@ class _SymptomTrendChartState extends State<SymptomTrendChart> {
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(fontFamily: "Poppins-Medium", fontSize: 10);
+    const style = TextStyle(fontFamily: 'Poppins-Medium', fontSize: 10);
     Widget text;
     switch (value.toInt()) {
       case 1:
@@ -93,7 +93,7 @@ class _SymptomTrendChartState extends State<SymptomTrendChart> {
   }
 
   Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(fontFamily: "Poppins-Light", fontSize: 10);
+    const style = TextStyle(fontFamily: 'Poppins-Light', fontSize: 10);
     String text;
     switch (value.toInt()) {
       case 1:

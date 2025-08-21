@@ -30,12 +30,12 @@ class MessageListTile extends StatelessWidget {
         leading: CircleAvatar(radius: 20,backgroundColor: Colors.white,child: SvgIcon(AppIcons.profile),),
         title: Text(
           contactName,
-          style: TextStyle(fontFamily: "Poppins-Medium", fontSize: 14),
+          style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 14),
         ),
         subtitle: Text(
           lastMessage,
           style: TextStyle(
-            fontFamily: "Poppins-Light",
+            fontFamily: 'Poppins-Light',
             color: AppColors.greyColor,
             fontSize: 14,
           ),
@@ -45,9 +45,9 @@ class MessageListTile extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                "12:30 PM",
+                '12:30 PM',
                 style: TextStyle(
-                  fontFamily: "Poppins-Light",
+                  fontFamily: 'Poppins-Light',
                   color: AppColors.greyColor,
                 ),
               ),
@@ -56,9 +56,9 @@ class MessageListTile extends StatelessWidget {
                 backgroundColor: AppColors.deepSecondaryColor,
                 radius: 11,
                 child: Text(
-                  "$unreadMessagesNumber",
+                  '$unreadMessagesNumber',
                   style: TextStyle(
-                    fontFamily: "Poppins-Regular",
+                    fontFamily: 'Poppins-Regular',
                     color: Colors.white,
                     fontSize: 12,
                   ),

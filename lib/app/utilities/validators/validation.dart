@@ -7,6 +7,13 @@ class AppValidator {
     return null;
   }
 
+  static String? validateDropdown(String? value){
+    if(value == null || value.isEmpty){
+      return 'Select an option';
+    }
+    return null;
+  }
+
 
 
 

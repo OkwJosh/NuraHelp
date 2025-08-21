@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:iconify_flutter_plus/icons/uil.dart';
-import 'package:material_symbols_icons/symbols.dart';
 import 'package:nurahelp/app/common/custom_switch/custom_switch.dart';
 import 'package:nurahelp/app/common/rounded_containers/rounded_container.dart';
 import 'package:nurahelp/app/common/search_bar/search_bar.dart';

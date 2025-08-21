@@ -59,13 +59,13 @@ class _AppointmentCardState extends State<AppointmentCard> {
                               'Dr John Smith',
                               style: TextStyle(
                                 fontSize: 15,
-                                fontFamily: "Poppins-Medium",
+                                fontFamily: 'Poppins-Medium',
                               ),
                             ),
                             Text(
                               'Cardiologist',
                               style: TextStyle(
-                                fontFamily: "Poppins-Light",
+                                fontFamily: 'Poppins-Light',
                                 fontSize: 14,
                                 color: AppColors.black300,
                               ),
@@ -79,7 +79,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                         widget.showStatus
                             ? Container(
                                 decoration: BoxDecoration(
-                                  color: widget.status == "pending"
+                                  color: widget.status == 'pending'
                                       ? AppColors.warning50
                                       : AppColors.error50,
                                   borderRadius: BorderRadius.circular(5),
@@ -94,12 +94,12 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                     children: [
                                       CircleAvatar(
                                         backgroundColor:
-                                            widget.status == "pending"
+                                            widget.status == 'pending'
                                             ? Colors.orangeAccent
                                             : Colors.redAccent,
                                         radius: 5,
                                       ),
-                                      widget.status == "pending"
+                                      widget.status == 'pending'
                                           ? Text(
                                               'Pending',
                                               style: TextStyle(
@@ -162,7 +162,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                               '12 Nov,12:00 - 12:45 PM',
                               style: TextStyle(
                                 fontSize: 14,
-                                fontFamily: "Poppins-Light",
+                                fontFamily: 'Poppins-Light',
                                 color: AppColors.black300,
                               ),
                             ),
@@ -179,7 +179,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                   : 'In-person visit',
                               style: TextStyle(
                                 fontSize: 14,
-                                fontFamily: "Poppins-Light",
+                                fontFamily: 'Poppins-Light',
                                 color: AppColors.black300,
                               ),
                             ),

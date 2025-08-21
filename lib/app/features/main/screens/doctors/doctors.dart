@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
-import 'package:iconify_flutter_plus/icons/carbon.dart';
 import 'package:nurahelp/app/common/custom_switch/custom_switch.dart';
 import 'package:nurahelp/app/common/search_bar/search_bar.dart';
+import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/features/main/screens/doctors/widgets/doctor_card.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import '../../../../common/appbar/appbar_with_bell.dart';
 
 class DoctorsScreen extends StatelessWidget {
   const DoctorsScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {

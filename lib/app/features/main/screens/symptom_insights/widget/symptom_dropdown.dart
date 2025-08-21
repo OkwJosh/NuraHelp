@@ -27,7 +27,9 @@ class SymptomDropdown extends StatelessWidget {
                 ],
                 selectedValue: null,
                 hintText: '1-10',
-                height: 50,
+                height: 50, validator: (String? value) {
+                  return null;
+                  }, onChanged: (String? value) {  },
               ),
             ),
           ],

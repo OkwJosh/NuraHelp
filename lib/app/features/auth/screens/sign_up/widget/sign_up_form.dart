@@ -62,6 +62,15 @@ class SignUpForm extends StatelessWidget {
               ),
             );
           }),
+          SizedBox(height: 12),
+          TextFormField(
+            controller: signUpController.invitationCode,
+            validator: (value) => AppValidator.validateTextField('Invitation code',value?.trim()),
+            cursorColor: AppColors.black,
+            decoration: InputDecoration(
+              hintText: 'Invitation Code',
+            ),
+          ),
           SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,

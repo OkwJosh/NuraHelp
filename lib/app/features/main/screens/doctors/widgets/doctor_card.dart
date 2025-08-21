@@ -64,8 +64,8 @@ class DoctorCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Dr. Mia Miller',style: TextStyle(fontFamily: "Poppins-Medium",fontSize: 16)),
-                  Text('Pediatrician',style: TextStyle(fontFamily: "Poppins-Regular",fontSize: 14,color: AppColors.lightgrey)),
+                  Text('Dr. Mia Miller',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16)),
+                  Text('Pediatrician',style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 14,color: AppColors.lightgrey)),
                 ],
               ),
               Transform.translate(

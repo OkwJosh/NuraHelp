@@ -173,7 +173,7 @@ class CustomOtpField extends StatelessWidget {
         obscureText: false,
         cursorColor: Colors.black,
         keyboardType: TextInputType.number,
-        hintCharacter: "-",
+        hintCharacter: '-',
         hintStyle: TextStyle(
           fontSize: 27,
           fontFamily: 'Poppins-ExtraLight',
@@ -213,7 +213,7 @@ class CustomOtpField extends StatelessWidget {
         enableActiveFill: true,
 
         onChanged: (value) {
-          print("OTP: $value");
+          print('OTP: $value');
         },
 
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

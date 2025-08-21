@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/common/dropdown/app_dropdown.dart';
+import 'package:nurahelp/app/common/misc/circular_image.dart';
+import 'package:nurahelp/app/features/auth/controllers/sign_up_controllers/sign_up_controller.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/widget/sign_up_progress_bar.dart';
-import 'package:nurahelp/app/nav_menu.dart';
-import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
-
+import 'package:nurahelp/app/utilities/validators/validation.dart';
+import '../../../../common/shimmer/shimmer_effect.dart';
 import '../../../../utilities/constants/colors.dart';
 import '../../../../utilities/constants/icons.dart';
+import '../../../../utilities/constants/svg_icons.dart';
+import '../../../main/controllers/patient/patient_controller.dart';
 
-class FirstTimeOnBoardingScreen extends StatefulWidget {
-  const FirstTimeOnBoardingScreen({super.key});
+class FirstTimeOnBoardingScreen extends StatelessWidget {
+  FirstTimeOnBoardingScreen({super.key});
 
-  @override
-  State<FirstTimeOnBoardingScreen> createState() => _FirstTimeOnBoardingScreenState();
-}
 
-class _FirstTimeOnBoardingScreenState extends State<FirstTimeOnBoardingScreen> {
-  bool isChecked = false;
+  final controller = Get.find<PatientController>();
+  final proceedController = Get.put(SignUpController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +54,10 @@ class _FirstTimeOnBoardingScreenState extends State<FirstTimeOnBoardingScreen> {
                 child: Column(
                   children: [
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () => controller.uploadProfilePicture(),
+                      style: TextButton.styleFrom(
+                        overlayColor: Colors.black.withOpacity(0.2),
+                      ),
                       child: Text(
                         'Add profile picture',
                         style: TextStyle(
@@ -61,9 +65,6 @@ class _FirstTimeOnBoardingScreenState extends State<FirstTimeOnBoardingScreen> {
                           fontSize: 16,
                           color: AppColors.black300,
                         ),
-                      ),
-                      style: TextButton.styleFrom(
-                        overlayColor: Colors.black.withOpacity(0.2),
                       ),
                     ),
                     Container(
@@ -73,100 +74,94 @@ class _FirstTimeOnBoardingScreenState extends State<FirstTimeOnBoardingScreen> {
                           color: AppColors.greyColor.withOpacity(0.6),
                         ),
                       ),
-                      padding: EdgeInsets.symmetric(
-                        vertical: 15,
-                        horizontal: 15,
-                      ),
-                      child: CircleAvatar(
-                        radius: 70,
-                        backgroundColor: Colors.white,
-                        child: SvgIcon(AppIcons.profile, size: 100),
-                      ),
+                      padding:EdgeInsets.all(5),
+                      child: Obx(() {
+                        final networkImage = controller.patient.value.profilePicture;
+                        return controller.imageLoading.value
+                            ? AppShimmerEffect(
+                                height: 170,
+                                width: 170,
+                                radius: 150,
+                              )
+                            : networkImage!.isEmpty?Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.black),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Colors.white,
+                              child: SvgIcon(
+                                AppIcons.profile,
+                                size: 100,
+                              ),
+                            ),
+                          ),
+                        ):SizedBox(
+                          height: 130,
+                          width: 130,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(90),
+                            child: Image.network(
+                              networkImage,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      }),
                     ),
                   ],
                 ),
               ),
               SizedBox(height: 32),
-              SizedBox(
-                height: 56,
-                width: double.infinity,
-                child: AppDropdown(menuItems: ['English', 'French'],
-                verticalPadding: 15,
-                  hintText: 'Choose Language Preference',
-                  borderRadius: 10,
-
+                Column(
+                  children: [
+                    Form(
+                      key: controller.onboardingFormKey,
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: AppDropdown(  // Add Obx() here!
+                          menuItems: ['English','French'],
+                          verticalPadding: 15,
+                          selectedValue: controller.selectedValue?.value,
+                          hintText: 'Choose Language Preference',
+                          borderRadius: 10,
+                          validator: (String? value) => AppValidator.validateDropdown(value),
+                          onChanged: (String? value) {
+                            controller.selectedValue?.value = value!;
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              // SizedBox(
-              //   child: DropdownButtonFormField<String>(
-              //     icon: Icon(Icons.keyboard_arrow_down,color: AppColors.black),
-              //     hint: Text(
-              //       'Choose Language Preference',
-              //       style: TextStyle(
-              //         fontSize: 14,
-              //         fontFamily: 'Poppins-ExtraLight',
-              //         color: AppColors.black,
-              //         letterSpacing: 0,
-              //       ),
-              //     ),
-              //     decoration: InputDecoration(
-              //       border: OutlineInputBorder(
-              //         borderRadius: BorderRadius.circular(10),
-              //         borderSide: BorderSide(
-              //           color: AppColors.black,
-              //           width: 0.3,
-              //         ),
-              //       ),
-              //       enabledBorder: OutlineInputBorder(
-              //         borderRadius: BorderRadius.circular(10),
-              //         borderSide: BorderSide(
-              //           color: AppColors.black,
-              //           width: 0.3,
-              //         ),
-              //       ),
-              //       disabledBorder: OutlineInputBorder(
-              //         borderRadius: BorderRadius.circular(10),
-              //         borderSide: BorderSide(
-              //           color: AppColors.black,
-              //           width: 0.3,
-              //         ),
-              //       ),
-              //       focusedBorder: OutlineInputBorder(
-              //         borderRadius: BorderRadius.circular(10),
-              //         borderSide: BorderSide(
-              //           color: AppColors.black,
-              //           width: 0.3,
-              //         ),
-              //       ),
-              //     ),
-              //     items: [
-              //       DropdownMenuItem(value: 'en', child: Text('English')),
-              //       DropdownMenuItem(value: 'fr', child: Text('French')),
-              //     ],
-              //     onChanged: (value) {
-              //       print("Selected: $value");
-              //     },
-              //   ),
-              // ),
               SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   SizedBox.square(
                     dimension: 20,
-                    child: Checkbox(
-                      value: isChecked,
-                      onChanged: (value) {
-                        setState((){
-                          isChecked = value!;
-                        });
-                      },
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
+                    child: Obx(
+                              () {
+                            bool showCheckboxError =
+                                (controller.proceedToDashboardIsClicked.value &&
+                                    !controller.enableHeyNuraVoice.value);
+                            return Checkbox(
+                              isError: showCheckboxError,
+                              value: (controller.enableHeyNuraVoice.value),
+                              onChanged: (value) {
+                                controller.enableHeyNuraVoice.value = value!;
+                              },
+                              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            );
+                          }
+                      ),
                   ),
                   SizedBox(width: 10),
                   Text(
-                    'Enable \"Hey Nura\" voice activation (optional)',
+                    'Enable "Hey Nura" voice activation (optional)',
                     style: TextStyle(
                       fontSize: 14,
                       fontFamily: 'Poppins-Regular',
@@ -179,11 +174,11 @@ class _FirstTimeOnBoardingScreenState extends State<FirstTimeOnBoardingScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => Get.offAll(
-                    () => NavigationMenu(),
-                    duration: Duration(seconds: 0),
-                  ),
-                  child: Text(
+                  onPressed: (){
+                    controller.proceedToDashboardIsClicked.value;
+                    controller.proceedToDashboard();
+                  },
+                    child: Text(
                     'Go to Dashboard',
                     style: TextStyle(
                       fontSize: 16,

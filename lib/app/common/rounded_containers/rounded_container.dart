@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../utilities/constants/colors.dart';
 
 class RoundedContainer extends StatelessWidget {
-  RoundedContainer({
+  const RoundedContainer({
     super.key,
     required this.child,
     this.padding = 5.0,

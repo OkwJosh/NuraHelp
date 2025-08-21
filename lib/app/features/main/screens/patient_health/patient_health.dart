@@ -1,5 +1,6 @@
 import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:flutter/material.dart';
+import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/patient_info_header.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/tab_content/medication_tab_content.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/tab_content/overview_tab_content.dart';
@@ -10,6 +11,7 @@ import '../../../../common/appbar/appbar_with_bell.dart';
 
 class PatientHealthScreen extends StatelessWidget {
   const PatientHealthScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +70,9 @@ class PatientHealthScreen extends StatelessWidget {
                               labelColor: Colors.black,
                               unselectedLabelColor: AppColors.black300,
                               tabs: const [
-                                Tab(child: Text("Overview",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
-                                Tab(child: Text("Test Result",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
-                                Tab(child: Text("Medication",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
+                                Tab(child: Text('Overview',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
+                                Tab(child: Text('Test Result',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
+                                Tab(child: Text('Medication',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
                               ],
                             ),
                           ),

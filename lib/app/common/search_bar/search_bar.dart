@@ -25,11 +25,11 @@ class AppSearchBar extends StatelessWidget {
             children: [
               SvgIcon(AppIcons.search,size: 20,color: AppColors.text10),
               SizedBox(width: isSmallPhone?5:10),
-              Text(hintText,style: TextStyle(fontFamily: "Poppins-Regular",fontSize:12,fontWeight: FontWeight.w600,color: AppColors.text10),)
+              Text(hintText,style: TextStyle(fontFamily: 'Poppins-Regular',fontSize:12,fontWeight: FontWeight.w600,color: AppColors.text10),)
             ],
           ),
         ),
-        hintStyle: TextStyle(color: AppColors.black200,fontFamily: "Poppins-Regular"),
+        hintStyle: TextStyle(color: AppColors.black200,fontFamily: 'Poppins-Regular'),
         fillColor: AppColors.neutral300,
         filled: true,
         border: OutlineInputBorder(

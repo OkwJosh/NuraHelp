@@ -47,8 +47,8 @@ class AboutDoctorScreen extends StatelessWidget {
                               unselectedLabelColor: Colors.grey[600],
                               labelPadding: EdgeInsets.symmetric(horizontal: 20),
                               tabs: const [
-                                Tab(child: Text("About",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
-                                Tab(child: Text("Reviews",style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
+                                Tab(child: Text('About',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
+                                Tab(child: Text('Reviews',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
                               ],
                             ),
                           ),

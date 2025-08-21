@@ -9,9 +9,11 @@ import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../common/appbar/appbar_with_bell.dart';
+import '../../../../data/models/patient_model.dart';
 
 class SymptomInsightsScreen extends StatelessWidget {
   const SymptomInsightsScreen({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -140,9 +142,9 @@ class SymptomInsightsScreen extends StatelessWidget {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      "Symptom Trends",
+                                      'Symptom Trends',
                                       style: TextStyle(
-                                        fontFamily: "Poppins-Medium",
+                                        fontFamily: 'Poppins-Medium',
                                         fontSize: 20,
                                       ),
                                     ),

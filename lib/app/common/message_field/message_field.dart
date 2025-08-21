@@ -12,6 +12,10 @@ class CustomTextField extends StatelessWidget {
     this.sendIconColor = AppColors.secondaryColor,
     this.micIconColor = Colors.black,
     this.attachmentIconColor = Colors.black,
+    required this.onSendButtonPressed,
+    required this.onMicButtonPressed,
+    required this.onAttachButtonPressed,
+    this.controller,
   });
 
   final bool showBorder;
@@ -19,12 +23,18 @@ class CustomTextField extends StatelessWidget {
   final Color? sendIconColor;
   final Color? micIconColor;
   final Color? attachmentIconColor;
+  final Function() onSendButtonPressed;
+  final Function() onMicButtonPressed;
+  final Function() onAttachButtonPressed;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: showBorder?Border.all(color: AppColors.secondaryColor,width: 0.5):Border(),
+        border: showBorder
+            ? Border.all(color: AppColors.secondaryColor, width: 0.5)
+            : Border(),
         color: AppColors.bluishWhiteColor,
         borderRadius: BorderRadius.circular(10),
       ),
@@ -32,6 +42,7 @@ class CustomTextField extends StatelessWidget {
       child: Column(
         children: [
           TextField(
+            controller: controller,
             minLines: 1,
             maxLines: 3,
             style: TextStyle(
@@ -53,9 +64,10 @@ class CustomTextField extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                     hint!,
+                      hint!,
                       style: TextStyle(
-                        fontFamily: "Poppins-ExtraLight",
+                        fontFamily: 'Poppins-ExtraLight',
+                        fontSize: 16,
                         color: AppColors.black300,
                       ),
                       textAlign: TextAlign.start,
@@ -73,15 +85,19 @@ class CustomTextField extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconButton(onPressed: () {}, icon: SvgIcon(AppIcons.attach,color: AppColors.black),color: attachmentIconColor,),
+              IconButton(
+                onPressed: onAttachButtonPressed,
+                icon: SvgIcon(AppIcons.attach, color: AppColors.black),
+                color: attachmentIconColor,
+              ),
               Row(
                 children: [
                   IconButton(
-                    onPressed: () {},
-                    icon: SvgIcon(AppIcons.mic,color: micIconColor,),
+                    onPressed: onMicButtonPressed,
+                    icon: SvgIcon(AppIcons.mic, color: micIconColor),
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: onSendButtonPressed,
                     icon: SvgIcon(AppIcons.send, color: sendIconColor),
                   ),
                 ],
