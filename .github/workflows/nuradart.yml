@@ -1,52 +1,38 @@
-name: iOS-ipa-build
+name: iOS-app-build
 
 on:
   workflow_dispatch:
 
 jobs:
   build-ios:
-    name: 🎉 iOS Build
+    name: 🎉 iOS .app Build
     runs-on: macos-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
 
-      - name: Setup Flutter
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           architecture: x64
 
-      - name: Get Flutter dependencies
+      - name: Install dependencies
         run: flutter pub get
 
-      - run: pod repo update
+      - name: Install CocoaPods
+        run: pod install
         working-directory: ios
 
-      - run: pod install
-        working-directory: ios
-
-
-      - name: Build iOS release (No Codesign)
+      - name: Build iOS app (no codesign)
         run: flutter build ios --release --no-codesign
 
-      - name: Create Payload directory
-        run: mkdir Payload
+      - name: Archive Runner.app into a zip
+        run: zip -r Runner.app.zip Runner.app
         working-directory: build/ios/iphoneos
 
-      - name: Move Runner.app into Payload
-        run: mv Runner.app Payload
-        working-directory: build/ios/iphoneos
-
-      - name: Package IPA
-        run: zip -qq -r -9 FlutterIpaExport.ipa Payload
-        working-directory: build/ios/iphoneos
-
-      - name: Upload IPA to GitHub Release
-        uses: svenstaro/upload-release-action@v2
+      - name: Upload .app file as artifact
+        uses: actions/upload-artifact@v3
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: v1.0
-          overwrite: true
-          body: "First release of the iOS IPA without code signing"
+          name: iOS-Runner-App
+          path: build/ios/iphoneos/Runner.app.zip
