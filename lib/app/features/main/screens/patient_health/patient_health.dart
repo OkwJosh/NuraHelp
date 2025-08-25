@@ -1,6 +1,9 @@
 import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:flutter/material.dart';
-import 'package:nurahelp/app/data/models/patient_model.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
+import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/patient_info_header.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/tab_content/medication_tab_content.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/tab_content/overview_tab_content.dart';
@@ -8,98 +11,92 @@ import 'package:nurahelp/app/features/main/screens/patient_health/widgets/tab_co
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import '../../../../common/appbar/appbar_with_bell.dart';
 
-
 class PatientHealthScreen extends StatelessWidget {
-  const PatientHealthScreen({super.key});
+  PatientHealthScreen({super.key});
+
+  final _controller = Get.find<PatientController>();
+  final _nuraBotController = Get.find<NuraBotController>();
 
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
-      body: Stack(
-        children: [
-          Positioned(top: 0, left: 0, right: 0, child: AppBarWithBell()),
-          Positioned.fill(
-            top: 120,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15, right: 15),
-              child: SingleChildScrollView(
-                child: Column(
+      appBar: AppBarWithBell(),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PatientInfoHeader(patientController: _controller,),
+                const Divider(color: AppColors.black300, thickness: 0.3),
+                const SizedBox(height: 10),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    PatientInfoHeader(),
-                    Divider(color: AppColors.black300,thickness: 0.3),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'example@gmail.com',
-                                  style: TextStyle(fontFamily: 'Poppins-Regular'),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  '(234) 912 345 8080',
-                                  style: TextStyle(fontFamily: 'Poppins-Regular'),
-                                ),
-                              ],
-                            ),
-                          ],
+                        Text(
+                          _controller.patient.value.email,
+                          style: const TextStyle(fontFamily: 'Poppins-Regular'),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          _controller.patient.value.phone,
+                          style: TextStyle(fontFamily: 'Poppins-Regular'),
                         ),
                       ],
                     ),
-                    SizedBox(height: 40),
-                    DefaultTabController(
-                      length: 3,
-                      child: Column(
-                        children: [
-                          Container(
-                            color:  AppColors.primaryColor,
-                            child: TabBar(
-                              indicatorColor: Colors.black,
-                              dividerColor: Colors.transparent,
-                              isScrollable: true,
-                              tabAlignment: TabAlignment.center,
-                              indicatorSize: TabBarIndicatorSize.tab,
-                              labelColor: Colors.black,
-                              unselectedLabelColor: AppColors.black300,
-                              tabs: const [
-                                Tab(child: Text('Overview',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
-                                Tab(child: Text('Test Result',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
-                                Tab(child: Text('Medication',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16),)),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 16),
-                          // 🔹 TabBarView (newly added)
-                          AutoScaleTabBarView(
-                            children: [
-                              // Tab 1: Overview
-                              OverviewTabContent(),
-                              // Tab 2: Test Result
-                              TestResultTabContent(),
-                              // Tab 3: Medication
-                              MedicationTabContent(),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
                   ],
                 ),
-              ),
+
+                const SizedBox(height: 40),
+
+
+                DefaultTabController(
+                  length: 3,
+                  child: Column(
+                    children: [
+                      Container(
+                        color: AppColors.primaryColor,
+                        child: const TabBar(
+                          indicatorColor: Colors.black,
+                          dividerColor: Colors.transparent,
+                          isScrollable: true,
+                          tabAlignment: TabAlignment.center,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          labelColor: Colors.black,
+                          unselectedLabelColor: AppColors.black300,
+                          tabs: [
+                            Tab(child: Text('Overview', style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 16))),
+                            Tab(child: Text('Test Result', style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 16))),
+                            Tab(child: Text('Medication', style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 16))),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      /// ✅ Tab Content
+                      AutoScaleTabBarView(
+                        children: const [
+                          OverviewTabContent(),
+                          TestResultTabContent(),
+                          MedicationTabContent(),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 }
-

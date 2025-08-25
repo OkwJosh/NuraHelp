@@ -1,3 +1,5 @@
+import 'package:nurahelp/app/data/models/doctor_model.dart';
+
 class PatientModel {
   String? id;
   String name;
@@ -7,6 +9,7 @@ class PatientModel {
   String? profilePicture;
   final String? inviteCode;
   DateTime? birthInfo;
+  DoctorModel? doctor;
 
   PatientModel({
     this.id,
@@ -16,7 +19,8 @@ class PatientModel {
     this.age,
     this.profilePicture,
     this.inviteCode,
-    this.birthInfo
+    this.birthInfo,
+    this.doctor
   });
 
   List<String>? get nameParts => name.split(' ');
@@ -57,6 +61,7 @@ class PatientModel {
         email: json['email'],
         phone: json['phone'],
         age: json['age'],
+        doctor: DoctorModel.fromJson(json['doctor']),
         profilePicture: json['profilePicture'],
     );
   }

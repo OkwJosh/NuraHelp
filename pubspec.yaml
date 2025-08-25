@@ -36,7 +36,10 @@ dependencies:
   firebase_storage: ^13.0.0
   shimmer: ^3.0.0
   cached_network_image: ^3.4.1
-  dash_chat_2: ^0.0.21
+  shared_preferences: ^2.5.3
+  zego_uikit_prebuilt_call: ^4.18.0
+  zego_uikit_signaling_plugin: ^2.8.16
+  shelf_web_socket: ^3.0.0
 
 
 

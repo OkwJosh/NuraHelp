@@ -6,6 +6,7 @@ import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/notification_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/security_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/settings_model.dart';
+import 'package:nurahelp/app/data/services/network_manager.dart';
 import 'package:nurahelp/app/utilities/loaders/loaders.dart';
 import 'package:nurahelp/app/utilities/popups/screen_loader.dart';
 import '../../../../data/services/app_service.dart';
@@ -17,17 +18,34 @@ class PatientController extends GetxController {
 
   final imageLoading = false.obs;
   Rx<PatientModel> patient = PatientModel.empty().obs;
-  final Rx<bool> proceedToDashboardIsClicked = false.obs;
-  final Rx<bool> enableHeyNuraVoice = false.obs;
+  Rx<SettingsModel> settings = SettingsModel.empty().obs;
+  Rx<bool> proceedToDashboardIsClicked = false.obs;
+  Rx<bool> enableHeyNuraVoice = false.obs;
   final appService = AppService.instance;
   GlobalKey<FormState> onboardingFormKey = GlobalKey<FormState>();
   Rx<String>? selectedValue;
-  final Rx<bool> enableAppointmentReminders = false.obs;
-  final Rx<bool> enableMessageAlerts = false.obs;
-  final Rx<bool> enable2Fa = false.obs;
+  Rx<bool> enableAppointmentReminders = false.obs;
+  Rx<bool> enableMessageAlerts = false.obs;
+  Rx<bool> enable2Fa = false.obs;
   final TextEditingController editName = TextEditingController();
   final TextEditingController editEmail = TextEditingController();
   final TextEditingController editPhone = TextEditingController();
+
+
+  @override
+  void onInit(){
+    super.onInit();
+    enableAppointmentReminders.value = settings.value.notifications.appointmentReminders;
+    enableMessageAlerts.value = settings.value.notifications.messageAlerts;
+    enable2Fa.value = settings.value.security.twoFactorAuth;
+    _initializeController();
+  }
+
+  Future<void> _initializeController() async {
+    final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+    print('Hey this is the token $token');
+
+  }
 
 
   @override
@@ -113,10 +131,15 @@ class PatientController extends GetxController {
       AppScreenLoader.openLoadingDialog('Saving setting');
       final token = await user?.getIdToken();
       print('Hey this is the token $token');
-       await appService.savePatientSettings(SettingsModel(notifications: NotificationModel(
-              appointmentReminders: enableAppointmentReminders.value,
-              messageAlerts: enableMessageAlerts.value),
-          security: SecurityModel(twoFactorAuth: enable2Fa.value)), user);
+      final newSettings = SettingsModel(notifications: NotificationModel(
+          appointmentReminders: enableAppointmentReminders.value,
+          messageAlerts: enableMessageAlerts.value),
+          security: SecurityModel(twoFactorAuth: enable2Fa.value));
+      print(newSettings.notifications.appointmentReminders);
+      print(newSettings.notifications.messageAlerts);
+      print(newSettings.security.twoFactorAuth);
+      await appService.savePatientSettings(newSettings,user);
+      print('This is the settings ${settings}');
       AppScreenLoader.stopLoading();
       AppToasts.successSnackBar(title: 'Settings has been saved!');
     }catch(e){

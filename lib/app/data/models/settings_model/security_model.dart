@@ -1,5 +1,5 @@
 class SecurityModel{
-  final bool twoFactorAuth;
+  bool twoFactorAuth;
 
   SecurityModel({required this.twoFactorAuth});
 
@@ -10,6 +10,9 @@ class SecurityModel{
           'twoFactorAuth':twoFactorAuth
         };
   }
+
+  static SecurityModel empty()=>
+    SecurityModel(twoFactorAuth: false);
 
   factory SecurityModel.fromJson(json){
     return SecurityModel(

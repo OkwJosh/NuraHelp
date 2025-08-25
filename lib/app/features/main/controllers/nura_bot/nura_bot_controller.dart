@@ -51,8 +51,6 @@ class NuraBotController extends GetxController{
         threadId: message.userId!,
         query: query,
       );
-
-      // Update placeholder message
       final index = conversations.indexOf(placeholderMessage);
       if (index != -1) {
         conversations[index] = BotMessageModel(
@@ -83,6 +81,7 @@ class NuraBotController extends GetxController{
   void dispose() {
     super.dispose();
     messageController.dispose();
+
   }
 
 

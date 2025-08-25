@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../common/dropdown/app_dropdown.dart';
@@ -6,8 +7,10 @@ import '../../../../../utilities/constants/colors.dart';
 
 class PatientInfoHeader extends StatelessWidget {
   const PatientInfoHeader({
-    super.key,
+    super.key, required this.patientController,
   });
+
+  final PatientController patientController;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class PatientInfoHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Dianne Russell',
+                  patientController.patient.value.name,
                   style: TextStyle(
                     fontFamily: 'Poppins-Semibold',
                     fontSize: 16,
@@ -31,7 +34,7 @@ class PatientInfoHeader extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      'Female',
+                      'Male',
                       style: TextStyle(
                         fontFamily: 'Poppins-Regular',
                         fontSize: 14,
@@ -39,7 +42,7 @@ class PatientInfoHeader extends StatelessWidget {
                     ),
                     SizedBox(width: 10),
                     Text(
-                      'Age 32',
+                      'Age ${patientController.patient.value.age}',
                       style: TextStyle(
                         fontFamily: 'Poppins-Regular',
                         fontSize: 14,

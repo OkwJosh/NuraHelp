@@ -5,6 +5,7 @@ import 'package:nurahelp/app/common/appbar/appbar_with_bell.dart';
 import 'package:nurahelp/app/common/message_field/message_field.dart';
 import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
+import 'package:nurahelp/app/nav_menu.dart';
 import '../../../../data/models/message_models/bot_message_model.dart';
 import '../../../../utilities/constants/colors.dart';
 
@@ -18,60 +19,66 @@ class NuraBot extends StatelessWidget {
     final _controller = Get.put(NuraBotController());
     final _patientController = Get.find<PatientController>();
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true, // Important
-      appBar: AppBarWithBell(showSearchBar: false), // Instead of positioned
-      body: Column(
-        children: [
-          Expanded(
-            child: Obx(() {
-              if (_controller.conversations.isEmpty) {
-                return Center(
-                  child: Text(
-                    'What\'s on the agenda ?',
-                    style: TextStyle(fontSize: 26, letterSpacing: -2),
-                  ),
-                );
-              }
-              return ListView.builder(
-                reverse: true,
-                itemCount: _controller.conversations.length,
-                itemBuilder: (context, index) {
-                  final message = _controller.conversations[index];
-                  return Align(
-                    alignment: message.sender == SenderType.user
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: message.sender == SenderType.user ? 0 : 10,
-                        right: message.sender == SenderType.user ? 10 : 0,
-                      ),
-                      child: MessageBubble(
-                        message: message,
-                        botIsReplying: _controller.isReplying.value,
-                      ),
+    return WillPopScope(
+      onWillPop:() async{
+        Get.offAll(()=>NavigationMenu());
+        return false;
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: true, // Important
+        appBar: AppBarWithBell(showSearchBar: false), // Instead of positioned
+        body: Column(
+          children: [
+            Expanded(
+              child: Obx(() {
+                if (_controller.conversations.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'What\'s on the agenda ?',
+                      style: TextStyle(fontSize: 26, letterSpacing: -2),
                     ),
                   );
-                },
-              );
-            }),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 1, left: 10, bottom: 15),
-            child: IntrinsicHeight(
-              child: CustomTextField(
-                controller: _controller.messageController,
-                onSendButtonPressed: () => _controller.sendBotMessage(
-                  patient: _patientController.patient.value,
+                }
+                return ListView.builder(
+                  reverse: true,
+                  itemCount: _controller.conversations.length,
+                  itemBuilder: (context, index) {
+                    final message = _controller.conversations[index];
+                    return Align(
+                      alignment: message.sender == SenderType.user
+                          ? Alignment.centerRight
+                          : Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          left: message.sender == SenderType.user ? 0 : 10,
+                          right: message.sender == SenderType.user ? 10 : 0,
+                        ),
+                        child: MessageBubble(
+                          message: message,
+                          botIsReplying: _controller.isReplying.value,
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 1, left: 10, bottom: 15),
+              child: IntrinsicHeight(
+                child: CustomTextField(
+                  controller: _controller.messageController,
+                  onSendButtonPressed: () => _controller.sendBotMessage(
+                    patient: _patientController.patient.value,
+                  ),
+                  onMicButtonPressed: () {},
+                  onAttachButtonPressed: () {},
+                  showBorder: false,
                 ),
-                onMicButtonPressed: () {},
-                onAttachButtonPressed: () {},
-                showBorder: false,
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
 

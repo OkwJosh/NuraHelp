@@ -7,14 +7,17 @@ import '../../utilities/constants/icons.dart';
 
 class AppSearchBar extends StatelessWidget {
   const AppSearchBar({
-    super.key, required this.hintText,
+    super.key, required this.hintText, this.textEditingController,
   });
   final String hintText;
+  final TextEditingController? textEditingController;
+
 
   @override
   Widget build(BuildContext context) {
     final bool isSmallPhone = AppDeviceUtils.getScreenWidth(context) <= 360.0;
-    return TextField(
+    return TextFormField(
+      controller: textEditingController,
       style: TextStyle(color: AppColors.greyColor),
       cursorColor: AppColors.greyColor,
       decoration: InputDecoration(

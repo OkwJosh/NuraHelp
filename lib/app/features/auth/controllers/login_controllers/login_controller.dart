@@ -42,10 +42,15 @@ class LoginController extends GetxController {
       );
       final currentUser = FirebaseAuth.instance.currentUser;
       final patient = await appService.fetchPatientRecord(currentUser);
+      final settings = await appService.fetchPatientSettings(currentUser);
+
       patientController.patient.value = patient;
-      patientController.refresh();
+      patientController.enableMessageAlerts.value = settings.notifications.messageAlerts;
+      patientController.enableAppointmentReminders.value = settings.notifications.appointmentReminders;
+      patientController.enable2Fa.value = settings.security.twoFactorAuth;
 
       AppScreenLoader.stopLoading();
+      print('Hey this is value 2fa ${patientController.enableMessageAlerts.value}');
       Get.offAll(() => NavigationMenu());
     } catch (e) {
       AppScreenLoader.stopLoading();

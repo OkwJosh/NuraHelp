@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:nurahelp/app/common/custom_switch/custom_switch.dart';
 import 'package:nurahelp/app/features/main/screens/symptom_insights/widget/symptom_dropdown.dart';
 import 'package:nurahelp/app/features/main/screens/symptom_insights/widget/symptom_insights_list_tile.dart';
@@ -8,338 +7,323 @@ import 'package:nurahelp/app/features/main/screens/symptom_insights/widget/sympt
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
+import 'package:nurahelp/app/utilities/validators/validation.dart';
 import '../../../../common/appbar/appbar_with_bell.dart';
-import '../../../../data/models/patient_model.dart';
+import '../../controllers/symptom_insight_controller/symptom_insight_controller.dart';
 
 class SymptomInsightsScreen extends StatelessWidget {
   const SymptomInsightsScreen({super.key});
 
-
   @override
   Widget build(BuildContext context) {
+    final _controller = Get.put(SymptomInsightController());
     return Scaffold(
       backgroundColor: AppColors.primaryColor,
-      body: Stack(
-        children: [
-          Positioned(top: 0, left: 0, right: 0, child: AppBarWithBell()),
-          Positioned.fill(
-            top: 110,
-            child: Padding(
-              padding: EdgeInsets.only(left: 15, right: 15),
-              child: SingleChildScrollView(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(110),
+        child: AppBarWithBell(showSearchBar: true),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Log Today's Symptoms
+            Material(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              elevation: 0.1,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 15,
+                ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                        top: 10,
+                    Text(
+                      'Log Today\'s Symptoms',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontFamily: 'Poppins-SemiBold',
                       ),
-                      child: Material(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        elevation: 0.1,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10.0,
-                            vertical: 15,
+                    ),
+                    const SizedBox(height: 15),
+                    Obx(
+                          () => ListView.separated(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        itemCount: _controller.uniqueSymptoms.length, // Use unique symptoms
+                        separatorBuilder: (_, __) => SizedBox(height: 10),
+                        itemBuilder: (context, index) {
+                          final symptom = _controller.uniqueSymptoms[index]; // Use unique symptoms
+                          return SymptomDropdown(
+                            symptomName: symptom.symptomName,
+                            selectedValue: symptom.value.toString(),
+                            menuItems: ['0','1','2','3','4','5','6','7','8','9','10'],
+                            onChanged: (value) {
+                              if (value != null) {
+                                // Find and update ALL instances of this symptom name
+                                for (int i = 0; i < _controller.symptoms.length; i++) {
+                                  if (_controller.symptoms[i].symptomName == symptom.symptomName) {
+                                    _controller.symptoms[i].value = int.parse(value);
+                                  }
+                                }
+                                _controller.symptoms.refresh();
+
+                                _controller.generateSpots(_controller.symptoms);
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: () => addNewSymptom(context, _controller),
+                          icon: Icon(
+                            Icons.add,
+                            color: AppColors.secondaryColor,
                           ),
-                          child: Column(
-                            children: [
-                              Text(
-                                'Log Today\'s Symptoms',
-                                style: TextStyle(fontSize: 18,fontFamily: 'Poppins-SemiBold'),
-                              ),
-                              SizedBox(height: 15),
-                              SymptomDropdown(symptomName: 'Pain'),
-                              SizedBox(height: 10),
-                              SymptomDropdown(symptomName: 'Fatigue'),
-                              SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                spacing: 10,
-                                children: [
-                                  SizedBox(
-                                    height:48,
-                                    child: OutlinedButton(
-                                      onPressed: () => addNewSymptom(context),
-                                      style: OutlinedButton.styleFrom(
-                                        side: BorderSide(
-                                          color: AppColors.secondaryColor,
-                                        ),
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 15,
-                                        ),
-                                      ),
-                                      child: Row(
-                                        spacing: 3,
-                                        children: [
-                                          Icon(
-                                            Icons.add,
-                                            color: AppColors.secondaryColor,
-                                          ),
-                                          Text(
-                                            'Add',
-                                            style: TextStyle(
-                                              color: AppColors.secondaryColor,
-                                              fontFamily: 'Poppins-Medium',
-                                              fontSize: 16
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 48,
-                                    child: ElevatedButton(
-                                      onPressed: () {},
-                                      style: ElevatedButton.styleFrom(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 10,
-                                          horizontal: 15,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        'Submit',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins-Medium',
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                          label: Text(
+                            'Add',
+                            style: TextStyle(
+                              color: AppColors.secondaryColor,
+                              fontFamily: 'Poppins-Medium',
+                              fontSize: 16,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: AppColors.secondaryColor),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 12,
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    Material(
-                      elevation: 1,
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      child: Container(
-                        padding: EdgeInsets.only(bottom: 15),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 10,
-                                right: 10,
-                                top: 10,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'Symptom Trends',
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins-Medium',
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 35,
-                                    width: 90,
-                                    child: CustomSwitch(
-                                      firstOptionText: '1W',
-                                      secondOptionText: '1M',
-                                    ),
-                                  ),
-                                ],
-                              ),
+                        const SizedBox(width: 10),
+                        ElevatedButton(
+                          onPressed: () => _controller.logSymptoms(),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
                             ),
-                            SymptomTrendChart(),
-                            SizedBox(height: 5),
-                            Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 7,
-                                          backgroundColor: Colors.purpleAccent,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Key title goes here',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontFamily: 'Poppins-Regular',
-                                              letterSpacing: 0
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 7,
-                                          backgroundColor: Colors.orange,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Key title goes here',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontFamily: 'Poppins-Regular',
-                                              letterSpacing: 0
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 15),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 7,
-                                          backgroundColor:
-                                              AppColors.deepSecondaryColor,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Key title goes here',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontFamily: 'Poppins-Regular',
-                                              letterSpacing: 0
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 7,
-                                          backgroundColor: Colors.greenAccent,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Text(
-                                          'Key title goes here',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontFamily: 'Poppins-Regular',
-                                              letterSpacing: 0
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
+                          ),
+                          child: const Text(
+                            'Submit',
+                            style: TextStyle(fontSize: 16, color: Colors.white),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    SizedBox(height: 10),
-                    Material(
-                      elevation: 1,
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        padding: EdgeInsets.only(top: 10, left: 10, right: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          children: [
-                            SymptomInsightListTile(),
-                            SymptomInsightListTile(),
-                            SymptomInsightListTile(),
-                            SymptomInsightListTile(showBottomBorder: false),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 100),
                   ],
                 ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 15),
+
+            // Symptom Trends
+            Material(
+              elevation: 1,
+              borderRadius: BorderRadius.circular(10),
+              child: Container(
+                padding: const EdgeInsets.only(bottom: 15),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10.0,
+                          vertical: 10,
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Symptom Trends',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: 35,
+                              width: 90,
+                              child: CustomSwitch(
+                                firstOptionText: '1W',
+                                secondOptionText: '1M',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SymptomTrendChart(controller: _controller),
+                      const SizedBox(height: 5),
+                      _buildTrendLegend(context, controller: _controller),
+                    ],
+                  ),
+                ),
+              ),
+            const SizedBox(height: 10),
+
+            // // Symptom Insights List
+            // Material(
+            //   elevation: 1,
+            //   borderRadius: BorderRadius.circular(10),
+            //   child: Container(
+            //     padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+            //     decoration: BoxDecoration(
+            //       color: Colors.white,
+            //       borderRadius: BorderRadius.circular(10),
+            //     ),
+            //     child: Column(
+            //       children: const [
+            //         SymptomInsightListTile(),
+            //         SymptomInsightListTile(),
+            //         SymptomInsightListTile(),
+            //         SymptomInsightListTile(showBottomBorder: false),
+            //       ],
+            //     ),
+            //   ),
+            // ),
+            const SizedBox(height: 100),
+          ],
+        ),
       ),
     );
   }
+
+  Widget _buildTrendLegend(
+    BuildContext context, {
+    required SymptomInsightController controller,
+  }) {
+    return Obx(
+      ()=> GridView.builder(
+        shrinkWrap: true,
+
+        physics: NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        itemCount: controller.uniqueSymptoms.length,
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 130,
+          mainAxisSpacing: 10,
+          childAspectRatio: 5,
+        ),
+        itemBuilder: (context, index) {
+          final symptom = controller.uniqueSymptoms[index].symptomName;
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!controller.symptomColors.containsKey(symptom)) {
+              controller.symptomColors[symptom] = controller.assignColorForSymptom(symptom);
+              controller.symptomColors.refresh();
+            }
+          });
+          return Obx(
+            () => Row(
+              children: [
+                CircleAvatar(radius: 7, backgroundColor:controller.symptomColors[symptom] ?? Colors.grey),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    symptom,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontSize: 14, fontFamily: 'Poppins-Regular'),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+
 }
 
-void addNewSymptom(BuildContext context) {
+void addNewSymptom(BuildContext context, SymptomInsightController controller) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return Dialog(
         backgroundColor: Colors.white,
         elevation: 2,
-        insetPadding: EdgeInsets.symmetric(horizontal: 26),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 26),
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: SizedBox(
             height: 250,
             child: Column(
-              spacing: 16,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [SvgIcon(AppIcons.health)],
-                ),
+                Row(children: [SvgIcon(AppIcons.health)]),
+                const SizedBox(height: 8),
                 Text(
                   'Add Symptom',
-                  style: TextStyle(fontSize: 18, color: AppColors.black,fontFamily: 'Poppins-SemiBold'),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColors.black,
+                    fontFamily: 'Poppins-SemiBold',
+                  ),
                 ),
-                TextField(
-                  cursorColor: Colors.black,
-                  style: TextStyle(color: AppColors.black,fontSize: 14,fontFamily: 'Poppins-ExtraLight'),
-                  decoration: InputDecoration(hintText: 'Symptom name',hintStyle: TextStyle(fontSize: 14)),
+                SizedBox(height: 30),
+                Form(
+                  key: controller.symptomKey,
+                  child: TextFormField(
+                    controller: controller.symptomText,
+                    validator: (value) =>
+                        AppValidator.validateTextField('Symptom', value),
+                    cursorColor: Colors.black,
+                    style: TextStyle(
+                      color: AppColors.black,
+                      fontSize: 14,
+                      fontFamily: 'Poppins-ExtraLight',
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'Symptom name',
+                      hintStyle: TextStyle(fontSize: 14),
+                    ),
+                  ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 30),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     SizedBox(
-                      height: 45,
+                      height: 50,
                       child: OutlinedButton(
                         onPressed: () => Navigator.pop(context),
                         style: OutlinedButton.styleFrom(
                           overlayColor: AppColors.black,
-                          padding: EdgeInsets.symmetric(horizontal: 40),
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
                         ),
-                        child: Text('Cancel',style: TextStyle(color: AppColors.black,fontSize: 14)),
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            color: AppColors.black,
+                            fontSize: 14,
+                          ),
+                        ),
                       ),
                     ),
                     SizedBox(
-                      height: 45,
+                      height: 50,
                       child: ElevatedButton(
-                        onPressed: (){},
+                        onPressed: () => controller.addSymptom(),
                         style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          overlayColor: Colors.white
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                         ),
-                        child: Text(
+                        child: const Text(
                           'Add Symptom',
-                          style: TextStyle(fontSize: 14,color: Colors.white),
+                          style: TextStyle(fontSize: 14, color: Colors.white),
                         ),
                       ),
                     ),

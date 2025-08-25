@@ -1,57 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/common/search_bar/search_bar.dart';
+import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
+import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/notification/notification.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
-
+import '../../features/main/screens/nura_bot/nura_bot.dart';
+import '../../nav_menu.dart';
 import '../../utilities/constants/colors.dart';
 
 class AppBarWithBell extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarWithBell({
-  this.showSearchBar = true,
-    super.key
-  });
+  AppBarWithBell({this.showSearchBar = true, super.key});
 
   final bool showSearchBar;
 
-
-
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 0.5,
+    final _controller = Get.find<NuraBotController>();
+    final _patientController = Get.find<PatientController>();
+    return WillPopScope(
+      onWillPop: ()async{
+        Get.offAll(()=>NavigationMenu());
+        return false;
+      },
       child: Container(
-        height: 110,
-        decoration: BoxDecoration(
-            color: Colors.white
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 10.0,right: 20.0,top: 35),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              showSearchBar?
-              Expanded(child: AppSearchBar(hintText: 'Hey Nura, type to ask anything')):
-                  SizedBox.shrink(),
-              SizedBox(width: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5,),
-                child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.black,width: 0.3)
-                    ),
-                    child: IconButton(onPressed:() => Get.to(() => NotificationScreen()),icon: SvgIcon(AppIcons.notification,color: AppColors.black,size: 25,))),
+        color: Colors.white,
+        padding: const EdgeInsets.only(top: 40, left: 15, right: 15, bottom: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            if (showSearchBar)
+              Expanded(
+                child: AppSearchBar(
+                  hintText: 'Hey Nura, type to ask anything',
+                  textEditingController: _controller.messageController,
+                ),
               ),
-            ],
-          ),
+            if (showSearchBar) const SizedBox(width: 10),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _controller.messageController,
+              builder: (context, value, child) {
+                final hasText = value.text.trim().isNotEmpty;
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: AppColors.black, width: 0.3),
+                  ),
+                  child: IconButton(
+                    onPressed: () async{
+                      if (hasText) {
+                        final focusScope = FocusScope.of(context);
+                        focusScope.unfocus();
+                        await Future.delayed(const Duration(milliseconds: 350));
+                        Get.to(() => const NuraBot(), transition: Transition.rightToLeftWithFade);
+                        _controller.sendBotMessage(patient: _patientController.patient.value);
+                      } else {
+                        Get.to(() => NotificationScreen());
+                      }
+                    },
+                    icon: SvgIcon(
+                      hasText ? AppIcons.send : AppIcons.notification,
+                      color: hasText?AppColors.secondaryColor:AppColors.black,
+                      size: hasText?22:25,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 
   @override
-
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(90);
 }

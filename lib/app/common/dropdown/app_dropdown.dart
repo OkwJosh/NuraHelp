@@ -115,8 +115,7 @@ class AppDropdown extends StatelessWidget {
           items: menuItems.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(
-                value,
+              child: Text(value,
                 style: TextStyle(
                   fontFamily: 'Poppins-ExtraLight',
                   color: Colors.black,

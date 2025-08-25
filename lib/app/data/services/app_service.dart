@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'dart:core';
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
@@ -10,10 +11,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:nurahelp/app/data/models/settings_model/settings_model.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../utilities/exceptions/firebase_exceptions.dart';
 import '../../utilities/exceptions/platform_exceptions.dart';
 import '../models/login_response.dart';
+import '../models/symptom_model.dart';
 
 class AppService {
   static AppService get instance => Get.find();
@@ -92,6 +94,8 @@ class AppService {
   Future<PatientModel> fetchPatientRecord(User? user) async {
     final url = Uri.parse('$baseUrl/patient/auth/v1/profile');
     final response = await http.get(url, headers: await _getHeaders(user));
+    final token = await user?.getIdToken();
+    print('Hey this is the $token');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       return LoginResponse.fromJson(data).patient;
@@ -99,6 +103,8 @@ class AppService {
       throw Exception('Failed to fetch patient record ${response.statusCode}');
     }
   }
+
+
 
   Future<Map<String, dynamic>> updatePatientField({
     User? user,
@@ -145,7 +151,7 @@ class AppService {
     final response = await http.put(
       url,
       headers: await _getHeaders(user),
-      body: json.encode({'setting':settings.toJson()}),
+      body: json.encode({'setting': settings.toJson()}),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
@@ -155,4 +161,76 @@ class AppService {
       );
     }
   }
+
+  Future<SettingsModel> fetchPatientSettings(User? user) async {
+    final url = Uri.parse('$baseUrl/patient/auth/v1/profile');
+    final response = await http.get(url, headers: await _getHeaders(user));
+    final token = await user?.getIdToken();
+    print('Hey this is the $token');
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return LoginResponse.fromJson(data).settings;
+    } else {
+      throw Exception('Failed to fetch patient record ${response.statusCode}');
+    }
+  }
+
+
+  Future<void> savePatientSymptoms(List<SymptomModel> symptoms, User? user) async {
+    final url = Uri.parse('$baseUrl/api/v1/my-symptoms');
+    final response = await http.post(
+      url,
+      headers: await _getHeaders(user),
+      body: jsonEncode({'symptoms': symptoms.map((s) => s.toJson()).toList()}),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception(
+        'Failed to save symptoms. status code = ${response.statusCode}',
+      );
+    }
+  }
+
+  Future<List<SymptomModel>> getPatientSymptoms(User? user, PatientModel patient) async {
+    final url = Uri.parse('$baseUrl/api/v1/patient-symptoms');
+    final response = await http.post(
+      url,
+      headers: await _getHeaders(user),
+      body: jsonEncode({'patientId': patient.id}),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonBody = jsonDecode(response.body);
+
+      if (jsonBody is List) {
+        List<SymptomModel> allSymptoms = [];
+
+        for (var entry in jsonBody) {
+          final symptomsJson = entry['symptoms'] ?? [];
+
+          for (var symptomData in symptomsJson) {
+            if (symptomData is Map<String, dynamic>) {
+              allSymptoms.add(SymptomModel.fromJson(symptomData));
+            }
+          }
+        }
+
+        return allSymptoms;
+      } else {
+        throw Exception('Unexpected response format');
+      }
+    } else {
+      throw Exception('Failed to fetch symptoms. Status code = ${response.statusCode}');
+    }
+  }
+
+
+
+
+
+
+
+
+
 }

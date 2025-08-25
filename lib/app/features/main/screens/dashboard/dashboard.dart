@@ -17,7 +17,7 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarWithBell(showSearchBar: false),
+      appBar: AppBarWithBell(showSearchBar: false),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -26,7 +26,6 @@ class DashboardScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 15),
-
                 Material(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
@@ -97,7 +96,7 @@ class DashboardScreen extends StatelessWidget {
                           final focusScope = FocusScope.of(context);
                           focusScope.unfocus();
                           await Future.delayed(const Duration(milliseconds: 250));
-                          Get.off(() => const NuraBot(), transition: Transition.rightToLeftWithFade);
+                          Get.to(() => const NuraBot(), transition: Transition.rightToLeftWithFade);
                           nuraController.sendBotMessage(patient: controller.patient.value);
                         },
                         onMicButtonPressed: () {},

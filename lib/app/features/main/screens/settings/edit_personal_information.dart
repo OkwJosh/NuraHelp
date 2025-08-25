@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
@@ -15,7 +16,7 @@ class EditPersonalInformation extends StatelessWidget {
   Widget build(BuildContext context) {
     final _controller = Get.find<PatientController>();
 
-    WidgetsBinding.instance.addPostFrameCallback((_){
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.editName.text = _controller.patient.value.name;
       _controller.editEmail.text = _controller.patient.value.email;
       _controller.editPhone.text = _controller.patient.value.phone;
@@ -67,52 +68,103 @@ class EditPersonalInformation extends StatelessWidget {
                               child: Column(
                                 children: [
                                   Obx(
-                            () => Container(
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        border: Border.all(color: Colors.black),
-                                      ),
-                                      child: Padding(
+                                    () => Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: _controller.imageLoading.value
+                                          ? Container(
                                         padding: const EdgeInsets.all(10.0),
-                                        child: _controller.imageLoading.value
-                                            ? AppShimmerEffect(
-                                          height: 130,
-                                          width: 130,
-                                          radius: 130,
-                                        )
-                                            : _controller.patient.value.profilePicture!.isEmpty?Container(
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            border: Border.all(color: Colors.black),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(10.0),
-                                            child: CircleAvatar(
-                                              radius: 60,
-                                              backgroundColor: Colors.white,
-                                              child: SvgIcon(
-                                                AppIcons.profile,
-                                                size: 100,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(100),
+                                          border: Border.all(color: Colors.black)),
+                                              child: const AppShimmerEffect(
+                                                height: 143,
+                                                width: 143,
+                                                radius: 150,
                                               ),
+                                            )
+                                          : Container(
+                                              width: 165,
+                                              height: 165,
+                                              padding: const EdgeInsets.all(
+                                                10.0,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                                border: Border.all(
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              child:
+                                                  _controller
+                                                      .patient
+                                                      .value
+                                                      .profilePicture!
+                                                      .isEmpty
+                                                  ? CircleAvatar(
+                                                      radius: 120,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      child: SvgIcon(
+                                                        AppIcons.profile,
+                                                        size: 100,
+                                                      ),
+                                                    )
+                                                  : ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            90,
+                                                          ),
+                                                      child: CachedNetworkImage(
+                                                        imageUrl: _controller
+                                                            .patient
+                                                            .value
+                                                            .profilePicture!,
+                                                        fit: BoxFit.cover,
+                                                        progressIndicatorBuilder:
+                                                            (
+                                                              context,
+                                                              url,
+                                                              downloadProgress,
+                                                            ) => Container(
+                                                              decoration: BoxDecoration(
+                                                                color: Colors
+                                                                    .white,
+                                                                borderRadius:
+                                                                    BorderRadius.circular(
+                                                                      100,
+                                                                    ),
+                                                                border: Border.all(
+                                                                  color: Colors
+                                                                      .black,
+                                                                ),
+                                                              ),
+                                                              child:
+                                                                  const AppShimmerEffect(
+                                                                    width: 130,
+                                                                    height: 130,
+                                                                    radius: 90,
+                                                                  ),
+                                                            ),
+                                                        errorWidget:
+                                                            (
+                                                              context,
+                                                              url,
+                                                              error,
+                                                            ) => const Icon(
+                                                              Icons.error,
+                                                            ),
+                                                      ),
+                                                    ),
                                             ),
-                                          ),
-                                        ):SizedBox(
-                                          height: 130,
-                                          width: 130,
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(90),
-                                            child: Image.network(
-                                              _controller.patient.value.profilePicture!,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 10),
                                   TextButton(
-                                    onPressed: () => _controller.uploadProfilePicture(),
+                                    onPressed: () =>
+                                        _controller.uploadProfilePicture(),
                                     child: Text(
                                       'Change Profile Picture',
                                       style: TextStyle(
@@ -137,9 +189,7 @@ class EditPersonalInformation extends StatelessWidget {
                             ),
                             TextFormField(
                               controller: _controller.editEmail,
-                              decoration: InputDecoration(
-                                hintText: 'Email',
-                              ),
+                              decoration: InputDecoration(hintText: 'Email'),
                             ),
                             TextFormField(
                               controller: _controller.editPhone,

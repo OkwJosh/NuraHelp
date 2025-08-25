@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
@@ -41,44 +42,45 @@ class ProfileInfoSection extends StatelessWidget {
         ),
         SizedBox(height: 20),
         Obx(
-          ()=> Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.black),
-            ),
-            child: Padding(
+          ()=> Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: _controller.imageLoading.value
+                ? const AppShimmerEffect(
+              height: 170,
+              width: 170,
+              radius: 150,
+            )
+                : Container(
+              width: 165,
+              height: 165,
               padding: const EdgeInsets.all(10.0),
-              child: _controller.imageLoading.value
-                  ? AppShimmerEffect(
-                height: 170,
-                width: 170,
-                radius: 150,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(100),
+                border: Border.all(color: Colors.black),
+              ),
+              child: _controller.patient.value.profilePicture!.isEmpty
+                  ? CircleAvatar(
+                radius: 120,
+                backgroundColor: Colors.white,
+                child: SvgIcon(
+                  AppIcons.profile,
+                  size: 100,
+                ),
               )
-                  : _controller.patient.value.profilePicture!.isEmpty?Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.black),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.white,
-                    child: SvgIcon(
-                      AppIcons.profile,
-                      size: 100,
-                    ),
+                  : ClipRRect(
+                borderRadius: BorderRadius.circular(90),
+                child: CachedNetworkImage(
+                  imageUrl: _controller.patient.value.profilePicture!,
+                  fit: BoxFit.cover,
+                  progressIndicatorBuilder: (context, url, downloadProgress) =>
+                  const AppShimmerEffect(
+                    width: 130,
+                    height: 130,
+                    radius: 90,
                   ),
-                ),
-              ):SizedBox(
-                height: 130,
-                width: 130,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(90),
-                  child: Image.network(
-                    _controller.patient.value.profilePicture!,
-                    fit: BoxFit.cover,
-                  ),
+                  errorWidget: (context, url, error) =>
+                  const Icon(Icons.error),
                 ),
               ),
             ),
@@ -176,13 +178,48 @@ class ProfileInfoSection extends StatelessWidget {
             Row(
               spacing: 5,
               children: [
-                CircleAvatar(
-                  radius: 15,
-                  backgroundColor: Colors.white,
-                  child: SvgIcon(AppIcons.profile),
+                Obx(
+                      ()=> _controller.imageLoading.value
+                          ? const AppShimmerEffect(
+                        height: 50,
+                        width: 50,
+                        radius: 50,
+                      )
+                          : Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: _controller.patient.value.doctor!.profilePicture.isEmpty
+                            ? CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.white,
+                          child: SvgIcon(
+                            AppIcons.profile,
+                            size: 30,
+                          ),
+                        )
+                            : ClipRRect(
+                          borderRadius: BorderRadius.circular(90),
+                          child: CachedNetworkImage(
+                            imageUrl: _controller.patient.value.doctor!.profilePicture,
+                            fit: BoxFit.cover,
+                            progressIndicatorBuilder: (context, url, downloadProgress) =>
+                            const AppShimmerEffect(
+                              width: 100,
+                              height: 100,
+                              radius: 90,
+                            ),
+                            errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                          ),
+                        ),
+                      ),
                 ),
                 Text(
-                  'Dr John Smith',
+                  'Dr ${_controller.patient.value.doctor?.name}',
                   style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 16),
                 ),
               ],
