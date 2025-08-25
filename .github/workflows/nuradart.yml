@@ -1,4 +1,4 @@
-name: Build Latest IPA
+name: Build IPA
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.0'
+          flutter-version: '3.35.1'
           channel: 'stable'
 
       - name: Install CocoaPods
