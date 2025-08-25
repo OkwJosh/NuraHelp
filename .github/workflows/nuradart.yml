@@ -1,13 +1,13 @@
-name: iOS Flutter Setup
+name: Build Latest IPA
 
 on:
   push:
     branches:
       - master
-  workflow_dispatch: # Allows manual trigger
+  workflow_dispatch:
 
 jobs:
-  setup-ios:
+  build-ios:
     runs-on: macos-latest
 
     steps:
@@ -17,16 +17,19 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.0' 
+          flutter-version: '3.22.0'
           channel: 'stable'
 
       - name: Install CocoaPods
         run: sudo gem install cocoapods
 
-      - name: Flutter pub get
-        run: flutter pub get
-
-      - name: Install iOS pods
+      - name: Install dependencies
         run: |
+          flutter pub get
           cd ios
           pod install
+          cd ..
+
+      - name: Build IPA
+        run: |
+          flutter build ipa --release --no-codesign
