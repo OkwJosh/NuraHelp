@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
@@ -8,10 +9,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nurahelp/app/data/models/clinical_response.dart';
+import 'package:nurahelp/app/data/models/message_models/message_model.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:nurahelp/app/data/models/settings_model/settings_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../utilities/exceptions/firebase_exceptions.dart';
 import '../../utilities/exceptions/platform_exceptions.dart';
 import '../models/login_response.dart';
@@ -21,12 +23,13 @@ class AppService {
   static AppService get instance => Get.find();
   final String baseUrl = dotenv.env['NEXT_PUBLIC_API_URL']!;
 
-  Future<Map<String, String>> _getHeaders(User? user) async {
+  Future<Map<String, String>> _getHeaders(User? user,bool acceptValue) async {
     final token = await user?.getIdToken(true);
     return {
       if (token != null) 'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
-      'Accept': '*/*',
+      'Accept': acceptValue == true?'*/*':'application/json',
+
     };
   }
 
@@ -70,30 +73,29 @@ class AppService {
     final url = Uri.parse('$baseUrl/patient/auth/v1/register');
     final response = await http.post(
       url,
-      headers: await _getHeaders(user),
+      headers: await _getHeaders(user,true),
       body: json.encode({
         'name': patient.name,
         'email': patient.email,
         'phone': patient.phone,
-        'age': patient.age,
+        'DOB': patient.DOB?.millisecondsSinceEpoch,
         'profilePicture': patient.profilePicture,
         'inviteCode': patient.inviteCode,
       }),
     );
-
     if (response.statusCode == 200 || response.statusCode == 201) {
       return jsonDecode(response.body);
     } else {
       user?.delete();
       throw Exception(
-        'Failed to save details to db. Status code l= ${response.statusCode}',
+        'Failed to save details to db. Status code = ${response.statusCode}',
       );
     }
   }
 
   Future<PatientModel> fetchPatientRecord(User? user) async {
     final url = Uri.parse('$baseUrl/patient/auth/v1/profile');
-    final response = await http.get(url, headers: await _getHeaders(user));
+    final response = await http.get(url, headers: await _getHeaders(user,true));
     final token = await user?.getIdToken();
     print('Hey this is the $token');
     if (response.statusCode == 200) {
@@ -106,28 +108,31 @@ class AppService {
 
 
 
+
+
   Future<Map<String, dynamic>> updatePatientField({
     User? user,
     PatientModel? patient,
   }) async {
     final url = Uri.parse('$baseUrl/patient/auth/v1/update');
-
     final response = await http.put(
       url,
-      headers: await _getHeaders(user),
-      body: jsonEncode({'setting': patient?.toJson()}),
+      headers: await _getHeaders(user,true),
+      body: jsonEncode({'personalInfo': patient?.toJson()}),
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      return jsonDecode(response.body) as Map<String, dynamic>;
+      return jsonDecode(response.body);
     } else {
       throw Exception(
         'Failed to save details to db. '
-        'Status code = ${response.statusCode}, '
-        'Response body = ${response.body}',
+            'Status code = ${response.statusCode}, '
+            'Response body = ${response.body}',
       );
     }
   }
+
+
 
   Future<String> uploadImage(String path, XFile image) async {
     try {
@@ -150,7 +155,7 @@ class AppService {
     final url = Uri.parse('$baseUrl/patient/auth/v1/update');
     final response = await http.put(
       url,
-      headers: await _getHeaders(user),
+      headers: await _getHeaders(user,true),
       body: json.encode({'setting': settings.toJson()}),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -164,7 +169,7 @@ class AppService {
 
   Future<SettingsModel> fetchPatientSettings(User? user) async {
     final url = Uri.parse('$baseUrl/patient/auth/v1/profile');
-    final response = await http.get(url, headers: await _getHeaders(user));
+    final response = await http.get(url, headers: await _getHeaders(user,true));
     final token = await user?.getIdToken();
     print('Hey this is the $token');
     if (response.statusCode == 200) {
@@ -175,12 +180,35 @@ class AppService {
     }
   }
 
+  Future<List<ChatModel>> fetchConversations(User? user) async{
+    final url = Uri.parse('$baseUrl/chat/v1/conversations');
+    final response = await http.get(url,headers: await _getHeaders(user,true));
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body);
+      final List<dynamic> conversations = data['conversations'];
+      return conversations.map((json) => ChatModel.fromJson(json)).toList();
+    }else{
+      throw Exception('Failed to fetch conversations ${response.statusCode}');
+    }
+  }
+
+  Future<ClinicalResponse> getClinicalData({User? user}) async{
+    final url = Uri.parse('$baseUrl/api/v1/my-info');
+    final response = await http.get(url,headers: await _getHeaders(user,false));
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body);
+      return ClinicalResponse.fromJson(data);
+    }else{
+      throw Exception('Failed to fetch clinical record ${response.statusCode}');
+    }
+  }
+
 
   Future<void> savePatientSymptoms(List<SymptomModel> symptoms, User? user) async {
     final url = Uri.parse('$baseUrl/api/v1/my-symptoms');
     final response = await http.post(
       url,
-      headers: await _getHeaders(user),
+      headers: await _getHeaders(user,true),
       body: jsonEncode({'symptoms': symptoms.map((s) => s.toJson()).toList()}),
     );
     if (response.statusCode == 200 || response.statusCode == 201) {
@@ -196,7 +224,7 @@ class AppService {
     final url = Uri.parse('$baseUrl/api/v1/patient-symptoms');
     final response = await http.post(
       url,
-      headers: await _getHeaders(user),
+      headers: await _getHeaders(user,true),
       body: jsonEncode({'patientId': patient.id}),
     );
 
@@ -224,6 +252,8 @@ class AppService {
       throw Exception('Failed to fetch symptoms. Status code = ${response.statusCode}');
     }
   }
+  
+  
 
 
 

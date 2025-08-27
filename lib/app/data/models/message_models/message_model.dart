@@ -1,8 +1,9 @@
 import 'dart:io';
 
-class MessageModel {
+class ChatModel {
+  String sender;
+  String senderType;
   String message;
-  String status;
   final bool read;
   final DateTime timestamp;
   final File? attachments;
@@ -10,15 +11,28 @@ class MessageModel {
   final String receiver;
   final String receiverType;
 
-  MessageModel({
+  ChatModel({
+    required this.sender,
+    required this.senderType,
     required this.message,
-    required this.status,
     required this.read,
     required this.timestamp,
     required this.attachments,
     this.attachmentType,
     required this.receiver,
     this.receiverType = 'Doctor',
-}
-  );
+  });
+
+
+  factory ChatModel.fromJson(Map<String, dynamic> json){
+    return ChatModel(sender: json['sender'],
+        senderType: json['senderType'],
+        message: json['message'],
+        read: json['read'],
+        timestamp: DateTime.parse(json['timestamp']),
+        attachments: json['attachments'],
+        receiver: json['receiver']
+    );
+  }
+
 }

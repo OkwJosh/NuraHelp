@@ -163,8 +163,8 @@ class EditPersonalInformation extends StatelessWidget {
                                   ),
                                   SizedBox(height: 10),
                                   TextButton(
-                                    onPressed: () =>
-                                        _controller.uploadProfilePicture(),
+                                    onPressed: () async =>
+                                        await _controller.uploadProfilePicture(),
                                     child: Text(
                                       'Change Profile Picture',
                                       style: TextStyle(

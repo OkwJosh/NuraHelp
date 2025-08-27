@@ -5,8 +5,9 @@ import '../../../../../utilities/constants/colors.dart';
 
 class TestResultCard extends StatelessWidget {
   const TestResultCard({
-    super.key,
+    super.key, required this.testName,
   });
+  final String testName;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,7 @@ class TestResultCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Complete Blood Count (CBC)',style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16)),
+              Text(testName,style: TextStyle(fontFamily: 'Poppins-Medium',fontSize: 16)),
               Text('02 Jan,2024',style: TextStyle(fontFamily: 'Poppins-Regular',fontSize: 14,color: AppColors.black300)),
               SizedBox(height: 15),
               Row(

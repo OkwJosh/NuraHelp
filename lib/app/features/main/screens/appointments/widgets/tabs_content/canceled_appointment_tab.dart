@@ -9,16 +9,9 @@ class CanceledAppointmentTabContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Column(
-          children: [
-            AppointmentCard(status: 'canceled',isVirtual: false,showStatus: true),
-            SizedBox(height: 10),
-            AppointmentCard(status: 'canceled',isVirtual: false,showStatus: true),
-            SizedBox(height: 10),
-            AppointmentCard(status: 'canceled',isVirtual: false,showStatus: true),
-            SizedBox(height: 100)
-          ],
-        ),
+        SizedBox(height: 250),
+        Text('No Canceled Appointment'),
+        SizedBox(height: 250),
       ],
     );
   }

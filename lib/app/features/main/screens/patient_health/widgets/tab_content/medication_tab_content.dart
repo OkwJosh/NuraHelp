@@ -4,15 +4,41 @@ import 'package:iconify_flutter_plus/icons/uil.dart';
 import 'package:nurahelp/app/common/custom_switch/custom_switch.dart';
 import 'package:nurahelp/app/common/rounded_containers/rounded_container.dart';
 import 'package:nurahelp/app/common/search_bar/search_bar.dart';
+import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../../utilities/constants/colors.dart';
 
 class MedicationTabContent extends StatelessWidget {
-  const MedicationTabContent({super.key});
+  const MedicationTabContent({super.key, required this.patientController});
+
+  final PatientController patientController;
 
   @override
   Widget build(BuildContext context) {
+    final clinicalResponse = patientController.patient.value.clinicalResponse;
+    if (clinicalResponse?.medications.isEmpty != false) {
+      return Column(
+        children: [
+          const Center(
+            child: Column(
+              children: [
+                SizedBox(height: 150),
+                Text(
+                  'No medications prescribed yet',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Poppins-Regular',
+                    color: AppColors.black300,
+                  ),
+                ),
+                SizedBox(height: 250),
+              ],
+            ),
+          ),
+        ],
+      );
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

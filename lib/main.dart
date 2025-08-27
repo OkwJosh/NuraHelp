@@ -18,13 +18,13 @@ void main() async{
     options: DefaultFirebaseOptions.currentPlatform
   );
 
-  ZegoUIKitPrebuiltCallInvitationService().init(
-    appID: 645029584,
-    appSign: '349504939c5810841a10596660c089d443c47262051760251344d4aa0fe3e62d',
-    userID: 'joshie',
-    userName: 'Joshua Okwoli',
-    plugins: [ZegoUIKitSignalingPlugin()],
-  );
+  // ZegoUIKitPrebuiltCallInvitationService().init(
+  //   appID: 645029584,
+  //   appSign: '349504939c5810841a10596660c089d443c47262051760251344d4aa0fe3e62d',
+  //   userID: 'joshie',
+  //   userName: 'Joshua Okwoli',
+  //   plugins: [ZegoUIKitSignalingPlugin()],
+  // );
 
   await dotenv.load(fileName: '.env');
   Get.put(AppService(),permanent: true);

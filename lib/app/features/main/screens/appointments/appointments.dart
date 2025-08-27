@@ -1,5 +1,8 @@
 import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_content/canceled_appointment_tab.dart';
 import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_content/pending_appointment_tab.dart';
 import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_content/upcoming_appointment_tab.dart';
@@ -9,7 +12,9 @@ import '../../../../data/models/patient_model.dart';
 
 
 class AppointmentsScreen extends StatelessWidget {
-  const AppointmentsScreen({super.key});
+  AppointmentsScreen({super.key});
+
+  final _controller = Get.find<PatientController>();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +31,7 @@ class AppointmentsScreen extends StatelessWidget {
                 child: Column(
                   children: [
                       DefaultTabController(
-                        length: 3,
+                        length: 2,
                         child: Column(
                           children: [
                             Container(
@@ -41,7 +46,7 @@ class AppointmentsScreen extends StatelessWidget {
                                 unselectedLabelColor: Colors.grey[600],
                                 tabs: const [
                                   Tab(child: Text('Upcoming',style: TextStyle(fontFamily: 'Poppins-Regular'))),
-                                  Tab(child: Text('Pending',style: TextStyle(fontFamily: 'Poppins-Regular'),)),
+                                  // Tab(child: Text('Pending',style: TextStyle(fontFamily: 'Poppins-Regular'),)),
                                   Tab(child: Text('Canceled',style: TextStyle(fontFamily: 'Poppins-Regular'),)),
                                 ],
                               ),
@@ -49,11 +54,9 @@ class AppointmentsScreen extends StatelessWidget {
                             SizedBox(height: 16),
                             AutoScaleTabBarView(
                               children: [
-                                // Tab 1: Overview
-                                UpcomingAppointmentTabContent(),
-                                // Tab 2: Test Result
-                                PendingAppointmentTabContent(),
-                                // Tab 3: Medication
+
+                                UpcomingAppointmentTabContent(patientController: _controller),
+                                // PendingAppointmentTabContent(),
                                 CanceledAppointmentTabContent(),
                               ],
                             ),

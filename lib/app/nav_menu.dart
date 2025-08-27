@@ -450,6 +450,6 @@ class NavigationController extends GetxController {
     PatientHealthScreen(),
     const DoctorsScreen(),
     const SymptomInsightsScreen(),
-    const AppointmentsScreen(),
+    AppointmentsScreen(),
   ];
 }

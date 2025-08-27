@@ -52,6 +52,7 @@ class SymptomInsightsScreen extends StatelessWidget {
                           () => ListView.separated(
                         shrinkWrap: true,
                         padding: EdgeInsets.zero,
+                        physics: NeverScrollableScrollPhysics(),
                         itemCount: _controller.uniqueSymptoms.length, // Use unique symptoms
                         separatorBuilder: (_, __) => SizedBox(height: 10),
                         itemBuilder: (context, index) {

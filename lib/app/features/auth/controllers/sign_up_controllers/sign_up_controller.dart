@@ -30,15 +30,7 @@ class SignUpController extends GetxController {
   final patientController = Get.find<PatientController>();
   final appService = AppService.instance;
 
-  int _getAge(DateTime? date) {
-    int dateNow =
-        (DateTime.now().microsecondsSinceEpoch / (31.536 * math.pow(10, 12)))
-            .toInt();
-    int dateThen = (date!.microsecondsSinceEpoch / (31.536 * math.pow(10, 12)))
-        .toInt();
 
-    return dateNow - dateThen;
-  }
 
 
   void signUpWithEmailAndPassword() async {
@@ -72,10 +64,9 @@ class SignUpController extends GetxController {
         name: fullName.text.trim(),
         email: email.text.trim(),
         phone: phoneNumber.text.trim(),
-        age: _getAge(submittedDate.value),
+        DOB: submittedDate.value,
         profilePicture: '',
         inviteCode: invitationCode.text.trim(),
-        birthInfo: submittedDate.value,
       );
       await appService.savePatientRecord(
         patient,
@@ -94,12 +85,10 @@ class SignUpController extends GetxController {
         transition: Transition.rightToLeft,
       );
     } catch (e) {
-      // Clean up Firebase user if it was created but savePatientRecord failed
       if (createdUser != null) {
         try {
           await createdUser.delete();
         } catch (deleteError) {
-          // Log the delete error but don't throw it
           print(
             'Failed to delete user after registration failure: $deleteError',
           );

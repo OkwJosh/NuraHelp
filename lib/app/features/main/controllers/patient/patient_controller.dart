@@ -1,7 +1,10 @@
+import 'dart:math' as math;
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nurahelp/app/data/models/clinical_response.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/notification_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/security_model.dart';
@@ -19,6 +22,7 @@ class PatientController extends GetxController {
   final imageLoading = false.obs;
   Rx<PatientModel> patient = PatientModel.empty().obs;
   Rx<SettingsModel> settings = SettingsModel.empty().obs;
+  // Rx<ClinicalResponse> clinicResponse = ClinicalResponse.empty().obs;
   Rx<bool> proceedToDashboardIsClicked = false.obs;
   Rx<bool> enableHeyNuraVoice = false.obs;
   final appService = AppService.instance;
@@ -45,6 +49,16 @@ class PatientController extends GetxController {
     final token = await FirebaseAuth.instance.currentUser?.getIdToken();
     print('Hey this is the token $token');
 
+  }
+
+  int getAge(DateTime? date) {
+    int dateNow =
+    (DateTime.now().microsecondsSinceEpoch / (31.536 * math.pow(10, 12)))
+        .toInt();
+    int dateThen = (date!.microsecondsSinceEpoch / (31.536 * math.pow(10, 12)))
+        .toInt();
+
+    return dateNow - dateThen;
   }
 
 
@@ -83,10 +97,11 @@ class PatientController extends GetxController {
         imageLoading.value = true;
         final currentUser = FirebaseAuth.instance.currentUser;
         final token = await currentUser?.getIdToken();
-        print('Hey this is the token $token');
+        print('Hey this !!!!!!!!!!!!!!!!!! is the token $token');
         final imageUrl = await appService.uploadImage('Patient/Profile/', image);
         patient.value.profilePicture = imageUrl;
         patient.refresh();
+        print('This is it${patient.value.profilePicture}');
         await appService.updatePatientField(user: currentUser,patient: patient.value);
         AppToasts.successSnackBar(title: 'Congratulations',
             message: 'Your profile image has been updated');
@@ -109,7 +124,16 @@ class PatientController extends GetxController {
   }
 
 
-  void proceedToDashboard() {
+  Future<void> proceedToDashboard() async {
+    final isConnected = await AppNetworkManager.instance.isConnected();
+    if (!isConnected) {
+      AppScreenLoader.stopLoading();
+      AppToasts.warningSnackBar(
+        title: 'No Internet Connection',
+        message: 'Connect to the internet to continue',
+      );
+      return;
+    }
     try {
       AppScreenLoader.openLoadingDialog('Setting up ');
       if (!onboardingFormKey.currentState!.validate() ||
@@ -117,6 +141,14 @@ class PatientController extends GetxController {
         AppScreenLoader.stopLoading();
         return;
       }
+      final currentUser = FirebaseAuth.instance.currentUser;
+      final newPatient = await appService.fetchPatientRecord(currentUser);
+      final settings = await appService.fetchPatientSettings(currentUser);
+
+      patient.value = newPatient;
+      enableMessageAlerts.value = settings.notifications.messageAlerts;
+      enableAppointmentReminders.value = settings.notifications.appointmentReminders;
+      enable2Fa.value = settings.security.twoFactorAuth;
       Get.offAll(() => NavigationMenu(), duration: Duration(seconds: 0));
     } catch (e) {
       AppScreenLoader.stopLoading();
@@ -124,7 +156,6 @@ class PatientController extends GetxController {
     }
   }
 
-  //
   void saveSettings() async {
     final user = FirebaseAuth.instance.currentUser;
     try {

@@ -42,7 +42,7 @@ class PatientInfoHeader extends StatelessWidget {
                     ),
                     SizedBox(width: 10),
                     Text(
-                      'Age ${patientController.patient.value.age}',
+                      'Age ${patientController.getAge(patientController.patient.value.DOB)}',
                       style: TextStyle(
                         fontFamily: 'Poppins-Regular',
                         fontSize: 14,

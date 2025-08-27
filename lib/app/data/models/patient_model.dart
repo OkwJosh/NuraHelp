@@ -1,3 +1,4 @@
+import 'package:nurahelp/app/data/models/clinical_response.dart';
 import 'package:nurahelp/app/data/models/doctor_model.dart';
 
 class PatientModel {
@@ -5,22 +6,22 @@ class PatientModel {
   String name;
   String email;
   String phone;
-  int? age;
+  DateTime? DOB;
   String? profilePicture;
   final String? inviteCode;
-  DateTime? birthInfo;
   DoctorModel? doctor;
+  ClinicalResponse? clinicalResponse;
 
   PatientModel({
     this.id,
     required this.name,
     required this.email,
     required this.phone,
-    this.age,
+    this.DOB,
     this.profilePicture,
     this.inviteCode,
-    this.birthInfo,
-    this.doctor
+    this.doctor,
+    this.clinicalResponse
   });
 
   List<String>? get nameParts => name.split(' ');
@@ -37,10 +38,9 @@ class PatientModel {
         name: '',
         email: '',
         phone: '',
-        age: 0,
+        DOB: DateTime.now(),
         profilePicture: '',
         inviteCode: '',
-
       );
 
   Map<String, dynamic> toJson() {
@@ -48,7 +48,7 @@ class PatientModel {
       'name': name,
       'email': email,
       'phone': phone,
-      'age': age,
+      'DOB': DOB?.millisecondsSinceEpoch,
       'profilePicture': profilePicture,
       'inviteCode': inviteCode,
     };
@@ -60,7 +60,7 @@ class PatientModel {
         name: json['name'],
         email: json['email'],
         phone: json['phone'],
-        age: json['age'],
+        DOB: DateTime.parse(json['DOB']),
         doctor: DoctorModel.fromJson(json['doctor']),
         profilePicture: json['profilePicture'],
     );

@@ -1,7 +1,7 @@
 import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/patient_info_header.dart';
@@ -83,10 +83,12 @@ class PatientHealthScreen extends StatelessWidget {
 
                       /// ✅ Tab Content
                       AutoScaleTabBarView(
-                        children: const [
-                          OverviewTabContent(),
-                          TestResultTabContent(),
-                          MedicationTabContent(),
+                        physics: AlwaysScrollableScrollPhysics(),
+                        dragStartBehavior: DragStartBehavior.start,
+                        children: [
+                          OverviewTabContent(patientController: _controller,),
+                          TestResultTabContent(patientController: _controller,),
+                          MedicationTabContent(patientController:_controller),
                         ],
                       ),
                     ],

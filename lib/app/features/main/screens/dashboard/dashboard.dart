@@ -64,11 +64,7 @@ class DashboardScreen extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      AppointmentCard(),
-                      const SizedBox(width: 10),
-                      AppointmentCard(),
-                      const SizedBox(width: 10),
-                      AppointmentCard(),
+                      AppointmentCard(patientController: controller,isVirtual: false,),
                     ],
                   ),
                 ),
