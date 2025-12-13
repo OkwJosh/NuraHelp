@@ -1,16 +1,14 @@
-# nurahelp
+# NURAHELP MOBILE APP
 
-A new Flutter project.
+NURAHELP IS A TELEMEDICINE PLATFORM, WHERE DOCTORS AND PATIENTS CAN SEAMLESSLY INTERACT
 
-## Getting Started
+## FEATURES OF NURAHELP
 
-This project is a starting point for a Flutter application.
+- View/Book appointment
+- View Medical Records
+- Gain AI Insights about your records
+- Chat/Video Call with your appointed doctor
+  
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Check the Screenshots in the Screenshots folder
