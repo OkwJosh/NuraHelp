@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 class CallScreen extends StatelessWidget {
   const CallScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ZegoUIKitPrebuiltCall(
-      appID: 645029584,
-      appSign:
-          '349504939c5810841a10596660c089d443c47262051760251344d4aa0fe3e62d',
-      userName: 'Joshua',
-      callID: '123776',
-      userID: 'joshieishim',
-      config: ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall(),
-    );
+    return Placeholder();
   }
 }
 

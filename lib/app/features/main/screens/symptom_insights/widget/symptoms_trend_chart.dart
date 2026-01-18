@@ -11,59 +11,83 @@ class SymptomTrendChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () {
-        controller.chartTrigger.value;
-          return Column(
-            children: [
-              AspectRatio(
-                aspectRatio: 1.3,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 18,
-                    left: 12,
-                    top: 24,
-                    bottom: 12,
-                  ),
-                  child: LineChart(mainData()),
-                ),
+    return Obx(() {
+      controller.chartTrigger.value;
+      return Column(
+        children: [
+          AspectRatio(
+            aspectRatio: 1.3,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 18,
+                left: 12,
+                top: 24,
+                bottom: 12,
               ),
-              SizedBox(height: 10),
-            ],
-          );
-        }
-    );
+              child: LineChart(mainData()),
+            ),
+          ),
+          SizedBox(height: 10),
+        ],
+      );
+    });
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(fontFamily: 'Poppins-Medium', fontSize: 10);
     Widget text;
-    switch (value.toInt()) {
-      case 1:
-        text = const Text('MON', style: style);
-        break;
-      case 3:
-        text = const Text('TUE', style: style);
-        break;
-      case 5:
-        text = const Text('WED', style: style);
-        break;
-      case 7:
-        text = const Text('THU', style: style);
-        break;
-      case 9:
-        text = const Text('FRI', style: style);
-        break;
-      case 11:
-        text = const Text('SAT', style: style);
-        break;
-      case 13:
-        text = const Text('SUN', style: style);
-        break;
 
-      default:
-        text = const Text('', style: style);
-        break;
+    // Show different labels based on view mode
+    if (controller.isMonthlyView.value) {
+      // Monthly view: show week numbers or dates
+      switch (value.toInt()) {
+        case 0:
+          text = const Text('W1', style: style);
+          break;
+        case 3:
+          text = const Text('W2', style: style);
+          break;
+        case 6:
+          text = const Text('W3', style: style);
+          break;
+        case 9:
+          text = const Text('W4', style: style);
+          break;
+        case 13:
+          text = const Text('W5', style: style);
+          break;
+        default:
+          text = const Text('', style: style);
+          break;
+      }
+    } else {
+      // Daily view: show weekday names
+      switch (value.toInt()) {
+        case 1:
+          text = const Text('MON', style: style);
+          break;
+        case 3:
+          text = const Text('TUE', style: style);
+          break;
+        case 5:
+          text = const Text('WED', style: style);
+          break;
+        case 7:
+          text = const Text('THU', style: style);
+          break;
+        case 9:
+          text = const Text('FRI', style: style);
+          break;
+        case 11:
+          text = const Text('SAT', style: style);
+          break;
+        case 13:
+          text = const Text('SUN', style: style);
+          break;
+        default:
+          text = const Text('', style: style);
+          break;
+      }
     }
 
     return SideTitleWidget(

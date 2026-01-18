@@ -49,24 +49,46 @@ class SymptomInsightsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
                     Obx(
-                          () => ListView.separated(
+                      () => ListView.separated(
                         shrinkWrap: true,
                         padding: EdgeInsets.zero,
                         physics: NeverScrollableScrollPhysics(),
-                        itemCount: _controller.uniqueSymptoms.length, // Use unique symptoms
+                        itemCount: _controller
+                            .uniqueSymptoms
+                            .length, // Use unique symptoms
                         separatorBuilder: (_, __) => SizedBox(height: 10),
                         itemBuilder: (context, index) {
-                          final symptom = _controller.uniqueSymptoms[index]; // Use unique symptoms
+                          final symptom = _controller
+                              .uniqueSymptoms[index]; // Use unique symptoms
                           return SymptomDropdown(
                             symptomName: symptom.symptomName,
                             selectedValue: symptom.value.toString(),
-                            menuItems: ['0','1','2','3','4','5','6','7','8','9','10'],
+                            menuItems: [
+                              '0',
+                              '1',
+                              '2',
+                              '3',
+                              '4',
+                              '5',
+                              '6',
+                              '7',
+                              '8',
+                              '9',
+                              '10',
+                            ],
                             onChanged: (value) {
                               if (value != null) {
                                 // Find and update ALL instances of this symptom name
-                                for (int i = 0; i < _controller.symptoms.length; i++) {
-                                  if (_controller.symptoms[i].symptomName == symptom.symptomName) {
-                                    _controller.symptoms[i].value = int.parse(value);
+                                for (
+                                  int i = 0;
+                                  i < _controller.symptoms.length;
+                                  i++
+                                ) {
+                                  if (_controller.symptoms[i].symptomName ==
+                                      symptom.symptomName) {
+                                    _controller.symptoms[i].value = int.parse(
+                                      value,
+                                    );
                                   }
                                 }
                                 _controller.symptoms.refresh();
@@ -137,41 +159,47 @@ class SymptomInsightsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0,
-                          vertical: 10,
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Symptom Trends',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 35,
-                              width: 90,
-                              child: CustomSwitch(
-                                firstOptionText: '1W',
-                                secondOptionText: '1M',
-                              ),
-                            ),
-                          ],
-                        ),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0,
+                        vertical: 10,
                       ),
-                      SymptomTrendChart(controller: _controller),
-                      const SizedBox(height: 5),
-                      _buildTrendLegend(context, controller: _controller),
-                    ],
-                  ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Symptom Trends',
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 20,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 35,
+                            width: 90,
+                            child: CustomSwitch(
+                              firstOptionText: '1W',
+                              secondOptionText: '1M',
+                              onChanged: (option) {
+                                // option 1 = 1W (daily), option 2 = 1M (monthly)
+                                _controller.isMonthlyView.value = (option == 2);
+                                _controller.generateSpots(_controller.symptoms);
+                                _controller.chartTrigger.value++;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SymptomTrendChart(controller: _controller),
+                    const SizedBox(height: 5),
+                    _buildTrendLegend(context, controller: _controller),
+                  ],
                 ),
               ),
+            ),
             const SizedBox(height: 10),
 
             // // Symptom Insights List
@@ -206,7 +234,7 @@ class SymptomInsightsScreen extends StatelessWidget {
     required SymptomInsightController controller,
   }) {
     return Obx(
-      ()=> GridView.builder(
+      () => GridView.builder(
         shrinkWrap: true,
 
         physics: NeverScrollableScrollPhysics(),
@@ -223,20 +251,28 @@ class SymptomInsightsScreen extends StatelessWidget {
 
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!controller.symptomColors.containsKey(symptom)) {
-              controller.symptomColors[symptom] = controller.assignColorForSymptom(symptom);
+              controller.symptomColors[symptom] = controller
+                  .assignColorForSymptom(symptom);
               controller.symptomColors.refresh();
             }
           });
           return Obx(
             () => Row(
               children: [
-                CircleAvatar(radius: 7, backgroundColor:controller.symptomColors[symptom] ?? Colors.grey),
+                CircleAvatar(
+                  radius: 7,
+                  backgroundColor:
+                      controller.symptomColors[symptom] ?? Colors.grey,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     symptom,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 14, fontFamily: 'Poppins-Regular'),
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontFamily: 'Poppins-Regular',
+                    ),
                   ),
                 ),
               ],
@@ -246,8 +282,6 @@ class SymptomInsightsScreen extends StatelessWidget {
       ),
     );
   }
-
-
 }
 
 void addNewSymptom(BuildContext context, SymptomInsightController controller) {

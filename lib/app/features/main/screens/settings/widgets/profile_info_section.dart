@@ -42,48 +42,43 @@ class ProfileInfoSection extends StatelessWidget {
         ),
         SizedBox(height: 20),
         Obx(
-          ()=> Padding(
+          () => Padding(
             padding: const EdgeInsets.all(10.0),
             child: _controller.imageLoading.value
-                ? const AppShimmerEffect(
-              height: 170,
-              width: 170,
-              radius: 150,
-            )
+                ? const AppShimmerEffect(height: 170, width: 170, radius: 150)
                 : Container(
-              width: 165,
-              height: 165,
-              padding: const EdgeInsets.all(10.0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(100),
-                border: Border.all(color: Colors.black),
-              ),
-              child: _controller.patient.value.profilePicture!.isEmpty
-                  ? CircleAvatar(
-                radius: 120,
-                backgroundColor: Colors.white,
-                child: SvgIcon(
-                  AppIcons.profile,
-                  size: 100,
-                ),
-              )
-                  : ClipRRect(
-                borderRadius: BorderRadius.circular(90),
-                child: CachedNetworkImage(
-                  imageUrl: _controller.patient.value.profilePicture!,
-                  fit: BoxFit.cover,
-                  progressIndicatorBuilder: (context, url, downloadProgress) =>
-                  const AppShimmerEffect(
-                    width: 130,
-                    height: 130,
-                    radius: 90,
+                    width: 165,
+                    height: 165,
+                    padding: const EdgeInsets.all(10.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(100),
+                      border: Border.all(color: Colors.black),
+                    ),
+                    child: _controller.patient.value.profilePicture!.isEmpty
+                        ? CircleAvatar(
+                            radius: 120,
+                            backgroundColor: Colors.white,
+                            child: SvgIcon(AppIcons.profile, size: 100),
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(90),
+                            child: CachedNetworkImage(
+                              imageUrl:
+                                  _controller.patient.value.profilePicture!,
+                              fit: BoxFit.cover,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) =>
+                                      const AppShimmerEffect(
+                                        width: 130,
+                                        height: 130,
+                                        radius: 90,
+                                      ),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                            ),
+                          ),
                   ),
-                  errorWidget: (context, url, error) =>
-                  const Icon(Icons.error),
-                ),
-              ),
-            ),
           ),
         ),
         SizedBox(height: 15),
@@ -165,7 +160,7 @@ class ProfileInfoSection extends StatelessWidget {
         SizedBox(height: 15),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 15,
+          spacing: _controller.patient.value.doctor == null ? 5 : 10,
           children: [
             Text(
               'Linked Doctor(s)',
@@ -175,54 +170,94 @@ class ProfileInfoSection extends StatelessWidget {
                 fontSize: 15,
               ),
             ),
-            Row(
-              spacing: 5,
-              children: [
-                Obx(
-                      ()=> _controller.imageLoading.value
-                          ? const AppShimmerEffect(
-                        height: 50,
-                        width: 50,
-                        radius: 50,
-                      )
-                          : Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(100),
+            Builder(
+              builder: (context) {
+                if (_controller.patient.value.doctor == null) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('No Linked Doctors yet'),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 8,
+                          ),
                         ),
-                        child: _controller.patient.value.doctor!.profilePicture.isEmpty
-                            ? CircleAvatar(
-                          radius: 30,
-                          backgroundColor: Colors.white,
-                          child: SvgIcon(
-                            AppIcons.profile,
-                            size: 30,
-                          ),
-                        )
-                            : ClipRRect(
-                          borderRadius: BorderRadius.circular(90),
-                          child: CachedNetworkImage(
-                            imageUrl: _controller.patient.value.doctor!.profilePicture,
-                            fit: BoxFit.cover,
-                            progressIndicatorBuilder: (context, url, downloadProgress) =>
-                            const AppShimmerEffect(
-                              width: 100,
-                              height: 100,
-                              radius: 90,
-                            ),
-                            errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                          ),
+                        onPressed: () =>
+                            _controller.showLinkDoctorBottomSheet(context),
+                        child: Text(
+                          'Link Now',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
-                ),
-                Text(
-                  'Dr ${_controller.patient.value.doctor?.name}',
-                  style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 16),
-                ),
-              ],
+                    ],
+                  );
+                }
+                return Row(
+                  spacing: 5,
+                  children: [
+                    Obx(() {
+                      return _controller.imageLoading.value
+                          ? const AppShimmerEffect(
+                              height: 50,
+                              width: 50,
+                              radius: 50,
+                            )
+                          : Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(100),
+                              ),
+                              child:
+                                  _controller
+                                      .patient
+                                      .value
+                                      .doctor!
+                                      .profilePicture
+                                      .isEmpty
+                                  ? CircleAvatar(
+                                      radius: 30,
+                                      backgroundColor: Colors.white,
+                                      child: SvgIcon(
+                                        AppIcons.profile,
+                                        size: 30,
+                                      ),
+                                    )
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(90),
+                                      child: CachedNetworkImage(
+                                        imageUrl: _controller
+                                            .patient
+                                            .value
+                                            .doctor!
+                                            .profilePicture,
+                                        fit: BoxFit.cover,
+                                        progressIndicatorBuilder:
+                                            (context, url, downloadProgress) =>
+                                                const AppShimmerEffect(
+                                                  width: 100,
+                                                  height: 100,
+                                                  radius: 90,
+                                                ),
+                                        errorWidget: (context, url, error) =>
+                                            const Icon(Icons.error),
+                                      ),
+                                    ),
+                            );
+                    }),
+                    Text(
+                      'Dr ${_controller.patient.value.doctor?.name}',
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Medium',
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),

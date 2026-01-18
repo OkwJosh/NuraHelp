@@ -1,10 +1,7 @@
 import 'dart:math' as math;
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:nurahelp/app/data/models/clinical_response.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/notification_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/security_model.dart';
@@ -14,10 +11,14 @@ import 'package:nurahelp/app/utilities/loaders/loaders.dart';
 import 'package:nurahelp/app/utilities/popups/screen_loader.dart';
 import '../../../../data/services/app_service.dart';
 import '../../../../nav_menu.dart';
+import 'package:flutter/material.dart';
+import 'package:nurahelp/app/utilities/constants/colors.dart';
+import 'package:nurahelp/app/utilities/constants/icons.dart';
+import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
+import 'package:nurahelp/app/utilities/validators/validation.dart';
 
 class PatientController extends GetxController {
   static PatientController get instance => Get.find();
-
 
   final imageLoading = false.obs;
   Rx<PatientModel> patient = PatientModel.empty().obs;
@@ -34,12 +35,14 @@ class PatientController extends GetxController {
   final TextEditingController editName = TextEditingController();
   final TextEditingController editEmail = TextEditingController();
   final TextEditingController editPhone = TextEditingController();
-
+  final formKey = GlobalKey<FormState>();
+  final doctorCodeController = TextEditingController();
 
   @override
-  void onInit(){
+  void onInit() {
     super.onInit();
-    enableAppointmentReminders.value = settings.value.notifications.appointmentReminders;
+    enableAppointmentReminders.value =
+        settings.value.notifications.appointmentReminders;
     enableMessageAlerts.value = settings.value.notifications.messageAlerts;
     enable2Fa.value = settings.value.security.twoFactorAuth;
     _initializeController();
@@ -47,41 +50,37 @@ class PatientController extends GetxController {
 
   Future<void> _initializeController() async {
     final token = await FirebaseAuth.instance.currentUser?.getIdToken();
-    print('Hey this is the token $token');
-
   }
 
   int getAge(DateTime? date) {
     int dateNow =
-    (DateTime.now().microsecondsSinceEpoch / (31.536 * math.pow(10, 12)))
-        .toInt();
+        (DateTime.now().microsecondsSinceEpoch / (31.536 * math.pow(10, 12)))
+            .toInt();
     int dateThen = (date!.microsecondsSinceEpoch / (31.536 * math.pow(10, 12)))
         .toInt();
 
     return dateNow - dateThen;
   }
 
-
   @override
-  void onReady(){
+  void onReady() {
     super.onReady();
-    if(patient != null){
+    if (patient != null) {
       editName.text = patient.value.name;
       editEmail.text = patient.value.email;
       editPhone.text = patient.value.phone;
     }
   }
 
-
-  formatDate(DateTime? date){
+  formatDate(DateTime? date) {
     String dateSuffix;
-    if(date?.day == 1 || date?.day == 21 || date?.day == 31){
+    if (date?.day == 1 || date?.day == 21 || date?.day == 31) {
       dateSuffix = 'st';
-    }else if(date?.day == 2 || date?.day == 22){
+    } else if (date?.day == 2 || date?.day == 22) {
       dateSuffix = 'nd';
-    }else if(date?.day == 3 || date?.day == 23){
+    } else if (date?.day == 3 || date?.day == 23) {
       dateSuffix = 'rd';
-    }else{
+    } else {
       dateSuffix = 'th';
     }
     return '${date?.day}$dateSuffix ${date?.month}, ${date?.year}';
@@ -89,40 +88,49 @@ class PatientController extends GetxController {
 
   uploadProfilePicture() async {
     try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery,
-          imageQuality: 70,
-          maxHeight: 512,
-          maxWidth: 512);
+      final image = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70,
+        maxHeight: 512,
+        maxWidth: 512,
+      );
       if (image != null) {
         imageLoading.value = true;
         final currentUser = FirebaseAuth.instance.currentUser;
         final token = await currentUser?.getIdToken();
-        print('Hey this !!!!!!!!!!!!!!!!!! is the token $token');
-        final imageUrl = await appService.uploadImage('Patient/Profile/', image);
+        final imageUrl = await appService.uploadImage(
+          'Patient/Profile/',
+          image,
+        );
         patient.value.profilePicture = imageUrl;
         patient.refresh();
-        print('This is it${patient.value.profilePicture}');
-        await appService.updatePatientField(user: currentUser,patient: patient.value);
-        AppToasts.successSnackBar(title: 'Congratulations',
-            message: 'Your profile image has been updated');
+        await appService.updatePatientField(
+          user: currentUser,
+          patient: patient.value,
+        );
+        AppToasts.successSnackBar(
+          title: 'Congratulations',
+          message: 'Your profile image has been updated',
+        );
       }
     } catch (e) {
       AppToasts.errorSnackBar(
-          title: 'Oh Snap', message: 'Something went wrong $e');
-    }
-    finally {
+        title: 'Oh Snap',
+        message: 'Something went wrong $e',
+      );
+    } finally {
       imageLoading.value = false;
     }
   }
 
-  updatePersonalInfo() async{
-    try{
-
-    }catch(e){
-      AppToasts.errorSnackBar(title: 'Oh Snap', message: 'Something went wrong $e');
+  updatePersonalInfo() async {
+    try {} catch (e) {
+      AppToasts.errorSnackBar(
+        title: 'Oh Snap',
+        message: 'Something went wrong $e',
+      );
     }
   }
-
 
   Future<void> proceedToDashboard() async {
     final isConnected = await AppNetworkManager.instance.isConnected();
@@ -147,12 +155,15 @@ class PatientController extends GetxController {
 
       patient.value = newPatient;
       enableMessageAlerts.value = settings.notifications.messageAlerts;
-      enableAppointmentReminders.value = settings.notifications.appointmentReminders;
+      enableAppointmentReminders.value =
+          settings.notifications.appointmentReminders;
       enable2Fa.value = settings.security.twoFactorAuth;
       Get.offAll(() => NavigationMenu(), duration: Duration(seconds: 0));
     } catch (e) {
       AppScreenLoader.stopLoading();
-      throw AppToasts.errorSnackBar(title: 'Something went wrong ${e.toString()}');
+      throw AppToasts.errorSnackBar(
+        title: 'Something went wrong ${e.toString()}',
+      );
     }
   }
 
@@ -162,24 +173,27 @@ class PatientController extends GetxController {
       AppScreenLoader.openLoadingDialog('Saving setting');
       final token = await user?.getIdToken();
       print('Hey this is the token $token');
-      final newSettings = SettingsModel(notifications: NotificationModel(
+      final newSettings = SettingsModel(
+        notifications: NotificationModel(
           appointmentReminders: enableAppointmentReminders.value,
-          messageAlerts: enableMessageAlerts.value),
-          security: SecurityModel(twoFactorAuth: enable2Fa.value));
+          messageAlerts: enableMessageAlerts.value,
+        ),
+        security: SecurityModel(twoFactorAuth: enable2Fa.value),
+      );
       print(newSettings.notifications.appointmentReminders);
       print(newSettings.notifications.messageAlerts);
       print(newSettings.security.twoFactorAuth);
-      await appService.savePatientSettings(newSettings,user);
+      await appService.savePatientSettings(newSettings, user);
       print('This is the settings ${settings}');
       AppScreenLoader.stopLoading();
       AppToasts.successSnackBar(title: 'Settings has been saved!');
-    }catch(e){
+    } catch (e) {
       AppScreenLoader.stopLoading();
       AppToasts.errorSnackBar(title: 'Something went wrong ${e.toString()}');
     }
   }
 
-  void savePersonalInfo() async{
+  void savePersonalInfo() async {
     final user = FirebaseAuth.instance.currentUser;
     try {
       AppScreenLoader.openLoadingDialog('Saving Personal Info');
@@ -188,14 +202,156 @@ class PatientController extends GetxController {
       patient.value.phone = editPhone.text.trim();
       patient.refresh();
       final newPatient = patient.value;
-      await appService.updatePatientField(user: user,patient: newPatient);
+      await appService.updatePatientField(user: user, patient: newPatient);
       AppScreenLoader.stopLoading();
       AppToasts.successSnackBar(title: 'Personal Info has been saved!');
-    }catch(e){
+    } catch (e) {
       AppScreenLoader.stopLoading();
       AppToasts.errorSnackBar(title: 'Something went wrong ${e.toString()}');
     }
   }
 
+  Future<void> linkDoctor(String inviteCode) async {
+    final user = FirebaseAuth.instance.currentUser;
+    try {
+      AppScreenLoader.openLoadingDialog('Linking Doctor');
+      await appService.linkDoctorToPatient(inviteCode, user);
+      final updatedPatient = await appService.fetchPatientRecord(user);
+      patient.value = updatedPatient;
+      patient.refresh();
+      AppScreenLoader.stopLoading();
+      AppToasts.successSnackBar(title: 'Doctor has been linked successfully!');
+    } catch (e) {
+      AppScreenLoader.stopLoading();
+      AppToasts.errorSnackBar(title: 'Something went wrong ${e.toString()}');
+    }
+  }
 
+  void showLinkDoctorBottomSheet(BuildContext context) {
+    final _controller = Get.find<PatientController>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            left: 20,
+            right: 20,
+            top: 20,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    SvgIcon(AppIcons.health, size: 30),
+                    const SizedBox(width: 10),
+                    const Text(
+                      'Link Doctor',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Poppins-SemiBold',
+                        color: AppColors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  'Enter your doctor\'s unique code to link them to your account',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Poppins-Regular',
+                    color: AppColors.black300,
+                  ),
+                ),
+                const SizedBox(height: 25),
+                Form(
+                  key: _controller.formKey,
+                  child: TextFormField(
+                    controller: _controller.doctorCodeController,
+                    validator: (value) =>
+                        AppValidator.validateTextField('Doctor code', value),
+                    cursorColor: AppColors.black,
+                    style: const TextStyle(
+                      color: AppColors.black,
+                      fontSize: 14,
+                      fontFamily: 'Poppins-Regular',
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'Enter doctor code',
+                      hintStyle: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: OutlinedButton(
+                          onPressed: () {
+                            _controller.doctorCodeController.clear();
+                            Navigator.pop(context);
+                          },
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: AppColors.black300),
+                            overlayColor: AppColors.black300.withOpacity(0.1),
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: AppColors.black,
+                              fontSize: 14,
+                              fontFamily: 'Poppins-Medium',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (_controller.formKey.currentState!.validate()) {
+                              await _controller.linkDoctor(
+                                _controller.doctorCodeController.text,
+                              );
+                              _controller.doctorCodeController.clear();
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: const Text(
+                            'Submit',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.white,
+                              fontFamily: 'Poppins-Medium',
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

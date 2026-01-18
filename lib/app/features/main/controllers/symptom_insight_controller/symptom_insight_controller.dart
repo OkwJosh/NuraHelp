@@ -15,30 +15,30 @@ class SymptomInsightController extends GetxController {
   final GlobalKey<FormState> symptomKey = GlobalKey<FormState>();
   Rx<String>? symptomValue;
   var symptoms = <SymptomModel>[].obs;
-  final RxMap<String, Color> symptomColors = <String,Color>{}.obs;
+  final RxMap<String, Color> symptomColors = <String, Color>{}.obs;
   final appService = Get.find<AppService>();
   var isLoading = false.obs;
   final patientController = Get.find<PatientController>();
   RxMap<String, List<FlSpot>> symptomSpots = <String, List<FlSpot>>{}.obs;
   var chartTrigger = 0.obs;
-
-
-
+  final Set<Color> usedColors = {};
+  var isMonthlyView =
+      false.obs; // false = daily (7 days), true = monthly (30 days)
 
   @override
   Future<void> onInit() async {
     super.onInit();
     fetchSymptoms();
-
   }
-
 
   List<SymptomModel> get uniqueSymptoms {
     Map<String, SymptomModel> latestSymptoms = {};
 
     for (var symptom in symptoms) {
       if (!latestSymptoms.containsKey(symptom.symptomName) ||
-          symptom.createdAt.isAfter(latestSymptoms[symptom.symptomName]!.createdAt)) {
+          symptom.createdAt.isAfter(
+            latestSymptoms[symptom.symptomName]!.createdAt,
+          )) {
         latestSymptoms[symptom.symptomName] = symptom;
       }
     }
@@ -49,124 +49,218 @@ class SymptomInsightController extends GetxController {
   Future<void> fetchSymptoms() async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-      final token  = await user?.getIdToken();
+      final token = await user?.getIdToken();
       print('This is my token $token');
       isLoading.value = true;
-      final fetchedSymptoms = await appService.getPatientSymptoms(user,patientController.patient.value);
+
+      // Fetch symptoms with color data
+      final fetchedSymptoms = await appService.getPatientSymptoms(
+        user,
+        patientController.patient.value,
+      );
+
+      // Debug: Print fetched symptoms with dates
+      print('===== FETCHED SYMPTOMS FROM DB =====');
+      for (var symptom in fetchedSymptoms) {
+        print(
+          'Symptom: ${symptom.symptomName}, Value: ${symptom.value}, Date: ${symptom.createdAt}',
+        );
+      }
+      print('===================================');
+
+      // Restore colors from database
+      symptomColors.clear();
+      usedColors.clear();
+
+      // Process unique symptom names to avoid color conflicts
+      Map<String, String?> uniqueSymptomColors = {};
+
+      for (var symptom in fetchedSymptoms) {
+        // Store the first valid color found for each symptom name
+        if (!uniqueSymptomColors.containsKey(symptom.symptomName)) {
+          uniqueSymptomColors[symptom.symptomName] = symptom.color;
+        }
+      }
+
+      // Now assign colors based on unique symptom names
+      for (var entry in uniqueSymptomColors.entries) {
+        final symptomName = entry.key;
+        final colorString = entry.value;
+
+        // If symptom has a color stored, restore it
+        if (colorString != null && colorString.isNotEmpty) {
+          try {
+            // Parse hex color string (e.g., "ffff0000" for red)
+            final colorValue = int.parse(colorString, radix: 16);
+            final color = Color(colorValue);
+            symptomColors[symptomName] = color;
+            usedColors.add(color);
+          } catch (e) {
+            print('Error parsing color for $symptomName: $e');
+            // If color parsing fails, assign a new color
+            assignColorForSymptom(symptomName);
+          }
+        } else {
+          // No color stored, assign a new one
+          assignColorForSymptom(symptomName);
+        }
+      }
+
       symptoms.value = fetchedSymptoms;
       symptoms.refresh();
       generateSpots(symptoms);
     } catch (e) {
-      AppToasts.errorSnackBar(title: 'Failed to fetch symptoms: ${e.toString()}');
+      AppToasts.errorSnackBar(
+        title: 'Failed to fetch symptoms: ${e.toString()}',
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  // List<FlSpot> get symptomSpots {
-  //   return symptoms.asMap().entries.map((entry) {
-  //     SymptomModel symptom = entry.value;
-  //     return FlSpot(xAxisValue(), yAxisValue(symptom.value));
-  //   }).toList();
-  // }
-
   void addSymptom() {
     if (!symptomKey.currentState!.validate()) {
       return;
     }
+
+    final symptomName = symptomText.text.trim();
+
+    // Assign color if not already assigned
+    assignColorForSymptom(symptomName);
+
     final newSymptom = SymptomModel(
-      symptomName: symptomText.text.trim(),
+      symptomName: symptomName,
       value: 0,
       createdAt: DateTime.now(),
+      color: getSymptomColor(symptomName).value.toRadixString(16),
     );
+
     symptoms.add(newSymptom);
     symptomText.clear();
     Navigator.pop(Get.context!);
 
     generateSpots(symptoms);
-
   }
-
 
   void logSymptoms() async {
     try {
       AppScreenLoader.openLoadingDialog('Logging Symptoms');
       final user = FirebaseAuth.instance.currentUser;
 
-      // Update timestamps for all symptoms being logged
-      for(int i = 0; i < symptoms.length; i++){
-        // If this is a new symptom without server timestamp, update it
-        if (symptoms[i].createdAt.difference(DateTime.now()).inMinutes.abs() < 1) {
-          symptoms[i] = SymptomModel(
-            symptomName: symptoms[i].symptomName,
-            value: symptoms[i].value,
-            createdAt: DateTime.now(),
-          );
-        }
-        print('This are the symptoms ${symptoms[i].value}');
+      // Prepare symptoms with colors for API
+      List<Map<String, dynamic>> symptomsToSend = [];
+
+      for (int i = 0; i < symptoms.length; i++) {
+        // Ensure color is assigned
+        final symptomName = symptoms[i].symptomName;
+        assignColorForSymptom(symptomName);
+
+        symptomsToSend.add({
+          'name': symptomName,
+          'value': symptoms[i].value,
+          'color': getSymptomColor(
+            symptomName,
+          ).value.toRadixString(16), // Save as hex
+        });
+
+        print('Logging symptom: $symptomName with value ${symptoms[i].value}');
       }
 
-      await appService.savePatientSymptoms(symptoms, user);
-      generateSpots(symptoms);
+      // Send to API with color data
+      await appService.savePatientSymptomsWithColors(symptomsToSend, user);
+
+      // Refresh symptoms from server to get updated data
+      await fetchSymptoms();
+
       AppScreenLoader.stopLoading();
       AppToasts.successSnackBar(title: 'Symptoms logged successfully!');
     } catch (e) {
       AppScreenLoader.stopLoading();
-      AppToasts.errorSnackBar(title: 'Failed to save symptoms: ${e.toString()}');
+      AppToasts.errorSnackBar(
+        title: 'Failed to save symptoms: ${e.toString()}',
+      );
     }
   }
-
-
-
-
 
   void generateSpots(List<SymptomModel> histories) {
     symptomSpots.clear();
 
     final now = DateTime.now();
-    final oneWeekAgo = now.subtract(Duration(days: 7));
+    final daysToShow = isMonthlyView.value ? 30 : 7;
+    final startDate = now.subtract(Duration(days: daysToShow));
 
+    print('===== GENERATE SPOTS DEBUG =====');
+    print('Current date: $now');
+    print('Start date (${daysToShow}d ago): $startDate');
+    print('Total histories count: ${histories.length}');
+
+    // Filter histories based on view mode
     final recentHistories = histories.where((history) {
-      return history.createdAt.isAfter(oneWeekAgo);
+      return history.createdAt.isAfter(startDate);
     }).toList();
 
-    Map<String, Map<int, List<int>>> groupedData = {};
+    print('Filtered histories count: ${recentHistories.length}');
+    for (var h in recentHistories) {
+      print('  - ${h.symptomName}: ${h.value} on ${h.createdAt}');
+    }
+
+    // Group by symptom name and date (normalized to day)
+    Map<String, Map<String, List<int>>> groupedData = {};
 
     for (var history in recentHistories) {
-      final day = history.createdAt.weekday;
+      // Normalize date to remove time component
+      final dateKey = DateTime(
+        history.createdAt.year,
+        history.createdAt.month,
+        history.createdAt.day,
+      ).toIso8601String();
 
       groupedData.putIfAbsent(history.symptomName, () => {});
-      groupedData[history.symptomName]!.putIfAbsent(day, () => []);
-      groupedData[history.symptomName]![day]!.add(history.value);
+      groupedData[history.symptomName]!.putIfAbsent(dateKey, () => []);
+      groupedData[history.symptomName]![dateKey]!.add(history.value);
     }
 
-    // PRE-ASSIGN COLORS BEFORE BUILDING CHART DATA
+    print('Grouped data by symptom:');
+    groupedData.forEach((symptom, dates) {
+      print('  $symptom: ${dates.length} days');
+    });
+    print('================================');
+
+    // Ensure colors are assigned
     for (String symptomName in groupedData.keys) {
-      assignColorForSymptom(symptomName); // Do this here, not during build
+      assignColorForSymptom(symptomName);
     }
 
-    // Create chart spots
-    groupedData.forEach((symptomName, dayData) {
+    // Create chart spots with proper sorting
+    groupedData.forEach((symptomName, dateData) {
       symptomSpots.putIfAbsent(symptomName, () => []);
 
-      dayData.forEach((day, values) {
+      // Sort dates to ensure proper line drawing
+      final sortedDates = dateData.keys.toList()..sort();
+
+      for (var dateKey in sortedDates) {
+        final date = DateTime.parse(dateKey);
+        final values = dateData[dateKey]!;
         final averageValue = values.reduce((a, b) => a + b) / values.length;
-        final xPos = xAxisValue(day);
+
+        // Calculate x position based on view mode
+        final xPos = isMonthlyView.value
+            ? xAxisValueMonthly(date, DateTime.now())
+            : xAxisValue(date.weekday);
         final yPos = yAxisValue(averageValue.round());
 
         symptomSpots[symptomName]!.add(FlSpot(xPos, yPos));
-      });
+      }
     });
 
     // Force update
     symptomSpots.refresh();
   }
 
-// Also modify the color assignment method to be safer:
   Color assignColorForSymptom(String symptom) {
     if (!symptomColors.containsKey(symptom)) {
       Color color = colorPalette.firstWhere(
-            (c) => !usedColors.contains(c),
+        (c) => !usedColors.contains(c),
         orElse: () => Colors.grey,
       );
 
@@ -176,13 +270,9 @@ class SymptomInsightController extends GetxController {
     return symptomColors[symptom]!;
   }
 
-// Add a getter for safe color access during build:
   Color getSymptomColor(String symptom) {
     return symptomColors[symptom] ?? Colors.grey;
   }
-
-
-
 
   double xAxisValue(int day) {
     switch (day) {
@@ -203,6 +293,19 @@ class SymptomInsightController extends GetxController {
       default:
         return 0.0;
     }
+  }
+
+  // For monthly view: distribute dates across 30 days
+  double xAxisValueMonthly(DateTime date, DateTime endDate) {
+    final daysAgo = endDate.difference(date).inDays;
+    // Map 30 days to x range 0-13
+    return 13.0 - (daysAgo * 13.0 / 30.0);
+  }
+
+  void toggleViewMode() {
+    isMonthlyView.value = !isMonthlyView.value;
+    generateSpots(symptoms);
+    chartTrigger.value++;
   }
 
   double yAxisValue(int value) {
@@ -234,49 +337,51 @@ class SymptomInsightController extends GetxController {
     }
   }
 
+  final colorPalette = [
+    Color(0xFF1F77B4), // Blue
+    Color(0xFFFF7F0E), // Orange
+    Color(0xFF2CA02C), // Green
+    Color(0xFFD62728), // Red
+    Color(0xFF9467BD), // Purple
+    Color(0xFF8C564B), // Brown
+    Color(0xFFE377C2), // Pink
+    Color(0xFF7F7F7F), // Gray
+    Color(0xFFBCBD22), // Olive
+    Color(0xFF17BECF), // Cyan
 
+    Color(0xFF003F5C), // Dark Blue
+    Color(0xFF58508D), // Indigo
+    Color(0xFFBC5090), // Magenta
+    Color(0xFFFF6361), // Coral Red
+    Color(0xFFFFA600), // Gold
 
+    Color(0xFF264653), // Deep Teal
+    Color(0xFF2A9D8F), // Teal Green
+    Color(0xFFE9C46A), // Mustard
+    Color(0xFFF4A261), // Soft Orange
+    Color(0xFFE76F51), // Burnt Orange
 
+    Color(0xFF0B3954), // Navy
+    Color(0xFF087E8B), // Cool Cyan
+    Color(0xFFBFD7EA), // Light Blue
+    Color(0xFFFF5A5F), // Soft Red
+    Color(0xFF8FC93A), // Lime Green
 
+    Color(0xFF6A4C93), // Deep Violet
+    Color(0xFF1982C4), // Bright Blue
+    Color(0xFF8AC926), // Fresh Green
+    Color(0xFFFFCA3A), // Yellow
+    Color(0xFFFF595E), // Salmon
 
-  final Set<Color> usedColors = {};
+    Color(0xFF343A40), // Charcoal
+    Color(0xFF495057), // Dark Gray
+    Color(0xFFADB5BD), // Light Gray
+    Color(0xFFF8F9FA), // Almost White
 
-  // Color assignColorForSymptom(String symptom) {
-  //   if (!symptomColors.containsKey(symptom)) {
-  //
-  //     Color color = colorPalette.firstWhere(
-  //           (c) => !usedColors.contains(c),
-  //       orElse: () => Colors.grey,
-  //     );
-  //
-  //     symptomColors[symptom] = color;
-  //     usedColors.add(color);
-  //   }
-  //   return symptomColors[symptom]!;
-  // }
-
-    final colorPalette = [
-      Colors.red,
-      Colors.pink,
-      Colors.purple,
-      Colors.deepPurple,
-      Colors.indigo,
-      Colors.blue,
-      Colors.teal,
-      Colors.lightGreen,
-      Colors.yellow,
-      Colors.amber,
-      Colors.orange,
-      Colors.brown,
-      Colors.grey,
-      Colors.blueGrey,
-      Colors.black,
-      Colors.pinkAccent,
-      Colors.purpleAccent,
-      Colors.deepPurpleAccent,
-      Colors.indigoAccent,
-      Colors.blueAccent,
-      Colors.cyanAccent,
-    ];
-
+    Color(0xFF4D908E), // Muted Teal
+    Color(0xFF577590), // Slate Blue
+    Color(0xFF43AA8B), // Soft Green
+    Color(0xFFF8961E), // Orange Yellow
+    Color(0xFFF3722C), // Warm Orange
+  ];
 }

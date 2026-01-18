@@ -11,6 +11,7 @@ class CustomSwitch extends StatefulWidget {
     this.firstOptionActive = true,
     this.secondOptionActive = false,
     this.thirdOptionActive = false,
+    this.onChanged,
   });
 
   final String firstOptionText;
@@ -20,6 +21,7 @@ class CustomSwitch extends StatefulWidget {
   bool firstOptionActive;
   bool secondOptionActive;
   bool thirdOptionActive;
+  final Function(int)? onChanged; // Callback: 1 = first, 2 = second, 3 = third
 
   @override
   State<CustomSwitch> createState() => _CustomSwitchState();
@@ -30,7 +32,7 @@ class _CustomSwitchState extends State<CustomSwitch> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.black,width: 0.3),
+        border: Border.all(color: AppColors.black, width: 0.3),
         borderRadius: BorderRadius.all(Radius.circular(8)),
       ),
       child: Row(
@@ -44,6 +46,7 @@ class _CustomSwitchState extends State<CustomSwitch> {
                   widget.secondOptionActive = false;
                   widget.thirdOptionActive = false;
                 });
+                widget.onChanged?.call(1);
               },
               style: TextButton.styleFrom(
                 overlayColor: AppColors.black300,
@@ -79,20 +82,21 @@ class _CustomSwitchState extends State<CustomSwitch> {
                   widget.secondOptionActive = true;
                   widget.thirdOptionActive = false;
                 });
+                widget.onChanged?.call(2);
               },
               style: TextButton.styleFrom(
                 overlayColor: AppColors.black300,
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                padding:EdgeInsets.zero,
+                padding: EdgeInsets.zero,
                 backgroundColor: widget.secondOptionActive
                     ? AppColors.greyColor.withOpacity(0.1)
                     : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: widget.numberOfOptions == 2
                       ? BorderRadius.only(
-                    topRight: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
-                  )
+                          topRight: Radius.circular(8),
+                          bottomRight: Radius.circular(8),
+                        )
                       : BorderRadius.zero,
                 ),
               ),
@@ -117,6 +121,7 @@ class _CustomSwitchState extends State<CustomSwitch> {
                     widget.secondOptionActive = false;
                     widget.thirdOptionActive = true;
                   });
+                  widget.onChanged?.call(3);
                 },
                 style: TextButton.styleFrom(
                   overlayColor: AppColors.black300,

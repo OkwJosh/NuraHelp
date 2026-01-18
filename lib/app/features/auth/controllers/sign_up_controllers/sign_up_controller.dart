@@ -1,16 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/data/repositories/auth_repository.dart';
+import 'package:nurahelp/app/data/services/socket_service.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
+import 'package:nurahelp/app/routes/app_routes.dart';
 import 'package:nurahelp/app/utilities/loaders/loaders.dart';
 import 'package:nurahelp/app/utilities/popups/screen_loader.dart';
-import 'dart:math' as math;
 import '../../../../data/services/app_service.dart';
 import '../../../../data/services/network_manager.dart';
-import '../../screens/login/login.dart';
-import '../../screens/sign_up/confirm_email.dart';
+
 
 class SignUpController extends GetxController {
   static SignUpController get instance => Get.find();
@@ -29,9 +30,6 @@ class SignUpController extends GetxController {
   final _authRepo = Get.put(AuthenticationRepository());
   final patientController = Get.find<PatientController>();
   final appService = AppService.instance;
-
-
-
 
   void signUpWithEmailAndPassword() async {
     AppScreenLoader.openLoadingDialog('Signing up ...');
@@ -60,30 +58,33 @@ class SignUpController extends GetxController {
         password.text.trim(),
       );
       createdUser = cred.user; // Store reference for potential cleanup
-      final patient =  PatientModel(
+      final patient = PatientModel(
         name: fullName.text.trim(),
         email: email.text.trim(),
         phone: phoneNumber.text.trim(),
         DOB: submittedDate.value,
         profilePicture: '',
-        inviteCode: invitationCode.text.trim(),
+        // inviteCode: invitationCode.text.trim(),
       );
-      await appService.savePatientRecord(
-        patient,
-        createdUser,
-      );
+      await appService.savePatientRecord(patient, createdUser);
       patientController.patient.value = patient;
       patientController.refresh();
+
+      // Initialize SocketService
+      await Get.putAsync(
+        () => SocketService().init(
+          dotenv.env['NEXT_PUBLIC_API_URL']!,
+          createdUser!.uid,
+        ),
+      );
+
       AppScreenLoader.stopLoading();
       AppToasts.successSnackBar(
         title: 'Congrats',
         message: 'Your account was created successfully',
       );
       appService.requestOtp(email.text.trim());
-      Get.to(
-        () => ConfirmEmailScreen(email: email.text.trim()),
-        transition: Transition.rightToLeft,
-      );
+      Get.toNamed(AppRoutes.confirmEmail, arguments: email.text.trim());
     } catch (e) {
       if (createdUser != null) {
         try {
@@ -105,7 +106,7 @@ class SignUpController extends GetxController {
       AppScreenLoader.openLoadingDialog('Logging out');
       await _authRepo.logout();
       AppScreenLoader.stopLoading();
-      Get.offAll(()=>LoginScreen());
+      Get.offAllNamed(AppRoutes.login);
     } catch (e) {
       throw 'Something went wrong';
     }

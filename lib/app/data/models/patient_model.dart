@@ -8,7 +8,7 @@ class PatientModel {
   String phone;
   DateTime? DOB;
   String? profilePicture;
-  final String? inviteCode;
+  String? inviteCode;
   DoctorModel? doctor;
   ClinicalResponse? clinicalResponse;
 
@@ -21,7 +21,7 @@ class PatientModel {
     this.profilePicture,
     this.inviteCode,
     this.doctor,
-    this.clinicalResponse
+    this.clinicalResponse,
   });
 
   List<String>? get nameParts => name.split(' ');
@@ -30,18 +30,14 @@ class PatientModel {
 
   String? get lastName => nameParts?[1];
 
-
-
-  static PatientModel empty() =>
-      PatientModel(
-        id: '',
-        name: '',
-        email: '',
-        phone: '',
-        DOB: DateTime.now(),
-        profilePicture: '',
-        inviteCode: '',
-      );
+  static PatientModel empty() => PatientModel(
+    id: '',
+    name: '',
+    email: '',
+    phone: '',
+    DOB: DateTime.now(),
+    profilePicture: '',
+  );
 
   Map<String, dynamic> toJson() {
     return {
@@ -50,21 +46,20 @@ class PatientModel {
       'phone': phone,
       'DOB': DOB?.millisecondsSinceEpoch,
       'profilePicture': profilePicture,
-      'inviteCode': inviteCode,
     };
   }
 
-  factory PatientModel.fromJson(Map<String, dynamic> json){
+  factory PatientModel.fromJson(Map<String, dynamic> json) {
     return PatientModel(
-        id: json['_id'],
-        name: json['name'],
-        email: json['email'],
-        phone: json['phone'],
-        DOB: DateTime.parse(json['DOB']),
-        doctor: DoctorModel.fromJson(json['doctor']),
-        profilePicture: json['profilePicture'],
+      id: json['_id'],
+      name: json['name'],
+      email: json['email'],
+      phone: json['phone'],
+      DOB: DateTime.parse(json['DOB']),
+      doctor: json['doctor'] != null
+          ? DoctorModel.fromJson(json['doctor'])
+          : null,
+      profilePicture: json['profilePicture'],
     );
   }
-
-
 }

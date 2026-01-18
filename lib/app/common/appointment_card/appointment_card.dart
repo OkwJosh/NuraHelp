@@ -60,57 +60,59 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                   width: 50,
                                   radius: 50,
                                 )
-                              : Container(
-                                  width: 30,
-                                  height: 30,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                  child:
-                                      widget
-                                          .patientController
-                                          .patient
-                                          .value
-                                          .doctor!
-                                          .profilePicture
-                                          .isEmpty
-                                      ? CircleAvatar(
-                                          radius: 30,
-                                          backgroundColor: Colors.white,
-                                          child: SvgIcon(
-                                            AppIcons.profile,
-                                            size: 30,
-                                          ),
-                                        )
-                                      : ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            90,
-                                          ),
-                                          child: CachedNetworkImage(
-                                            imageUrl: widget
-                                                .patientController
-                                                .patient
-                                                .value
-                                                .doctor!
-                                                .profilePicture,
-                                            fit: BoxFit.cover,
-                                            progressIndicatorBuilder:
-                                                (
-                                                  context,
-                                                  url,
-                                                  downloadProgress,
-                                                ) => const AppShimmerEffect(
-                                                  width: 100,
-                                                  height: 100,
-                                                  radius: 90,
-                                                ),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(Icons.error),
-                                          ),
-                                        ),
-                                ),
+                              :
+                                // : Container(
+                                //     width: 30,
+                                //     height: 30,
+                                //     decoration: BoxDecoration(
+                                //       color: Colors.white,
+                                //       borderRadius: BorderRadius.circular(100),
+                                //     ),
+                                //     child:
+                                //         widget
+                                //             .patientController
+                                //             .patient
+                                //             .value
+                                //             .doctor!
+                                //             .profilePicture
+                                //             .isEmpty
+                                //         ? CircleAvatar(
+                                //             radius: 30,
+                                //             backgroundColor: Colors.white,
+                                //             child: SvgIcon(
+                                //               AppIcons.profile,
+                                //               size: 30,
+                                //             ),
+                                //           )
+                                //         : ClipRRect(
+                                //             borderRadius: BorderRadius.circular(
+                                //               90,
+                                //             ),
+                                //             child: CachedNetworkImage(
+                                //               imageUrl: widget
+                                //                   .patientController
+                                //                   .patient
+                                //                   .value
+                                //                   .doctor!
+                                //                   .profilePicture,
+                                //               fit: BoxFit.cover,
+                                //               progressIndicatorBuilder:
+                                //                   (
+                                //                     context,
+                                //                     url,
+                                //                     downloadProgress,
+                                //                   ) => const AppShimmerEffect(
+                                //                     width: 100,
+                                //                     height: 100,
+                                //                     radius: 90,
+                                //                   ),
+                                //               errorWidget:
+                                //                   (context, url, error) =>
+                                //                       const Icon(Icons.error),
+                                //             ),
+                                //           ),
+                                //   ),
+                                SizedBox(),
                         ),
                         SizedBox(width: 10),
                         Column(
@@ -231,7 +233,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                           .value
                                           .clinicalResponse
                                           ?.appointments
-                                          ?.isNotEmpty ==
+                                          .isNotEmpty ==
                                       true
                                   ? widget
                                         .patientController

@@ -16,6 +16,7 @@ class CustomTextField extends StatelessWidget {
     required this.onMicButtonPressed,
     required this.onAttachButtonPressed,
     this.controller,
+    this.onChanged,
   });
 
   final bool showBorder;
@@ -27,6 +28,7 @@ class CustomTextField extends StatelessWidget {
   final Function() onMicButtonPressed;
   final Function() onAttachButtonPressed;
   final TextEditingController? controller;
+  final Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,7 @@ class CustomTextField extends StatelessWidget {
         children: [
           TextField(
             controller: controller,
+            onChanged: onChanged,
             minLines: 1,
             maxLines: 3,
             style: TextStyle(
