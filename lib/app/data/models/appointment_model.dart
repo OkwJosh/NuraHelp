@@ -1,7 +1,4 @@
-import 'dart:io';
 
-import 'package:nurahelp/app/data/models/doctor_model.dart';
-import 'package:nurahelp/app/data/models/patient_model.dart';
 
 class AppointmentModel {
   final String id;

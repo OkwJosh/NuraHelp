@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/common/custom_switch/custom_switch.dart';
 import 'package:nurahelp/app/features/main/screens/symptom_insights/widget/symptom_dropdown.dart';
-import 'package:nurahelp/app/features/main/screens/symptom_insights/widget/symptom_insights_list_tile.dart';
 import 'package:nurahelp/app/features/main/screens/symptom_insights/widget/symptoms_trend_chart.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';

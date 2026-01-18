@@ -1,14 +1,10 @@
 import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:nurahelp/app/common/appbar/appbar_with_bell.dart';
 import 'package:nurahelp/app/features/main/screens/doctors/widgets/tab_contents/about_tab_content.dart';
 import 'package:nurahelp/app/features/main/screens/doctors/widgets/tab_contents/reviews_tab_content.dart';
-import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 
 import '../../../../utilities/constants/colors.dart';
-import '../../../../utilities/constants/icons.dart';
 
 
 class AboutDoctorScreen extends StatelessWidget {

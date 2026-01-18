@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:nurahelp/app/features/auth/screens/sign_up/onboarding.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/widget/sign_up_progress_bar.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';

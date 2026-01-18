@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:material_symbols_icons/symbols.dart';
 import 'package:nurahelp/app/common/custom_switch/custom_switch.dart';
 import 'package:nurahelp/app/common/search_bar/search_bar.dart';
-import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/doctors/widgets/doctor_card.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';

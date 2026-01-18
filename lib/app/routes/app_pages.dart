@@ -14,7 +14,9 @@ import 'package:nurahelp/app/features/main/screens/messages_and_calls/call.dart'
 import 'package:nurahelp/app/features/main/screens/messages_and_calls/direct_message.dart';
 import 'package:nurahelp/app/features/main/screens/messages_and_calls/messages.dart';
 import 'package:nurahelp/app/features/main/screens/notification/notification.dart';
+import 'package:nurahelp/app/features/main/screens/nura_bot/nura_bot.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/patient_health.dart';
+import 'package:nurahelp/app/features/main/screens/settings/edit_personal_information.dart';
 import 'package:nurahelp/app/features/main/screens/settings/settings.dart';
 import 'package:nurahelp/app/features/main/screens/symptom_insights/symtom_insights.dart';
 import 'package:nurahelp/app/nav_menu.dart';
@@ -77,6 +79,11 @@ class AppPages {
       page: () => DashboardScreen(),
       transition: Transition.fadeIn,
     ),
+    GetPage(
+      name: AppRoutes.nuraBot,
+      page: () => NuraBot(),
+      transition: Transition.rightToLeft,
+    ),
 
     // ==================== MESSAGES & CALLS ====================
     GetPage(
@@ -133,6 +140,11 @@ class AppPages {
     GetPage(
       name: AppRoutes.settings,
       page: () => const SettingsScreen(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.editPersonalInformation,
+      page: () => const EditPersonalInformation(),
       transition: Transition.rightToLeft,
     ),
     GetPage(

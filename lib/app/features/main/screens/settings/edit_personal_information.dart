@@ -2,9 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
-import 'package:nurahelp/app/features/main/screens/settings/settings.dart';
 import '../../../../common/shimmer/shimmer_effect.dart';
-import '../../../../common/textfield/textfield_with_header.dart';
 import '../../../../utilities/constants/colors.dart';
 import '../../../../utilities/constants/icons.dart';
 import '../../../../utilities/constants/svg_icons.dart';
@@ -34,7 +32,7 @@ class EditPersonalInformation extends StatelessWidget {
               child: Row(
                 children: [
                   IconButton(
-                    onPressed: () => Get.offAll(() => SettingsScreen()),
+                    onPressed: () => Get.back(),
                     icon: Icon(Icons.arrow_back_ios),
                   ),
                   Text('Edit Personal Info', style: TextStyle(fontSize: 18)),
@@ -72,11 +70,17 @@ class EditPersonalInformation extends StatelessWidget {
                                       padding: const EdgeInsets.all(10.0),
                                       child: _controller.imageLoading.value
                                           ? Container(
-                                        padding: const EdgeInsets.all(10.0),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(100),
-                                          border: Border.all(color: Colors.black)),
+                                              padding: const EdgeInsets.all(
+                                                10.0,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                                border: Border.all(
+                                                  color: Colors.black,
+                                                ),
+                                              ),
                                               child: const AppShimmerEffect(
                                                 height: 143,
                                                 width: 143,
@@ -163,8 +167,8 @@ class EditPersonalInformation extends StatelessWidget {
                                   ),
                                   SizedBox(height: 10),
                                   TextButton(
-                                    onPressed: () async =>
-                                        await _controller.uploadProfilePicture(),
+                                    onPressed: () async => await _controller
+                                        .uploadProfilePicture(),
                                     child: Text(
                                       'Change Profile Picture',
                                       style: TextStyle(

@@ -14,7 +14,7 @@ class TestResultTabContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final clinicalResponse = patientController.patient.value.clinicalResponse;
 
-    if (clinicalResponse?.testResults?.isEmpty != false) {
+    if (clinicalResponse?.testResults.isEmpty != false) {
       return Column(
         children: [
           const Center(
@@ -69,7 +69,7 @@ class TestResultTabContent extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 100),
             itemBuilder: (context, index) {
               return TestResultCard(
-                testName: clinicalResponse!.testResults[index].testName,
+                testName: clinicalResponse.testResults[index].testName,
               );
             },
             separatorBuilder: (context, index) => const SizedBox(height: 10),

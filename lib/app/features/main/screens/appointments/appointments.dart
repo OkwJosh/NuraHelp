@@ -1,14 +1,11 @@
 import 'package:autoscale_tabbarview/autoscale_tabbarview.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_content/canceled_appointment_tab.dart';
-import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_content/pending_appointment_tab.dart';
 import 'package:nurahelp/app/features/main/screens/appointments/widgets/tabs_content/upcoming_appointment_tab.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import '../../../../common/appbar/appbar_with_bell.dart';
-import '../../../../data/models/patient_model.dart';
 
 
 class AppointmentsScreen extends StatelessWidget {

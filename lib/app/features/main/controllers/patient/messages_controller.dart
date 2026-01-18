@@ -347,15 +347,15 @@ class MessagesController extends GetxController {
                             radius: 25,
                             backgroundColor: AppColors.secondaryColor
                                 .withOpacity(0.2),
+                            backgroundImage: doctor.profilePicture.isNotEmpty
+                                ? NetworkImage(doctor.profilePicture)
+                                : null,
                             child: doctor.profilePicture.isEmpty
                                 ? const Icon(
                                     Icons.person,
                                     color: AppColors.secondaryColor,
                                     size: 30,
                                   )
-                                : null,
-                            backgroundImage: doctor.profilePicture.isNotEmpty
-                                ? NetworkImage(doctor.profilePicture)
                                 : null,
                           ),
                           const SizedBox(width: 15),

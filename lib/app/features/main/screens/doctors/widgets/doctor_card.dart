@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
-import 'package:iconify_flutter_plus/icons/carbon.dart';
 import 'package:nurahelp/app/common/shimmer/shimmer_effect.dart';
 import 'package:nurahelp/app/data/models/doctor_model.dart';
 import 'package:nurahelp/app/features/main/screens/doctors/about_doctor.dart';

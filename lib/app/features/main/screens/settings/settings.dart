@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:nurahelp/app/common/dropdown/app_dropdown.dart';
 import 'package:nurahelp/app/features/main/screens/settings/widgets/profile_info_section.dart';
 import 'package:nurahelp/app/routes/app_routes.dart';
@@ -28,7 +27,7 @@ class SettingsScreen extends StatelessWidget {
               child: Row(
                 children: [
                   IconButton(
-                    onPressed: () => Get.offAllNamed(AppRoutes.navigationMenu),
+                    onPressed: () => Get.back(),
                     icon: Icon(Icons.arrow_back_ios),
                   ),
                   Text('Settings', style: TextStyle(fontSize: 18)),
@@ -220,7 +219,9 @@ class SettingsScreen extends StatelessWidget {
                                           hintText: '',
                                           selectedValue: 'Email',
                                           verticalPadding: 5,
-                                          validator: (String? value) {},
+                                          validator: (String? value) {
+                                            return null;
+                                          },
                                           onChanged: (String? value) {},
                                         ),
                                       ),

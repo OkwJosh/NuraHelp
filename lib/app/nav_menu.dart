@@ -6,6 +6,7 @@ import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:nurahelp/app/features/auth/controllers/sign_up_controllers/sign_up_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/patient_health.dart';
+import 'package:nurahelp/app/routes/app_routes.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
@@ -296,44 +297,60 @@ class NavigationMenu extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             Obx(
-                                  ()=> patientController.imageLoading.value
+                              () => patientController.imageLoading.value
                                   ? const AppShimmerEffect(
-                                height: 50,
-                                width: 50,
-                                radius: 50,
-                              )
+                                      height: 50,
+                                      width: 50,
+                                      radius: 50,
+                                    )
                                   : Container(
-                                width: 30,
-                                height: 30,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                                child: patientController.patient.value.profilePicture!.isEmpty
-                                    ? CircleAvatar(
-                                  radius: 30,
-                                  backgroundColor: Colors.white,
-                                  child: SvgIcon(
-                                    AppIcons.profile,
-                                    size: 30,
-                                  ),
-                                )
-                                    : ClipRRect(
-                                  borderRadius: BorderRadius.circular(90),
-                                  child: CachedNetworkImage(
-                                    imageUrl: patientController.patient.value.profilePicture!,
-                                    fit: BoxFit.cover,
-                                    progressIndicatorBuilder: (context, url, downloadProgress) =>
-                                    const AppShimmerEffect(
-                                      width: 100,
-                                      height: 100,
-                                      radius: 90,
+                                      width: 30,
+                                      height: 30,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(
+                                          100,
+                                        ),
+                                      ),
+                                      child:
+                                          patientController
+                                              .patient
+                                              .value
+                                              .profilePicture!
+                                              .isEmpty
+                                          ? CircleAvatar(
+                                              radius: 30,
+                                              backgroundColor: Colors.white,
+                                              child: SvgIcon(
+                                                AppIcons.profile,
+                                                size: 30,
+                                              ),
+                                            )
+                                          : ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(90),
+                                              child: CachedNetworkImage(
+                                                imageUrl: patientController
+                                                    .patient
+                                                    .value
+                                                    .profilePicture!,
+                                                fit: BoxFit.cover,
+                                                progressIndicatorBuilder:
+                                                    (
+                                                      context,
+                                                      url,
+                                                      downloadProgress,
+                                                    ) => const AppShimmerEffect(
+                                                      width: 100,
+                                                      height: 100,
+                                                      radius: 90,
+                                                    ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        const Icon(Icons.error),
+                                              ),
+                                            ),
                                     ),
-                                    errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
-                                  ),
-                                ),
-                              ),
                             ),
                             SizedBox(width: 15),
                             Text(
@@ -355,7 +372,7 @@ class NavigationMenu extends StatelessWidget {
                             color: AppColors.greyColor,
                             size: 30,
                           ),
-                          onPressed: () => Get.to(() => NuraBot()),
+                          onPressed: () => Get.toNamed(AppRoutes.nuraBot),
                         ),
                         SizedBox(height: 10),
                         NavListTiles(
@@ -364,7 +381,7 @@ class NavigationMenu extends StatelessWidget {
                             AppIcons.messages,
                             color: AppColors.greyColor,
                           ),
-                          onPressed: () => Get.to(() => MessagesScreen()),
+                          onPressed: () => Get.toNamed(AppRoutes.messages),
                         ),
                         SizedBox(height: 10),
                         NavListTiles(
@@ -373,7 +390,7 @@ class NavigationMenu extends StatelessWidget {
                             AppIcons.settings,
                             color: AppColors.greyColor,
                           ),
-                          onPressed: () => Get.to(() => SettingsScreen()),
+                          onPressed: () => Get.toNamed(AppRoutes.settings),
                         ),
                         SizedBox(height: 10),
                         NavListTiles(
@@ -445,11 +462,34 @@ class NavigationController extends GetxController {
   final Rx<bool> togglePanel = false.obs;
   final Rx<bool> absorbTouch = false.obs;
 
-  final screens = [
-    DashboardScreen(),
-    PatientHealthScreen(),
-    const DoctorsScreen(),
-    const SymptomInsightsScreen(),
-    AppointmentsScreen(),
+  // Using getter to ensure widgets are kept alive
+  List<Widget> get screens => [
+    _KeepAliveWrapper(child: DashboardScreen()),
+    _KeepAliveWrapper(child: PatientHealthScreen()),
+    const _KeepAliveWrapper(child: DoctorsScreen()),
+    const _KeepAliveWrapper(child: SymptomInsightsScreen()),
+    _KeepAliveWrapper(child: AppointmentsScreen()),
   ];
+}
+
+/// Wrapper to keep child widget alive in IndexedStack
+class _KeepAliveWrapper extends StatefulWidget {
+  final Widget child;
+
+  const _KeepAliveWrapper({required this.child});
+
+  @override
+  State<_KeepAliveWrapper> createState() => _KeepAliveWrapperState();
+}
+
+class _KeepAliveWrapperState extends State<_KeepAliveWrapper>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
+  }
 }

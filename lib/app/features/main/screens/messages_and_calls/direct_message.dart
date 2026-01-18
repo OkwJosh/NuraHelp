@@ -5,7 +5,6 @@ import 'package:nurahelp/app/common/appbar/appbar.dart';
 import 'package:nurahelp/app/common/widgets/message_status_tick.dart';
 import 'package:nurahelp/app/data/models/doctor_model.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/direct_message_controller.dart';
-import 'package:nurahelp/app/features/main/screens/messages_and_calls/call.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
@@ -37,11 +36,11 @@ class DirectMessagePage extends StatelessWidget {
                   CircleAvatar(
                     radius: 20,
                     backgroundColor: AppColors.secondaryColor.withOpacity(0.2),
-                    child: doctor.profilePicture.isEmpty
-                        ? SvgIcon(AppIcons.profile)
-                        : null,
                     backgroundImage: doctor.profilePicture.isNotEmpty
                         ? NetworkImage(doctor.profilePicture)
+                        : null,
+                    child: doctor.profilePicture.isEmpty
+                        ? SvgIcon(AppIcons.profile)
                         : null,
                   ),
                   SizedBox(width: 10),

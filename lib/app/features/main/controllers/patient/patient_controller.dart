@@ -65,12 +65,10 @@ class PatientController extends GetxController {
   @override
   void onReady() {
     super.onReady();
-    if (patient != null) {
-      editName.text = patient.value.name;
-      editEmail.text = patient.value.email;
-      editPhone.text = patient.value.phone;
+    editName.text = patient.value.name;
+    editEmail.text = patient.value.email;
+    editPhone.text = patient.value.phone;
     }
-  }
 
   formatDate(DateTime? date) {
     String dateSuffix;
@@ -184,7 +182,7 @@ class PatientController extends GetxController {
       print(newSettings.notifications.messageAlerts);
       print(newSettings.security.twoFactorAuth);
       await appService.savePatientSettings(newSettings, user);
-      print('This is the settings ${settings}');
+      print('This is the settings $settings');
       AppScreenLoader.stopLoading();
       AppToasts.successSnackBar(title: 'Settings has been saved!');
     } catch (e) {

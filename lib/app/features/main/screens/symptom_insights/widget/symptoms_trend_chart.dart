@@ -5,7 +5,7 @@ import 'package:nurahelp/app/features/main/controllers/symptom_insight_controlle
 import '../../../../../utilities/constants/colors.dart';
 
 class SymptomTrendChart extends StatelessWidget {
-  SymptomTrendChart({super.key, required this.controller});
+  const SymptomTrendChart({super.key, required this.controller});
 
   final SymptomInsightController controller;
 

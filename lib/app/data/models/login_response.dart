@@ -1,4 +1,3 @@
-import 'package:nurahelp/app/data/models/doctor_model.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/settings_model.dart';
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/settings/edit_personal_information.dart';
+import 'package:nurahelp/app/routes/app_routes.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 
@@ -26,7 +27,7 @@ class ProfileInfoSection extends StatelessWidget {
               style: TextStyle(fontFamily: 'Poppins-Regular', fontSize: 16),
             ),
             OutlinedButton(
-              onPressed: () => Get.to(() => EditPersonalInformation()),
+              onPressed: () => Get.toNamed(AppRoutes.editPersonalInformation),
               style: OutlinedButton.styleFrom(
                 padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
               ),

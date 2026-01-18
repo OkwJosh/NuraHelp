@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
-import '../../../../../common/dropdown/app_dropdown.dart';
 import '../../../../../utilities/constants/colors.dart';
 
 class PatientInfoHeader extends StatelessWidget {

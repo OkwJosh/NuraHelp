@@ -38,7 +38,7 @@ class AppDropdown extends StatelessWidget {
       children: [
         DropdownButtonFormField<String>(
           validator: validator,
-          value: selectedValue,
+          initialValue: selectedValue,
           hint: Text(
               hintText ?? 'Select an option',
               style: TextStyle(

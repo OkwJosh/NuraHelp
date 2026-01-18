@@ -11,7 +11,7 @@ import '../../nav_menu.dart';
 import '../../utilities/constants/colors.dart';
 
 class AppBarWithBell extends StatelessWidget implements PreferredSizeWidget {
-  AppBarWithBell({this.showSearchBar = true, super.key});
+  const AppBarWithBell({this.showSearchBar = true, super.key});
 
   final bool showSearchBar;
 

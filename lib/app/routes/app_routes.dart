@@ -13,6 +13,7 @@ class AppRoutes {
   // Main Routes
   static const String navigationMenu = '/navigation-menu';
   static const String dashboard = '/dashboard';
+  static const String nuraBot = '/nura-bot';
 
   // Messages & Calls
   static const String messages = '/messages';
@@ -30,5 +31,6 @@ class AppRoutes {
 
   // Settings & Profile
   static const String settings = '/settings';
+  static const String editPersonalInformation = '/edit-personal-information';
   static const String notification = '/notification';
 }

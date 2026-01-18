@@ -1,17 +1,14 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:core';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nurahelp/app/data/models/clinical_response.dart';
 import 'package:nurahelp/app/data/models/message_models/conversation_model.dart';
-import 'package:nurahelp/app/data/models/message_models/message_model.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:nurahelp/app/data/models/settings_model/settings_model.dart';

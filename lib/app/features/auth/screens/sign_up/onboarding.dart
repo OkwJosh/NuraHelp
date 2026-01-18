@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/common/dropdown/app_dropdown.dart';
-import 'package:nurahelp/app/common/misc/circular_image.dart';
 import 'package:nurahelp/app/features/auth/controllers/sign_up_controllers/sign_up_controller.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/widget/sign_up_progress_bar.dart';
 import 'package:nurahelp/app/utilities/validators/validation.dart';

@@ -6,7 +6,6 @@ import 'package:nurahelp/app/features/main/controllers/patient/messages_controll
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/routes/app_routes.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
-import '../../../../common/appbar/appbar_with_bell.dart';
 import '../../../../common/search_bar/search_bar.dart';
 import '../../../../utilities/constants/colors.dart';
 
@@ -38,7 +37,7 @@ class MessagesScreen extends StatelessWidget {
               child: Row(
                 children: [
                   IconButton(
-                    onPressed: () => Get.offAllNamed(AppRoutes.navigationMenu),
+                    onPressed: () => Get.back(),
                     icon: Icon(Icons.arrow_back_ios),
                   ),
                   Text(

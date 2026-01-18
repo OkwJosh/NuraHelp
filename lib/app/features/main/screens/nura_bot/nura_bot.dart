@@ -20,8 +20,8 @@ class NuraBot extends StatelessWidget {
     final _patientController = Get.find<PatientController>();
 
     return WillPopScope(
-      onWillPop:() async{
-        Get.offAll(()=>NavigationMenu());
+      onWillPop: () async {
+        Get.back();
         return false;
       },
       child: Scaffold(
@@ -81,12 +81,15 @@ class NuraBot extends StatelessWidget {
         ),
       ),
     );
-
   }
 }
 
 class MessageBubble extends StatelessWidget {
-  const MessageBubble({super.key, required this.message, required this.botIsReplying});
+  const MessageBubble({
+    super.key,
+    required this.message,
+    required this.botIsReplying,
+  });
 
   final BotMessageModel message;
   final bool botIsReplying;
@@ -113,20 +116,24 @@ class MessageBubble extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
               ),
               padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: message.isLoading && message.sender == SenderType.bot?
-                  Lottie.asset('assets/animations/chat_loading.json',width: 350,height: 100)
-                  :Text(
-                message.message!,
-                style: TextStyle(
-                  color: message.sender == SenderType.user
-                      ? Colors.white
-                      : AppColors.black,
-                  fontSize: 14,
-                  fontFamily: message.sender == SenderType.user
-                      ? 'Poppins-Regular'
-                      : 'Poppins-Light',
-                ),
-              ),
+              child: message.isLoading && message.sender == SenderType.bot
+                  ? Lottie.asset(
+                      'assets/animations/chat_loading.json',
+                      width: 350,
+                      height: 100,
+                    )
+                  : Text(
+                      message.message!,
+                      style: TextStyle(
+                        color: message.sender == SenderType.user
+                            ? Colors.white
+                            : AppColors.black,
+                        fontSize: 14,
+                        fontFamily: message.sender == SenderType.user
+                            ? 'Poppins-Regular'
+                            : 'Poppins-Light',
+                      ),
+                    ),
             ),
           ),
           SizedBox.shrink(),

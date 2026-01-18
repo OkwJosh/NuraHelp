@@ -15,7 +15,7 @@ class OverviewTabContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final clinicalResponse = patientController.patient.value.clinicalResponse;
 
-    if (clinicalResponse?.vitals?.isEmpty != false) {
+    if (clinicalResponse?.vitals.isEmpty != false) {
       return Column(
         children: [
           const Center(
@@ -238,7 +238,7 @@ class OverviewTabContent extends StatelessWidget {
 
         const SizedBox(height: 20),
         /// Test Results - Added proper null/empty check
-        if(clinicalResponse.testResults?.isNotEmpty == true)
+        if(clinicalResponse.testResults.isNotEmpty == true)
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -318,7 +318,7 @@ class OverviewTabContent extends StatelessWidget {
           ),
         SizedBox(height: 20),
         ///Medications - Added proper null/empty check
-        if(clinicalResponse.medications?.isNotEmpty == true)
+        if(clinicalResponse.medications.isNotEmpty == true)
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
