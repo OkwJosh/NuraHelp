@@ -38,84 +38,71 @@ class AppDropdown extends StatelessWidget {
       children: [
         DropdownButtonFormField<String>(
           validator: validator,
-          initialValue: selectedValue,
+          value: selectedValue,
           hint: Text(
-              hintText ?? 'Select an option',
-              style: TextStyle(
-                  color: AppColors.black,
-                  fontSize: 14,
-                  fontFamily: 'Poppins-Light'
-              )
+            hintText ?? 'Select an option',
+            style: TextStyle(
+              color: AppColors.black,
+              fontSize: 14,
+              fontFamily: 'Poppins-Light',
+            ),
           ),
           icon: Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: Icon(Icons.keyboard_arrow_down_sharp, color: AppColors.black),
+            child: Icon(
+              Icons.keyboard_arrow_down_sharp,
+              color: AppColors.black,
+            ),
           ),
           iconSize: 20,
           dropdownColor: Colors.white,
           style: TextStyle(
-              fontFamily: 'Poppins-Light',
-              fontSize: 14,
-              color: AppColors.black,
-              overflow: TextOverflow.ellipsis
+            fontFamily: 'Poppins-Light',
+            fontSize: 14,
+            color: AppColors.black,
+            overflow: TextOverflow.ellipsis,
           ),
           decoration: InputDecoration(
-            prefixIcon: showPrefixIcon ? Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
-              child: Icon(
-                prefixIcon,
-                color: prefixIconColor,
-                size: 15,
-              ),
-            ) : null,
-            prefixIconConstraints: BoxConstraints(
-              minHeight: 30,
-              maxWidth: 30,
-            ),
+            prefixIcon: showPrefixIcon
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 20,
+                    ),
+                    child: Icon(prefixIcon, color: prefixIconColor, size: 15),
+                  )
+                : null,
+            prefixIconConstraints: BoxConstraints(minHeight: 30, maxWidth: 30),
             contentPadding: EdgeInsets.symmetric(
-                vertical: verticalPadding,
-                horizontal: 8
+              vertical: verticalPadding,
+              horizontal: 8,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
-              borderSide: BorderSide(
-                  width: 0.3,
-                  color: AppColors.black
-              ),
+              borderSide: BorderSide(width: 0.3, color: AppColors.black),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
-              borderSide: BorderSide(
-                  width: 0.3,
-                  color: AppColors.black
-              ),
+              borderSide: BorderSide(width: 0.3, color: AppColors.black),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
-              borderSide: BorderSide(
-                  width: 0.3,
-                  color: AppColors.black
-              ),
+              borderSide: BorderSide(width: 0.3, color: AppColors.black),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
-              borderSide: BorderSide(
-                width: 0.3,
-                color: Colors.red,
-              ),
+              borderSide: BorderSide(width: 0.3, color: Colors.red),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(borderRadius),
-              borderSide: BorderSide(
-                width: 0.3,
-                color: Colors.red,
-              ),
+              borderSide: BorderSide(width: 0.3, color: Colors.red),
             ),
           ),
           items: menuItems.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(value,
+              child: Text(
+                value,
                 style: TextStyle(
                   fontFamily: 'Poppins-ExtraLight',
                   color: Colors.black,

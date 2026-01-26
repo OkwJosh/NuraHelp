@@ -55,11 +55,14 @@ class PatientModel {
       name: json['name'],
       email: json['email'],
       phone: json['phone'],
-      DOB: DateTime.parse(json['DOB']),
+      DOB: json['DOB'] != null ? DateTime.parse(json['DOB']) : null,
       doctor: json['doctor'] != null
           ? DoctorModel.fromJson(json['doctor'])
           : null,
       profilePicture: json['profilePicture'],
+      clinicalResponse: json['clinicalResponse'] != null
+          ? ClinicalResponse.fromJson(json['clinicalResponse'])
+          : null,
     );
   }
 }

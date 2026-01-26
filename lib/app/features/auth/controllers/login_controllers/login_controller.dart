@@ -43,18 +43,8 @@ class LoginController extends GetxController {
         password.text.trim(),
       );
       final currentUser = FirebaseAuth.instance.currentUser;
-      final patient = await appService.fetchPatientRecord(currentUser);
-      final settings = await appService.fetchPatientSettings(currentUser);
-      final clinicalInfo = await appService.getClinicalData(user: currentUser);
-      patient.clinicalResponse = clinicalInfo;
-      patientController.patient.value = patient;
-      patientController.enableMessageAlerts.value =
-          settings.notifications.messageAlerts;
-      patientController.enableAppointmentReminders.value =
-          settings.notifications.appointmentReminders;
-      patientController.enable2Fa.value = settings.security.twoFactorAuth;
 
-      // Initialize SocketService
+      // Initialize SocketService immediately (needed for real-time messaging)
       await Get.putAsync(
         () => SocketService().init(
           dotenv.env['NEXT_PUBLIC_API_URL']!,
@@ -63,9 +53,8 @@ class LoginController extends GetxController {
       );
 
       AppScreenLoader.stopLoading();
-      print(
-        'Hey this is value 2fa ${patientController.enableMessageAlerts.value}',
-      );
+
+      // Navigate to dashboard - data will be fetched there with shimmer loading
       Get.offAllNamed(AppRoutes.navigationMenu);
     } catch (e) {
       AppScreenLoader.stopLoading();

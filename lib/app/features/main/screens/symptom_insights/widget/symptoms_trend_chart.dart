@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:get/get.dart';
 import 'package:nurahelp/app/features/main/controllers/symptom_insight_controller/symptom_insight_controller.dart';
 import '../../../../../utilities/constants/colors.dart';
 
@@ -13,6 +13,9 @@ class SymptomTrendChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Obx(() {
       controller.chartTrigger.value;
+      final spots = controller.symptomSpots;
+      final isMonthly = controller.isMonthlyView.value;
+
       return Column(
         children: [
           AspectRatio(
@@ -24,7 +27,7 @@ class SymptomTrendChart extends StatelessWidget {
                 top: 24,
                 bottom: 12,
               ),
-              child: LineChart(mainData()),
+              child: LineChart(mainData(spots, isMonthly)),
             ),
           ),
           SizedBox(height: 10),
@@ -37,56 +40,37 @@ class SymptomTrendChart extends StatelessWidget {
     const style = TextStyle(fontFamily: 'Poppins-Medium', fontSize: 10);
     Widget text;
 
-    // Show different labels based on view mode
     if (controller.isMonthlyView.value) {
-      // Monthly view: show week numbers or dates
-      switch (value.toInt()) {
-        case 0:
-          text = const Text('W1', style: style);
-          break;
-        case 3:
-          text = const Text('W2', style: style);
-          break;
-        case 6:
-          text = const Text('W3', style: style);
-          break;
-        case 9:
-          text = const Text('W4', style: style);
-          break;
-        case 13:
-          text = const Text('W5', style: style);
-          break;
-        default:
+      // Monthly view: show week labels at positions 0, 3, 6, 9, 12
+      final intValue = value.toInt();
+      if (intValue == 0 ||
+          intValue == 3 ||
+          intValue == 6 ||
+          intValue == 9 ||
+          intValue == 12) {
+        final weekIndex = intValue ~/ 3;
+        if (weekIndex < controller.numberOfWeeks) {
+          text = Text(controller.getWeekLabel(weekIndex), style: style);
+        } else {
           text = const Text('', style: style);
-          break;
+        }
+      } else {
+        text = const Text('', style: style);
       }
     } else {
-      // Daily view: show weekday names
-      switch (value.toInt()) {
-        case 1:
-          text = const Text('MON', style: style);
-          break;
-        case 3:
-          text = const Text('TUE', style: style);
-          break;
-        case 5:
-          text = const Text('WED', style: style);
-          break;
-        case 7:
-          text = const Text('THU', style: style);
-          break;
-        case 9:
-          text = const Text('FRI', style: style);
-          break;
-        case 11:
-          text = const Text('SAT', style: style);
-          break;
-        case 13:
-          text = const Text('SUN', style: style);
-          break;
-        default:
+      // FIXED: Daily view shows labels at positions 0.5, 2.5, 4.5, 6.5, 8.5, 10.5, 12.5
+      // These correspond to day indices 0-6 (chronological order from start date)
+      final intValue = value.toInt();
+      if (intValue % 2 == 1 && intValue >= 1 && intValue <= 13) {
+        final dayIndex = (intValue - 1) ~/ 2; // 1->0, 3->1, 5->2, etc.
+        if (dayIndex < 7) {
+          // Get the label for this day index (chronologically)
+          text = Text(controller.getWeekdayLabel(dayIndex), style: style);
+        } else {
           text = const Text('', style: style);
-          break;
+        }
+      } else {
+        text = const Text('', style: style);
       }
     }
 
@@ -127,7 +111,7 @@ class SymptomTrendChart extends StatelessWidget {
     );
   }
 
-  LineChartData mainData() {
+  LineChartData mainData(RxMap<String, List<FlSpot>> spots, bool isMonthly) {
     return LineChartData(
       lineTouchData: LineTouchData(enabled: false),
       gridData: FlGridData(
@@ -184,13 +168,14 @@ class SymptomTrendChart extends StatelessWidget {
       maxX: 13,
       minY: 0,
       maxY: 16,
-      lineBarsData: controller.symptomSpots.entries.map((entry) {
+
+      lineBarsData: spots.entries.map((entry) {
         return LineChartBarData(
           spots: entry.value,
-          isCurved: true,
+          isCurved: false,
           barWidth: 3,
           color: controller.assignColorForSymptom(entry.key),
-          dotData: const FlDotData(show: true),
+          dotData: const FlDotData(show: false),
         );
       }).toList(),
     );

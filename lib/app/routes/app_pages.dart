@@ -18,7 +18,7 @@ import 'package:nurahelp/app/features/main/screens/nura_bot/nura_bot.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/patient_health.dart';
 import 'package:nurahelp/app/features/main/screens/settings/edit_personal_information.dart';
 import 'package:nurahelp/app/features/main/screens/settings/settings.dart';
-import 'package:nurahelp/app/features/main/screens/symptom_insights/symtom_insights.dart';
+import 'package:nurahelp/app/features/main/screens/symptom_insights/symptom_insights.dart';
 import 'package:nurahelp/app/nav_menu.dart';
 import 'package:nurahelp/app/splash_screen.dart';
 import 'package:nurahelp/app/routes/app_routes.dart';

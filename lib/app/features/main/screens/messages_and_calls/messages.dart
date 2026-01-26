@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:nurahelp/app/common/list_tiles/message_list_tile.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/messages_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
+import 'package:nurahelp/app/modules/patient/views/messages/messages_shimmer.dart';
 import 'package:nurahelp/app/routes/app_routes.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import '../../../../common/search_bar/search_bar.dart';
@@ -57,45 +58,45 @@ class MessagesScreen extends StatelessWidget {
               padding: EdgeInsets.only(left: 15, right: 15),
               child: Obx(() {
                 if (messagesController.isLoading.value) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.secondaryColor,
-                    ),
-                  );
+                  return const MessagesShimmer();
                 }
 
                 if (messagesController.conversations.isEmpty) {
                   return _buildNoMessagesView(context);
                 }
 
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      AppSearchBar(hintText: 'Search type of Keywords'),
-                      SizedBox(height: 20),
-                      ...messagesController.conversations.map(
-                        (conversation) => MessageListTile(
-                          onPressed: () {
-                            if (controller.patient.value.doctor != null) {
-                              Get.toNamed(
-                                AppRoutes.directMessage,
-                                arguments: controller.patient.value.doctor,
-                              );
-                            }
-                          },
-                          contactName: conversation.userName,
-                          lastMessage: conversation.lastMessage,
-                          unreadMessagesNumber: conversation.unreadCount,
-                          profilePicture: conversation.userProfilePic,
-                          timestamp: conversation.lastTimestamp,
-                          backgroundColor: Colors.transparent,
-                          lastSender: conversation.lastSender,
-                          currentUserId: controller.patient.value.id,
-                          delivered: conversation.lastMessageDelivered,
-                          read: conversation.lastMessageRead,
+                return RefreshIndicator(
+                  onRefresh: () => messagesController.refreshConversations(),
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        AppSearchBar(hintText: 'Search type of Keywords'),
+                        SizedBox(height: 20),
+                        ...messagesController.conversations.map(
+                          (conversation) => MessageListTile(
+                            onPressed: () {
+                              if (controller.patient.value.doctor != null) {
+                                Get.toNamed(
+                                  AppRoutes.directMessage,
+                                  arguments: controller.patient.value.doctor,
+                                );
+                              }
+                            },
+                            contactName: conversation.userName,
+                            lastMessage: conversation.lastMessage,
+                            unreadMessagesNumber: conversation.unreadCount,
+                            profilePicture: conversation.userProfilePic,
+                            timestamp: conversation.lastTimestamp,
+                            backgroundColor: Colors.transparent,
+                            lastSender: conversation.lastSender,
+                            currentUserId: controller.patient.value.id,
+                            delivered: conversation.lastMessageDelivered,
+                            read: conversation.lastMessageRead,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               }),

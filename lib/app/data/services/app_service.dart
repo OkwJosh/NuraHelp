@@ -12,6 +12,7 @@ import 'package:nurahelp/app/data/models/message_models/conversation_model.dart'
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:nurahelp/app/data/models/settings_model/settings_model.dart';
+import 'package:nurahelp/app/data/services/cache_service.dart';
 import '../../utilities/exceptions/firebase_exceptions.dart';
 import '../../utilities/exceptions/platform_exceptions.dart';
 import '../models/login_response.dart';
@@ -90,7 +91,30 @@ class AppService {
     }
   }
 
-  Future<PatientModel> fetchPatientRecord(User? user) async {
+  Future<PatientModel> fetchPatientRecord(
+    User? user, {
+    bool forceRefresh = false,
+  }) async {
+    print(
+      '🔍 [AppService] fetchPatientRecord called - forceRefresh: $forceRefresh',
+    );
+
+    // Check cache first unless force refresh
+    if (!forceRefresh) {
+      final cachedData = CacheService.instance.getCachedPatient();
+      if (cachedData != null) {
+        try {
+          return LoginResponse.fromJson({
+            'patient': cachedData,
+            'settings': {},
+          }).patient;
+        } catch (e) {
+          print('❌ [AppService] Error parsing cached patient: $e');
+        }
+      }
+    }
+
+    // Fetch from API
     final url = Uri.parse('$baseUrl/patient/auth/v1/profile');
     final response = await http.get(
       url,
@@ -99,7 +123,12 @@ class AppService {
     final token = await user?.getIdToken();
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return LoginResponse.fromJson(data).patient;
+      final patient = LoginResponse.fromJson(data).patient;
+
+      // Cache the result
+      await CacheService.instance.cachePatient(data['patient']);
+
+      return patient;
     } else {
       throw Exception('Failed to fetch patient record ${response.statusCode}');
     }
@@ -160,7 +189,26 @@ class AppService {
     }
   }
 
-  Future<SettingsModel> fetchPatientSettings(User? user) async {
+  Future<SettingsModel> fetchPatientSettings(
+    User? user, {
+    bool forceRefresh = false,
+  }) async {
+    // Check cache first unless force refresh
+    if (!forceRefresh) {
+      final cachedData = CacheService.instance.getCachedSettings();
+      if (cachedData != null) {
+        try {
+          return LoginResponse.fromJson({
+            'patient': {},
+            'settings': cachedData,
+          }).settings;
+        } catch (e) {
+          print('❌ [AppService] Error parsing cached settings: $e');
+        }
+      }
+    }
+
+    // Fetch from API
     final url = Uri.parse('$baseUrl/patient/auth/v1/profile');
     final response = await http.get(
       url,
@@ -170,15 +218,38 @@ class AppService {
     print('Hey this is the $token');
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return LoginResponse.fromJson(data).settings;
+      final settings = LoginResponse.fromJson(data).settings;
+
+      // Cache the result
+      await CacheService.instance.cacheSettings(data['settings']);
+
+      return settings;
     } else {
       throw Exception('Failed to fetch patient record ${response.statusCode}');
     }
   }
 
+  Future<ClinicalResponse> getClinicalData({
+    User? user,
+    bool forceRefresh = false,
+  }) async {
+    print(
+      '🔍 [AppService] getClinicalData called - forceRefresh: $forceRefresh',
+    );
 
+    // Check cache first unless force refresh
+    if (!forceRefresh) {
+      final cachedData = CacheService.instance.getCachedClinicalData();
+      if (cachedData != null) {
+        try {
+          return ClinicalResponse.fromJson(cachedData);
+        } catch (e) {
+          print('❌ [AppService] Error parsing cached clinical data: $e');
+        }
+      }
+    }
 
-  Future<ClinicalResponse> getClinicalData({User? user}) async {
+    // Fetch from API
     final url = Uri.parse('$baseUrl/api/v1/my-info');
     final response = await http.get(
       url,
@@ -186,7 +257,12 @@ class AppService {
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return ClinicalResponse.fromJson(data);
+      final clinical = ClinicalResponse.fromJson(data);
+
+      // Cache the result
+      await CacheService.instance.cacheClinicalData(data);
+
+      return clinical;
     } else {
       throw Exception('Failed to fetch clinical record ${response.statusCode}');
     }
@@ -300,87 +376,117 @@ class AppService {
     }
   }
 
+  // Add these methods to your AppService class
 
-// Add these methods to your AppService class
-
-// Get chat history with a specific user
-Future<Map<String, dynamic>> getChatHistory(
-  String receiverId,
-  User? user,
-) async {
-  final url = Uri.parse('$baseUrl/chat/v1/history/$receiverId');
-  final response = await http.get(url, headers: await _getHeaders(user, true));
-
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    throw Exception('Failed to fetch chat history: ${response.statusCode}');
-  }
-}
-
-// Get all conversations
-Future<List<ConversationModel>> getConversations(User? user) async {
-  final url = Uri.parse('$baseUrl/chat/v1/conversations');
-  final response = await http.get(url, headers: await _getHeaders(user, true));
-
-  if (response.statusCode == 200) {
-    final List<dynamic> data = jsonDecode(response.body);
-    return data.map((json) => ConversationModel.fromJson(json)).toList();
-  } else {
-    throw Exception('Failed to fetch conversations: ${response.statusCode}');
-  }
-}
-
-// Mark messages as read from a specific sender
-Future<void> markMessagesAsRead(String senderId, User? user) async {
-  final url = Uri.parse('$baseUrl/chat/v1/read/$senderId');
-  final response = await http.put(url, headers: await _getHeaders(user, true));
-
-  if (response.statusCode != 200) {
-    throw Exception('Failed to mark messages as read: ${response.statusCode}');
-  }
-}
-
-// Mark all messages as read
-Future<void> markAllMessagesAsRead(User? user) async {
-  final url = Uri.parse('$baseUrl/chat/v1/read/all');
-  final response = await http.put(url, headers: await _getHeaders(user, true));
-
-  if (response.statusCode != 200) {
-    throw Exception(
-      'Failed to mark all messages as read: ${response.statusCode}',
+  // Get chat history with a specific user
+  Future<Map<String, dynamic>> getChatHistory(
+    String receiverId,
+    User? user,
+  ) async {
+    final url = Uri.parse('$baseUrl/chat/v1/history/$receiverId');
+    final response = await http.get(
+      url,
+      headers: await _getHeaders(user, true),
     );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to fetch chat history: ${response.statusCode}');
+    }
+  }
+
+  // Get all conversations
+  Future<List<ConversationModel>> getConversations(
+    User? user, {
+    bool forceRefresh = false,
+  }) async {
+    // Check cache first unless force refresh
+    if (!forceRefresh) {
+      final cachedData = CacheService.instance.getCachedConversations();
+      if (cachedData != null) {
+        try {
+          return cachedData
+              .map((json) => ConversationModel.fromJson(json))
+              .toList();
+        } catch (e) {
+          print('❌ [AppService] Error parsing cached conversations: $e');
+        }
+      }
+    }
+
+    // Fetch from API
+    final url = Uri.parse('$baseUrl/chat/v1/conversations');
+    final response = await http.get(
+      url,
+      headers: await _getHeaders(user, true),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+
+      // Cache the result
+      await CacheService.instance.cacheConversations(data);
+
+      return data.map((json) => ConversationModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to fetch conversations: ${response.statusCode}');
+    }
+  }
+
+  // Mark messages as read from a specific sender
+  Future<void> markMessagesAsRead(String senderId, User? user) async {
+    final url = Uri.parse('$baseUrl/chat/v1/read/$senderId');
+    final response = await http.put(
+      url,
+      headers: await _getHeaders(user, true),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to mark messages as read: ${response.statusCode}',
+      );
+    }
+  }
+
+  // Mark all messages as read
+  Future<void> markAllMessagesAsRead(User? user) async {
+    final url = Uri.parse('$baseUrl/chat/v1/read/all');
+    final response = await http.put(
+      url,
+      headers: await _getHeaders(user, true),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to mark all messages as read: ${response.statusCode}',
+      );
+    }
+  }
+
+  // Upload file for chat (image, document, etc.)
+  Future<Map<String, dynamic>> uploadChatFile(
+    XFile file,
+    String receiver,
+    User? user,
+  ) async {
+    final url = Uri.parse('$baseUrl/api/v1/upload');
+
+    final request = http.MultipartRequest('POST', url);
+    request.headers.addAll(await _getHeaders(user, true));
+    request.fields['receiver'] = receiver;
+
+    request.files.add(
+      await http.MultipartFile.fromPath('file', file.path, filename: file.name),
+    );
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to upload file: ${response.statusCode}');
+    }
   }
 }
-
-// Upload file for chat (image, document, etc.)
-Future<Map<String, dynamic>> uploadChatFile(
-  XFile file,
-  String receiver,
-  User? user,
-) async {
-  final url = Uri.parse('$baseUrl/api/v1/upload');
-
-  final request = http.MultipartRequest('POST', url);
-  request.headers.addAll(await _getHeaders(user, true));
-  request.fields['receiver'] = receiver;
-
-  request.files.add(
-    await http.MultipartFile.fromPath('file', file.path, filename: file.name),
-  );
-
-  final streamedResponse = await request.send();
-  final response = await http.Response.fromStream(streamedResponse);
-
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    throw Exception('Failed to upload file: ${response.statusCode}');
-  }
-}
-
-
-
-
-}
-

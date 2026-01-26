@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
@@ -8,49 +7,54 @@ import 'package:nurahelp/app/data/services/nurabot_service.dart';
 
 import '../../../../data/models/message_models/bot_message_model.dart';
 
-class NuraBotController extends GetxController{
+class NuraBotController extends GetxController {
   static NuraBotController get instance => Get.find();
 
+  final _nuraBotService = NuraBotService();
+  final messageController = TextEditingController();
 
-  final nuraBotService = NuraBotService();
-  final TextEditingController messageController = TextEditingController();
-  var conversations = <BotMessageModel>[].obs;
-  Rx<bool> notReceivedAMessage = true.obs;
-  int? lastIndex;
-  Rx<bool> showMessageStatus = false.obs;
-  Rx<bool> isReplying = false.obs;
+  final conversations = <BotMessageModel>[].obs;
+  final isReplying = false.obs;
 
+  Future<void> sendBotMessage({
+    File? documentFile,
+    required PatientModel patient,
+  }) async {
+    final context = Get.context;
+    if (context != null) {
+      FocusScope.of(context).unfocus();
+    }
 
+    final query = messageController.text.trim();
+    if (query.isEmpty) return;
 
-
-  void sendBotMessage({File? documentFile, required PatientModel patient}) async {
-    FocusScope.of(Get.context!).unfocus();
-
+    isReplying.value = true;
+    BotMessageModel? placeholderMessage;
 
     try {
-      final query = messageController.text.trim();
       final message = BotMessageModel(
         userId: patient.id!,
         message: query,
         documentFile: documentFile,
         sender: SenderType.user,
-        threadId: await FirebaseAuth.instance.currentUser?.getIdToken(),
+        threadId: patient.id,
       );
 
       conversations.insert(0, message);
       messageController.clear();
 
-      final placeholderMessage = BotMessageModel(
+      placeholderMessage = BotMessageModel(
         sender: SenderType.bot,
         isLoading: true,
       );
       conversations.insert(0, placeholderMessage);
 
       // Get reply
-      final reply = await nuraBotService.sendChatMessage(
+      final reply = await _nuraBotService.sendChatMessage(
         threadId: message.userId!,
         query: query,
       );
+
       final index = conversations.indexOf(placeholderMessage);
       if (index != -1) {
         conversations[index] = BotMessageModel(
@@ -61,28 +65,25 @@ class NuraBotController extends GetxController{
         );
       }
     } catch (e) {
-      throw Exception('Failed to send query');
+      // Remove placeholder on error
+      if (placeholderMessage != null) {
+        conversations.remove(placeholderMessage);
+      }
+      // Show error to user
+      Get.snackbar('Error', 'Failed to send message: ${e.toString()}');
+      rethrow;
+    } finally {
+      isReplying.value = false;
     }
   }
 
-
-
-  bool checkForLastMessage(List items){
-    if(items.indexOf(items) == items.lastIndexOf(items)){
-      return true;
-    }
-    return false;
+  bool checkForLastMessage(List items, dynamic item) {
+    return items.isNotEmpty && items.last == item;
   }
-
-
-
 
   @override
-  void dispose() {
-    super.dispose();
+  void onClose() {
     messageController.dispose();
-
+    super.onClose();
   }
-
-
 }

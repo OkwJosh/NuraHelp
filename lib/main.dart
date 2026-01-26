@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/data/services/app_service.dart';
+import 'package:nurahelp/app/data/services/cache_service.dart';
 import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
+import 'package:nurahelp/app/features/main/controllers/symptom_insight_controller/symptom_insight_controller.dart';
 import 'package:nurahelp/firebase_options.dart';
 // import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 // import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
@@ -24,9 +26,14 @@ void main() async {
   // );
 
   await dotenv.load(fileName: '.env');
+
+  // Initialize services
+  await Get.putAsync(() => CacheService().init(), permanent: true);
   Get.put(AppService(), permanent: true);
   Get.put(PatientController());
   Get.put(NuraBotController());
+  Get.put(SymptomInsightController());
   // SocketService will be initialized after user login
+
   runApp(const MyApp());
 }

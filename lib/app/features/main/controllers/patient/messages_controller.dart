@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:nurahelp/app/data/models/message_models/conversation_model.dart';
 import 'package:nurahelp/app/data/models/message_models/message_model.dart';
 import 'package:nurahelp/app/data/services/app_service.dart';
+import 'package:nurahelp/app/data/services/cache_service.dart';
 import 'package:nurahelp/app/data/services/socket_service.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/messages_and_calls/direct_message.dart';
@@ -58,6 +59,13 @@ class MessagesController extends GetxController {
     socketService.onMessagesRead = (readerId) {
       _handleMessagesRead(readerId);
     };
+  }
+
+  /// Refresh conversations (force API call and clear cache)
+  Future<void> refreshConversations() async {
+    debugPrint('🔄 [MessagesController] Force refreshing conversations...');
+    await CacheService.instance.clearConversationsCache();
+    await fetchConversations();
   }
 
   void _handleMessagesRead(String readerId) {
