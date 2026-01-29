@@ -23,7 +23,7 @@ class AppService {
   final String baseUrl = dotenv.env['NEXT_PUBLIC_API_URL']!;
 
   Future<Map<String, String>> _getHeaders(User? user, bool acceptValue) async {
-    final token = await user?.getIdToken(true);
+    final token = await user?.getIdToken();
     return {
       if (token != null) 'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -449,7 +449,6 @@ class AppService {
     }
   }
 
-  // Mark all messages as read
   Future<void> markAllMessagesAsRead(User? user) async {
     final url = Uri.parse('$baseUrl/chat/v1/read/all');
     final response = await http.put(
