@@ -3,6 +3,7 @@ import 'package:nurahelp/app/bindings/network_bindings.dart';
 import 'package:nurahelp/app/features/auth/screens/forget_password/email_sent.dart';
 import 'package:nurahelp/app/features/auth/screens/forget_password/forget_password.dart';
 import 'package:nurahelp/app/features/auth/screens/login/login.dart';
+import 'package:nurahelp/app/features/auth/screens/otp_verification.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/confirm_email.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/onboarding.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/sign_up.dart';
@@ -65,6 +66,14 @@ class AppPages {
     GetPage(
       name: AppRoutes.onboarding,
       page: () => FirstTimeOnBoardingScreen(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.otpVerification,
+      page: () {
+        final email = Get.arguments as String? ?? '';
+        return OtpVerificationScreen(email: email);
+      },
       transition: Transition.rightToLeft,
     ),
 

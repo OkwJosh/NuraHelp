@@ -41,13 +41,13 @@ class MessageListTile extends StatelessWidget {
     final difference = now.difference(dateTime);
 
     if (difference.inDays == 0) {
-      return DateFormat('h:mm a').format(dateTime);
+      return DateFormat('h:mm a').format(dateTime.toLocal());
     } else if (difference.inDays == 1) {
       return 'Yesterday';
     } else if (difference.inDays < 7) {
-      return DateFormat('EEEE').format(dateTime);
+      return DateFormat('EEEE').format(dateTime.toLocal());
     } else {
-      return DateFormat('MMM d').format(dateTime);
+      return DateFormat('MMM d').format(dateTime.toLocal());
     }
   }
 

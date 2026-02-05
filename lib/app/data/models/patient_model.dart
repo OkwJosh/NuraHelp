@@ -1,3 +1,4 @@
+import 'package:nurahelp/app/data/models/appointment_model.dart';
 import 'package:nurahelp/app/data/models/clinical_response.dart';
 import 'package:nurahelp/app/data/models/doctor_model.dart';
 
@@ -6,10 +7,12 @@ class PatientModel {
   String name;
   String email;
   String phone;
+  bool isComplete = false;
   DateTime? DOB;
   String? profilePicture;
   String? inviteCode;
   DoctorModel? doctor;
+  List<AppointmentModel> appointments = [];
   ClinicalResponse? clinicalResponse;
 
   PatientModel({
@@ -21,7 +24,9 @@ class PatientModel {
     this.profilePicture,
     this.inviteCode,
     this.doctor,
+    this.appointments = const [],
     this.clinicalResponse,
+    this.isComplete = false,
   });
 
   List<String>? get nameParts => name.split(' ');
@@ -37,6 +42,8 @@ class PatientModel {
     phone: '',
     DOB: DateTime.now(),
     profilePicture: '',
+    appointments: [],
+    isComplete: false,
   );
 
   Map<String, dynamic> toJson() {
@@ -46,6 +53,7 @@ class PatientModel {
       'phone': phone,
       'DOB': DOB?.millisecondsSinceEpoch,
       'profilePicture': profilePicture,
+      'isComplete': isComplete,
     };
   }
 
@@ -60,9 +68,9 @@ class PatientModel {
           ? DoctorModel.fromJson(json['doctor'])
           : null,
       profilePicture: json['profilePicture'],
-      clinicalResponse: json['clinicalResponse'] != null
-          ? ClinicalResponse.fromJson(json['clinicalResponse'])
-          : null,
+      appointments:[], // Appointments are fetched separately from /api/v1/appointments
+      clinicalResponse: null,
+      isComplete: json['isComplete'] ?? false,
     );
   }
 }

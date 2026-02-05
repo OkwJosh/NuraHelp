@@ -17,7 +17,6 @@ class VitalModel {
     required this.date,
   });
 
-
   static empty() => VitalModel(
     bglValue: '',
     weightValue: '',
@@ -30,13 +29,15 @@ class VitalModel {
 
   factory VitalModel.fromJson(Map<String, dynamic> json) {
     return VitalModel(
-      bglValue: json['bgl'],
-      weightValue: json['weight'],
-      heartRate: json['heartRate'],
-      oxygenSatValue: json['oxygen'],
-      bodyTempValue: json['bodyTemp'],
-      bpValue: json['bp'],
-      date: DateTime.parse(json['date']),
+      bglValue: json['bgl'] ?? '',
+      weightValue: json['weight'] ?? '',
+      heartRate: json['heartRate'] ?? '',
+      oxygenSatValue: json['oxygen'] ?? '',
+      bodyTempValue: json['bodyTemp'] ?? '',
+      bpValue: json['bp'] ?? '',
+      date: json['date'] != null
+          ? DateTime.parse(json['date'])
+          : DateTime.now(),
     );
   }
 }

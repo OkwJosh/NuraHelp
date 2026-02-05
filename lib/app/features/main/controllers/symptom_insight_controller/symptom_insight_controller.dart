@@ -18,11 +18,10 @@ class SymptomInsightController extends GetxController {
   final symptomColors = <String, Color>{}.obs;
   final symptomSpots = <String, List<FlSpot>>{}.obs;
   final isLoading = true.obs;
+  final hasError = false.obs;
   final isMonthlyView = false.obs;
   final chartTrigger = 0.obs;
-
   final _cachedUniqueSymptoms = <SymptomModel>[].obs;
-
   final _appService = Get.find<AppService>();
   final _patientController = Get.find<PatientController>();
   final Set<Color> _usedColors = {};
@@ -342,6 +341,24 @@ class SymptomInsightController extends GetxController {
     symptoms.refresh();
     _updateCachedUniqueSymptoms();
     generateSpots(symptoms);
+  }
+
+
+  Future<void> refreshSymptomData() async {
+    try {
+      isLoading.value = true;
+      hasError.value = false;
+
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+     
+
+    } catch (e) {
+      hasError.value = true;
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override

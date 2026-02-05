@@ -39,31 +39,33 @@ dependencies:
   flutter_native_splash: ^2.4.7
   shared_preferences: ^2.5.3
   socket_io_client: ^3.1.4
-#  zego_uikit_prebuilt_call: ^4.18.0
+  syncfusion_flutter_pdfviewer: ^30.1.41
+  #  zego_uikit_prebuilt_call: ^4.18.0
 #  zego_uikit_signaling_plugin: ^2.8.16
 #  shelf_web_socket: ^3.0.0
 
 
 
+  path_provider: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.4
+  mockito: ^5.4.4
+  build_runner: ^2.4.7
 
 
 flutter_launcher_icons:
     android: "launcher_icon"
     ios: true
     image_path: "assets/logo/NuraAndroidLogo.png" # Fallback for older iOS
-    adaptive_icon_background: "#3471eb"
+    adaptive_icon_background: "#FFFFFF"
     adaptive_icon_foreground: "assets/logo/NuraAndroidLogo.png"
 
 flutter_native_splash:
-  color: "#ffffff"
-  image: assets/logo/NuraIOSLogo.png
-  color_dark: "#3471eb"
-  image_dark: assets/logo/NuraIOSLogoAlt.png
+  color: "#2A7BE4"
+  image: assets/logo/NuraAndroidLogoAlt.png
   branding: assets/logo/brandDark.png
   branding_dark: assets/logo/brand.png
 
@@ -76,7 +78,7 @@ flutter_native_splash:
     image: assets/logo/NuraAndroidLogo.png
     image_dark: assets/logo/NuraAndroidLogoAlt.png
     color: "#ffffff"
-    color_dark: "#3471eb"
+    color_dark: "#2A7BE4"
 
   android: true
   ios: true

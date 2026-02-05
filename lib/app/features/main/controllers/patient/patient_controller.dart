@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:math' as math;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/notification_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/security_model.dart';
@@ -16,6 +18,8 @@ import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import 'package:nurahelp/app/utilities/validators/validation.dart';
+import 'package:nurahelp/app/data/models/appointment_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class PatientController extends GetxController {
   static PatientController get instance => Get.find();
@@ -23,6 +27,7 @@ class PatientController extends GetxController {
   final imageLoading = false.obs;
   Rx<PatientModel> patient = PatientModel.empty().obs;
   Rx<SettingsModel> settings = SettingsModel.empty().obs;
+  final String baseUrl = dotenv.env['NEXT_PUBLIC_API_URL']!;
   // Rx<ClinicalResponse> clinicResponse = ClinicalResponse.empty().obs;
   Rx<bool> proceedToDashboardIsClicked = false.obs;
   Rx<bool> enableHeyNuraVoice = false.obs;
@@ -38,6 +43,9 @@ class PatientController extends GetxController {
   final formKey = GlobalKey<FormState>();
   final doctorCodeController = TextEditingController();
 
+  // Track canceled appointments locally since backend doesn't return status field
+  final RxSet<String> canceledAppointmentIds = <String>{}.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -45,11 +53,6 @@ class PatientController extends GetxController {
         settings.value.notifications.appointmentReminders;
     enableMessageAlerts.value = settings.value.notifications.messageAlerts;
     enable2Fa.value = settings.value.security.twoFactorAuth;
-    _initializeController();
-  }
-
-  Future<void> _initializeController() async {
-    final token = await FirebaseAuth.instance.currentUser?.getIdToken();
   }
 
   int getAge(DateTime? date) {
@@ -68,7 +71,7 @@ class PatientController extends GetxController {
     editName.text = patient.value.name;
     editEmail.text = patient.value.email;
     editPhone.text = patient.value.phone;
-    }
+  }
 
   formatDate(DateTime? date) {
     String dateSuffix;
@@ -95,7 +98,6 @@ class PatientController extends GetxController {
       if (image != null) {
         imageLoading.value = true;
         final currentUser = FirebaseAuth.instance.currentUser;
-        final token = await currentUser?.getIdToken();
         final imageUrl = await appService.uploadImage(
           'Patient/Profile/',
           image,
@@ -169,8 +171,6 @@ class PatientController extends GetxController {
     final user = FirebaseAuth.instance.currentUser;
     try {
       AppScreenLoader.openLoadingDialog('Saving setting');
-      final token = await user?.getIdToken();
-      print('Hey this is the token $token');
       final newSettings = SettingsModel(
         notifications: NotificationModel(
           appointmentReminders: enableAppointmentReminders.value,
@@ -178,11 +178,7 @@ class PatientController extends GetxController {
         ),
         security: SecurityModel(twoFactorAuth: enable2Fa.value),
       );
-      print(newSettings.notifications.appointmentReminders);
-      print(newSettings.notifications.messageAlerts);
-      print(newSettings.security.twoFactorAuth);
       await appService.savePatientSettings(newSettings, user);
-      print('This is the settings $settings');
       AppScreenLoader.stopLoading();
       AppToasts.successSnackBar(title: 'Settings has been saved!');
     } catch (e) {
@@ -351,5 +347,91 @@ class PatientController extends GetxController {
         );
       },
     );
+  }
+
+  Future<Map<String, String>> _getHeaders(User? user, bool acceptValue) async {
+    String? token;
+    try {
+      token = await user?.getIdToken().timeout(const Duration(seconds: 5));
+    } catch (e) {
+      token = await user?.getIdToken();
+    }
+
+    return {
+      if (token != null) 'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+      'Accept': acceptValue ? '*/*' : 'application/json',
+    };
+  }
+
+  Future<void> cancelAppointment(String appointmentId) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+
+      final headers = await _getHeaders(user, false);
+
+      final url = Uri.parse('$baseUrl/api/v1/appointments/cancel/');
+
+      final requestBody = jsonEncode({'appointmentId': appointmentId});
+
+      final response = await http.put(url, headers: headers, body: requestBody);
+
+      if (response.statusCode == 200) {
+        // Add to canceled appointments set (since backend doesn't return status)
+        canceledAppointmentIds.add(appointmentId);
+
+        // Update the appointment status in the local model
+        final appointments = patient.value.appointments ?? [];
+
+        final appointmentIndex = appointments.indexWhere(
+          (a) => a.id == appointmentId,
+        );
+
+        if (appointmentIndex != -1) {
+          final updatedAppointment = AppointmentModel(
+            id: appointments[appointmentIndex].id,
+            purpose: appointments[appointmentIndex].purpose,
+            appointmentDate: appointments[appointmentIndex].appointmentDate,
+            appointmentStartTime:
+                appointments[appointmentIndex].appointmentStartTime,
+            appointmentFinishTime:
+                appointments[appointmentIndex].appointmentFinishTime,
+            image: appointments[appointmentIndex].image,
+            status: 'Canceled',
+          );
+
+          appointments[appointmentIndex] = updatedAppointment;
+
+          patient.refresh(); // Trigger UI refresh
+
+          Get.snackbar(
+            'Success',
+            'Appointment canceled successfully',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.green,
+            colorText: Colors.white,
+            duration: Duration(seconds: 2),
+          );
+        } else {
+          Get.snackbar(
+            'Error',
+            'Failed to cancel appointment (Status: ${response.statusCode})',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            duration: Duration(seconds: 2),
+          );
+        }
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'An error occurred: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: Duration(seconds: 2),
+      );
+    }
   }
 }

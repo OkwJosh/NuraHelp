@@ -10,6 +10,7 @@ import 'package:nurahelp/app/data/services/network_manager.dart';
 import 'package:nurahelp/app/features/auth/controllers/sign_up_controllers/sign_up_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/dashboard/dashboard_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
+import 'package:nurahelp/app/features/main/controllers/symptom_insight_controller/symptom_insight_controller.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/patient_health.dart';
 import 'package:nurahelp/app/routes/app_routes.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
@@ -19,9 +20,6 @@ import 'common/shimmer/shimmer_effect.dart';
 import 'features/main/screens/appointments/appointments.dart';
 import 'features/main/screens/dashboard/dashboard.dart';
 import 'features/main/screens/doctors/doctors.dart';
-import 'features/main/screens/messages_and_calls/messages.dart';
-import 'features/main/screens/nura_bot/nura_bot.dart';
-import 'features/main/screens/settings/settings.dart';
 import 'features/main/screens/symptom_insights/symptom_insights.dart';
 
 class NavigationMenu extends StatelessWidget {
@@ -33,6 +31,7 @@ class NavigationMenu extends StatelessWidget {
     final _authController = Get.put(SignUpController());
     final patientController = Get.find<PatientController>();
     final dashboardController = Get.put(DashboardController());
+    final symptomController = Get.find<SymptomInsightController>();
     final networkManager = Get.find<AppNetworkManager>();
 
     void showLogoutDialog() {
@@ -88,6 +87,7 @@ class NavigationMenu extends StatelessWidget {
         () => AbsorbPointer(
           absorbing:
               dashboardController.isLoading.value ||
+              symptomController.isLoading.value ||
               FirebaseAuth.instance.currentUser == null,
           child: Padding(
             padding: EdgeInsets.only(bottom: 35, left: 15, right: 15),
@@ -277,6 +277,7 @@ class NavigationMenu extends StatelessWidget {
             onRetry: () {
               // Refresh dashboard data when internet is restored
               dashboardController.refreshDashboardData();
+              symptomController.refreshSymptomData();
             },
           );
         }
@@ -343,11 +344,16 @@ class NavigationMenu extends StatelessWidget {
                                           ),
                                         ),
                                         child:
-                                            patientController
-                                                .patient
-                                                .value
-                                                .profilePicture!
-                                                .isEmpty
+                                            (patientController
+                                                        .patient
+                                                        .value
+                                                        .profilePicture ==
+                                                    null ||
+                                                patientController
+                                                    .patient
+                                                    .value
+                                                    .profilePicture!
+                                                    .isEmpty)
                                             ? CircleAvatar(
                                                 radius: 30,
                                                 backgroundColor: Colors.white,
@@ -377,21 +383,47 @@ class NavigationMenu extends StatelessWidget {
                                                             radius: 90,
                                                           ),
                                                   errorWidget:
-                                                      (context, url, error) =>
-                                                          const Icon(
-                                                            Icons.error,
-                                                          ),
+                                                      (context, url, error) {
+                                                    print(
+                                                      '❌ [NavMenu] Error loading profile picture: $error, URL: $url',
+                                                    );
+                                                    return CircleAvatar(
+                                                      radius: 15,
+                                                      backgroundColor:
+                                                          AppColors
+                                                              .secondaryColor
+                                                              .withOpacity(0.3),
+                                                      child: Icon(
+                                                        Icons.person,
+                                                        size: 16,
+                                                        color: AppColors
+                                                            .secondaryColor,
+                                                      ),
+                                                    );
+                                                  },
                                                 ),
                                               ),
                                       ),
                               ),
                               SizedBox(width: 15),
-                              Text(
-                                '${patientController.patient.value.name.split(" ").first} ${patientController.patient.value.nameParts?[1].split("").first.toUpperCase()}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins-Regular',
-                                  fontWeight: FontWeight.w500,
+                              Expanded(
+                                child: Text(
+                                  patientController.patient.value.name !=
+                                              null &&
+                                          patientController
+                                              .patient
+                                              .value
+                                              .name!
+                                              .isNotEmpty
+                                      ? '${patientController.patient.value.name!.split(" ").first} ${(patientController.patient.value.nameParts != null && patientController.patient.value.nameParts!.length > 1) ? patientController.patient.value.nameParts![1].split("").first.toUpperCase() : ""}'
+                                      : 'Patient',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Poppins-Regular',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],

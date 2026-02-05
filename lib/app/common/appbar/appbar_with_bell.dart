@@ -11,22 +11,32 @@ import '../../nav_menu.dart';
 import '../../utilities/constants/colors.dart';
 
 class AppBarWithBell extends StatelessWidget implements PreferredSizeWidget {
-  const AppBarWithBell({this.showSearchBar = true, super.key});
+  const AppBarWithBell({
+    this.showSearchBar = true,
+    super.key,
+    this.dynamicAppIcon = true,
+  });
 
   final bool showSearchBar;
+  final bool dynamicAppIcon;
 
   @override
   Widget build(BuildContext context) {
     final _controller = Get.find<NuraBotController>();
     final _patientController = Get.find<PatientController>();
     return WillPopScope(
-      onWillPop: ()async{
-        Get.offAll(()=>NavigationMenu());
+      onWillPop: () async {
+        Get.offAll(() => NavigationMenu());
         return false;
       },
       child: Container(
         color: Colors.white,
-        padding: const EdgeInsets.only(top: 40, left: 15, right: 15, bottom: 10),
+        padding: const EdgeInsets.only(
+          top: 40,
+          left: 15,
+          right: 15,
+          bottom: 10,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -42,27 +52,37 @@ class AppBarWithBell extends StatelessWidget implements PreferredSizeWidget {
               valueListenable: _controller.messageController,
               builder: (context, value, child) {
                 final hasText = value.text.trim().isNotEmpty;
+                // Only show dynamic icon switching if dynamicAppIcon is true
+                final shouldSwitch = dynamicAppIcon && hasText;
+
                 return Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: AppColors.black, width: 0.3),
                   ),
                   child: IconButton(
-                    onPressed: () async{
+                    onPressed: () async {
                       if (hasText) {
                         final focusScope = FocusScope.of(context);
                         focusScope.unfocus();
                         await Future.delayed(const Duration(milliseconds: 350));
-                        Get.to(() => const NuraBot(), transition: Transition.rightToLeftWithFade);
-                        _controller.sendBotMessage(patient: _patientController.patient.value);
+                        Get.to(
+                          () => const NuraBot(),
+                          transition: Transition.rightToLeftWithFade,
+                        );
+                        _controller.sendBotMessage(
+                          patient: _patientController.patient.value,
+                        );
                       } else {
                         Get.to(() => NotificationScreen());
                       }
                     },
                     icon: SvgIcon(
-                      hasText ? AppIcons.send : AppIcons.notification,
-                      color: hasText?AppColors.secondaryColor:AppColors.black,
-                      size: hasText?22:25,
+                      shouldSwitch ? AppIcons.send : AppIcons.notification,
+                      color: shouldSwitch
+                          ? AppColors.secondaryColor
+                          : AppColors.black,
+                      size: shouldSwitch ? 22 : 25,
                     ),
                   ),
                 );

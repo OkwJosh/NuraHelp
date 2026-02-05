@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nurahelp/app/common/appbar/appbar.dart';
 import 'package:nurahelp/app/common/widgets/message_status_tick.dart';
+import 'package:nurahelp/app/common/widgets/no_internet_screen.dart';
+import 'package:nurahelp/app/common/widgets/unstable_internet_screen.dart';
 import 'package:nurahelp/app/data/models/doctor_model.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/direct_message_controller.dart';
 import 'package:nurahelp/app/modules/patient/views/direct_message/direct_message_shimmer.dart';
@@ -21,6 +23,26 @@ class DirectMessagePage extends StatelessWidget {
     final controller = Get.put(DirectMessageController(doctor: doctor));
 
     return Obx(() {
+      // Show no internet screen if internet is off
+      if (controller.hasNoInternet.value) {
+        return NoInternetScreen(
+          onRetry: () {
+            controller.fetchMessages();
+          },
+        );
+      }
+
+      // Show unstable internet screen if timeout happened
+      if (controller.hasNetworkTimeout.value) {
+        return UnstableInternetScreen(
+          onRetry: () {
+            controller.hasNetworkTimeout.value = false;
+            controller.fetchMessages();
+          },
+        );
+      }
+
+      // Show shimmer while loading and no messages yet
       if (controller.isLoading.value && controller.messages.isEmpty) {
         return const DirectMessageShimmer();
       }
@@ -220,7 +242,7 @@ class DirectMessagePage extends StatelessWidget {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          '${message.timestamp.hour}:${message.timestamp.minute.toString().padLeft(2, '0')}',
+                                          '${message.timestamp.toLocal().hour}:${message.timestamp.toLocal().minute.toString().padLeft(2, '0')}',
                                           style: TextStyle(
                                             fontSize: 10,
                                             fontFamily: 'Poppins-Light',

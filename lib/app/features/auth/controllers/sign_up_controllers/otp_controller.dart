@@ -1,9 +1,10 @@
-
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/features/auth/screens/sign_up/onboarding.dart';
+import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/utilities/popups/screen_loader.dart';
 
 import '../../../../data/services/app_service.dart';
@@ -29,15 +30,17 @@ class OtpController extends GetxController {
     startCountdown(60);
   }
 
-  Future<void> resendOtp()async{
-    try{
+  Future<void> resendOtp() async {
+    try {
       AppScreenLoader.openLoadingDialog('Resending OTP ...');
       resendingOtp.value = true;
       await otpAuth.requestOtp(email);
       AppScreenLoader.stopLoading();
-      AppToasts.successSnackBar(title: 'OTP Resent',
-          message: 'We\'ve sent another OTP to your email');
-    }catch (e) {
+      AppToasts.successSnackBar(
+        title: 'OTP Resent',
+        message: 'We\'ve sent another OTP to your email',
+      );
+    } catch (e) {
       AppScreenLoader.stopLoading();
       AppToasts.errorSnackBar(
         title: 'Error sending OTP',
@@ -46,31 +49,52 @@ class OtpController extends GetxController {
     }
   }
 
-
   Future<void> verifyOtp() async {
     AppScreenLoader.openLoadingDialog('Verifying OTP ...');
     final isConnected = await AppNetworkManager.instance.isConnected();
     if (!isConnected) {
       AppScreenLoader.stopLoading();
-      AppToasts.warningSnackBar(title: 'No Internet Connection',
-          message: 'Connect to the internet to continue');
+      AppToasts.warningSnackBar(
+        title: 'No Internet Connection',
+        message: 'Connect to the internet to continue',
+      );
       return;
     }
-    if(otpCode.text.length < 6){
+    if (otpCode.text.length < 6) {
       AppScreenLoader.stopLoading();
       AppToasts.errorSnackBar(
         title: 'OTP Verification Failed',
-        message: 'The OTP supplied is incomplete'
+        message: 'The OTP supplied is incomplete',
       );
-      return ;
+      return;
     }
     try {
       await otpAuth.verifyOtp(email, otpCode.text.trim());
+
+      // Get patient controller and update isComplete to true
+      final patientController = Get.find<PatientController>();
+      final user = FirebaseAuth.instance.currentUser;
+
+      // Update isComplete to true and save to backend
+      if (user != null) {
+        patientController.patient.value.isComplete = true;
+        patientController.patient.refresh();
+
+        await otpAuth.updateIsCompleteField(
+          user,
+          patientController.patient.value,
+        );
+      }
+
       AppScreenLoader.stopLoading();
-      AppToasts.successSnackBar(title: 'OTP Verified!',
-          message: 'Your account has been verified successfully');
-      Get.to(() => FirstTimeOnBoardingScreen(),
-          transition: Transition.rightToLeft);
+      AppToasts.successSnackBar(
+        title: 'OTP Verified!',
+        message: 'Your account has been verified successfully',
+      );
+      Get.to(
+        () => FirstTimeOnBoardingScreen(),
+        transition: Transition.rightToLeft,
+      );
     } catch (e) {
       AppScreenLoader.stopLoading();
       AppToasts.errorSnackBar(
@@ -100,5 +124,4 @@ class OtpController extends GetxController {
     _timer?.cancel();
     super.onClose();
   }
-
 }

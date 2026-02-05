@@ -5,27 +5,65 @@ import 'package:nurahelp/app/common/appbar/appbar_with_bell.dart';
 import 'package:nurahelp/app/common/message_field/message_field.dart';
 import 'package:nurahelp/app/common/shimmer/shimmer_effect.dart';
 import 'package:nurahelp/app/common/widgets/coming_soon_screen.dart';
+import 'package:nurahelp/app/common/widgets/no_internet_screen.dart';
 import 'package:nurahelp/app/features/main/controllers/dashboard/dashboard_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/messages_and_calls/direct_message.dart';
 import 'package:nurahelp/app/features/main/screens/nura_bot/nura_bot.dart';
 import 'package:nurahelp/app/modules/patient/views/dashboard/dashboard_shimmer.dart';
-import 'package:nurahelp/app/routes/app_routes.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import '../../../../common/appointment_card/appointment_card.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   DashboardScreen({super.key});
 
-  final controller = Get.find<PatientController>();
-  final nuraController = Get.find<NuraBotController>();
-  final dashboardController = Get.put(DashboardController());
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  late final PatientController controller;
+  late final NuraBotController nuraController;
+  late final DashboardController dashboardController;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.find<PatientController>();
+    nuraController = Get.find<NuraBotController>();
+    dashboardController = Get.put(DashboardController());
+
+    // Unfocus text field when entering dashboard
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _unfocusKeyboard();
+    });
+  }
+
+  void _unfocusKeyboard() {
+    FocusScope.of(context).unfocus();
+    // Also clear the text to prevent keyboard activation on return
+    nuraController.messageController.clear();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      // Show no internet screen if internet is down
+      if (dashboardController.hasNoInternet.value) {
+        return NoInternetScreen(
+          onRetry: () {
+            dashboardController.refreshDashboardData();
+          },
+        );
+      }
+
       // Show shimmer while loading
       if (dashboardController.isLoading.value) {
         return const DashboardShimmer();
@@ -38,11 +76,13 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildDashboard(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWithBell(showSearchBar: false),
+      appBar: AppBarWithBell(showSearchBar: false, dynamicAppIcon: false),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
           child: RefreshIndicator(
+            backgroundColor: Colors.white,
+            color: AppColors.secondaryColor,
             onRefresh: () => dashboardController.refreshDashboardData(),
             child: SingleChildScrollView(
               child: Column(
@@ -101,13 +141,18 @@ class DashboardScreen extends StatelessWidget {
                             if (controller
                                     .patient
                                     .value
-                                    .clinicalResponse
                                     ?.appointments
                                     .isNotEmpty ==
                                 true) ...[
                               AppointmentCard(
                                 patientController: controller,
                                 isVirtual: false,
+                                appointment: controller
+                                    .patient
+                                    .value!
+                                    .appointments
+                                    .first,
+                                showStatus: true,
                               ),
                               const SizedBox(width: 10),
                             ],

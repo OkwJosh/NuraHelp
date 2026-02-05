@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:nurahelp/app/common/shimmer/shimmer_effect.dart';
 import 'package:nurahelp/app/data/models/doctor_model.dart';
-import 'package:nurahelp/app/features/main/screens/doctors/about_doctor.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 import '../../../../../utilities/constants/colors.dart';
@@ -119,20 +117,20 @@ class DoctorCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Transform.translate(
-                offset: Offset(15, 100),
-                child: SizedBox(
-                  height: 50,
-                  width: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                    ),
-                    onPressed: () => Get.to(() => AboutDoctorScreen()),
-                    child: SvgIcon(AppIcons.arrowUpRight, size: 25),
-                  ),
-                ),
-              ),
+              // Transform.translate(
+              //   offset: Offset(15, 100),
+              //   child: SizedBox(
+              //     height: 50,
+              //     width: 50,
+              //     child: ElevatedButton(
+              //       style: ElevatedButton.styleFrom(
+              //         padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+              //       ),
+              //       onPressed: () => Get.to(() => AboutDoctorScreen()),
+              //       child: SvgIcon(AppIcons.arrowUpRight, size: 25),
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),

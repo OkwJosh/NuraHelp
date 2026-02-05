@@ -8,39 +8,49 @@ class ClinicalResponse {
   final List<VitalModel> vitals;
   final List<MedicationModel> medications;
   final List<TestResultModel> testResults;
-  final List<AppointmentModel> appointments;
 
   ClinicalResponse({
     required this.vitals,
     required this.medications,
     required this.testResults,
-    required this.appointments,
   });
 
-  static empty() =>
-      ClinicalResponse(
-        vitals: VitalModel.empty(),
-        medications: MedicationModel.empty(),
-        testResults: TestResultModel.empty(),
-        appointments: AppointmentModel.empty(),
-      );
-
-
+  static empty() => ClinicalResponse(
+    vitals: [],
+    medications: [],
+    testResults: [],
+  );
 
   factory ClinicalResponse.fromJson(Map<String, dynamic> json) {
-  return ClinicalResponse(
-  vitals: (json['vitals'] as List<dynamic>?)
-      ?.map((item) => VitalModel.fromJson(item as Map<String, dynamic>))
-      .toList() ?? [],
-  medications: (json['medications'] as List<dynamic>?)
-      ?.map((item) => MedicationModel.fromJson(item as Map<String, dynamic>))
-      .toList() ?? [],
-  testResults: (json['testResults'] as List<dynamic>?)
-      ?.map((item) => TestResultModel.fromJson(item as Map<String, dynamic>))
-      .toList() ?? [],
-  appointments: (json['appointments'] as List<dynamic>?)
-      ?.map((item) => AppointmentModel.fromJson(item as Map<String, dynamic>))
-      .toList() ?? [],
-  );
+    final appointmentsList =
+        (json['appointments'] as List<dynamic>?)?.map((item) {
+          final appointment = AppointmentModel.fromJson(item);
+          return appointment;
+        }).toList() ??
+        [];
+
+    final testResultsList =
+        (json['testResults'] as List<dynamic>?)?.map((item) {
+          final result = TestResultModel.fromJson(item as Map<String, dynamic>);
+          return result;
+        }).toList() ??
+        [];
+
+    return ClinicalResponse(
+      vitals:
+          (json['vitals'] as List<dynamic>?)
+              ?.map((item) => VitalModel.fromJson(item as Map<String, dynamic>))
+              .toList() ??
+          [],
+      medications:
+          (json['medications'] as List<dynamic>?)
+              ?.map(
+                (item) =>
+                    MedicationModel.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
+      testResults: testResultsList,
+    );
   }
-  }
+}

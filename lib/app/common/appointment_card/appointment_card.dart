@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:intl/intl.dart';
+import 'package:nurahelp/app/data/models/appointment_model.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
 
@@ -9,19 +11,18 @@ import '../../utilities/constants/icons.dart';
 import '../shimmer/shimmer_effect.dart';
 
 class AppointmentCard extends StatefulWidget {
-  AppointmentCard({
+  const AppointmentCard({
     super.key,
     required this.isVirtual,
     this.showStatus = false,
-    this.status = 'pending',
     required this.patientController,
+    required this.appointment,
   });
 
   final bool isVirtual;
   final bool showStatus;
-  final String status;
-  bool showOptionsClicked = false;
   final PatientController patientController;
+  final AppointmentModel appointment;
 
   @override
   State<AppointmentCard> createState() => _AppointmentCardState();
@@ -59,59 +60,57 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                   width: 50,
                                   radius: 50,
                                 )
-                              :
-                                // : Container(
-                                //     width: 30,
-                                //     height: 30,
-                                //     decoration: BoxDecoration(
-                                //       color: Colors.white,
-                                //       borderRadius: BorderRadius.circular(100),
-                                //     ),
-                                //     child:
-                                //         widget
-                                //             .patientController
-                                //             .patient
-                                //             .value
-                                //             .doctor!
-                                //             .profilePicture
-                                //             .isEmpty
-                                //         ? CircleAvatar(
-                                //             radius: 30,
-                                //             backgroundColor: Colors.white,
-                                //             child: SvgIcon(
-                                //               AppIcons.profile,
-                                //               size: 30,
-                                //             ),
-                                //           )
-                                //         : ClipRRect(
-                                //             borderRadius: BorderRadius.circular(
-                                //               90,
-                                //             ),
-                                //             child: CachedNetworkImage(
-                                //               imageUrl: widget
-                                //                   .patientController
-                                //                   .patient
-                                //                   .value
-                                //                   .doctor!
-                                //                   .profilePicture,
-                                //               fit: BoxFit.cover,
-                                //               progressIndicatorBuilder:
-                                //                   (
-                                //                     context,
-                                //                     url,
-                                //                     downloadProgress,
-                                //                   ) => const AppShimmerEffect(
-                                //                     width: 100,
-                                //                     height: 100,
-                                //                     radius: 90,
-                                //                   ),
-                                //               errorWidget:
-                                //                   (context, url, error) =>
-                                //                       const Icon(Icons.error),
-                                //             ),
-                                //           ),
-                                //   ),
-                                SizedBox(),
+                              : Container(
+                                  width: 30,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(100),
+                                  ),
+                                  child:
+                                      widget
+                                          .patientController
+                                          .patient
+                                          .value
+                                          .doctor!
+                                          .profilePicture
+                                          .isEmpty
+                                      ? CircleAvatar(
+                                          radius: 30,
+                                          backgroundColor: Colors.white,
+                                          child: SvgIcon(
+                                            AppIcons.profile,
+                                            size: 30,
+                                          ),
+                                        )
+                                      : ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            90,
+                                          ),
+                                          child: CachedNetworkImage(
+                                            imageUrl: widget
+                                                .patientController
+                                                .patient
+                                                .value
+                                                .doctor!
+                                                .profilePicture,
+                                            fit: BoxFit.cover,
+                                            progressIndicatorBuilder:
+                                                (
+                                                  context,
+                                                  url,
+                                                  downloadProgress,
+                                                ) => const AppShimmerEffect(
+                                                  width: 100,
+                                                  height: 100,
+                                                  radius: 90,
+                                                ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                          ),
+                                        ),
+                                ),
                         ),
                         SizedBox(width: 10),
                         Column(
@@ -143,12 +142,11 @@ class _AppointmentCardState extends State<AppointmentCard> {
                     ),
                     Row(
                       children: [
-                        widget.showStatus
+                        widget.showStatus &&
+                                widget.appointment.status == 'Canceled'
                             ? Container(
                                 decoration: BoxDecoration(
-                                  color: widget.status == 'pending'
-                                      ? AppColors.warning50
-                                      : AppColors.error50,
+                                  color: AppColors.error50,
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Padding(
@@ -160,37 +158,24 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                     spacing: 5,
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor:
-                                            widget.status == 'pending'
-                                            ? Colors.orangeAccent
-                                            : Colors.redAccent,
+                                        backgroundColor: Colors.redAccent,
                                         radius: 5,
                                       ),
-                                      widget.status == 'pending'
-                                          ? Text(
-                                              'Pending',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontFamily: 'Poppins-Regular',
-                                                color: AppColors.warning500,
-                                                letterSpacing: -1,
-                                              ),
-                                            )
-                                          : Text(
-                                              'Canceled',
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontFamily: 'Poppins-Regular',
-                                                color: AppColors.error400,
-                                                letterSpacing: -1,
-                                              ),
-                                            ),
+                                      Text(
+                                        'Canceled',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: 'Poppins-Regular',
+                                          color: AppColors.error400,
+                                          letterSpacing: -1,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
                               )
-                            : SizedBox(),
-                        widget.status == 'canceled'
+                            : SizedBox.shrink(),
+                        widget.appointment.status == 'Canceled'
                             ? SizedBox.shrink()
                             : PopupMenuButton(
                                 icon: SvgIcon(AppIcons.ellipsis),
@@ -199,6 +184,12 @@ class _AppointmentCardState extends State<AppointmentCard> {
                                 itemBuilder: (context) {
                                   return [
                                     PopupMenuItem(
+                                      onTap: () async {
+                                        await widget.patientController
+                                            .cancelAppointment(
+                                              widget.appointment.id,
+                                            );
+                                      },
                                       child: Text(
                                         'Cancel appointment',
                                         style: TextStyle(
@@ -226,28 +217,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                             SvgIcon(AppIcons.calender, size: 20),
                             SizedBox(width: 10),
                             Text(
-                              widget
-                                          .patientController
-                                          .patient
-                                          .value
-                                          .clinicalResponse
-                                          ?.appointments
-                                          .isNotEmpty ==
-                                      true
-                                  ? widget
-                                        .patientController
-                                        .patient
-                                        .value
-                                        .clinicalResponse!
-                                        .appointments
-                                        .map(
-                                          (appointment) =>
-                                              '${DateFormat('dd MMM').format(appointment.appointmentDate)}, ${appointment.appointmentStartTime} - ${appointment.appointmentFinishTime ?? ""}',
-                                        )
-                                        .join(
-                                          '\n',
-                                        ) // Use \n for new lines or ', ' for comma separation
-                                  : 'No appointments',
+                              '${DateFormat('dd MMM').format(widget.appointment.appointmentDate)}, ${widget.appointment.appointmentStartTime} - ${widget.appointment.appointmentFinishTime}',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontFamily: 'Poppins-Light',

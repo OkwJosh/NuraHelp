@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../utilities/device/device_utility.dart';
 
-
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key,
+  const CustomAppBar({
+    super.key,
     this.title,
     this.showBackArrow = false,
     this.leadingIcon,
     this.actions,
-    this.leadingOnPressed, this.backgroundColor});
+    this.leadingOnPressed,
+    this.backgroundColor,
+  });
 
   final Widget? title;
   final bool showBackArrow;
@@ -26,14 +28,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: AppBar(
+          scrolledUnderElevation: 0.0,
+          surfaceTintColor: Colors.transparent,
           backgroundColor: backgroundColor,
           automaticallyImplyLeading: false,
           leading: showBackArrow
               ? IconButton(
-              onPressed: () => Get.back(), icon: Icon(Icons.arrow_back,color:Colors.black))
+                  onPressed: () => Get.back(),
+                  icon: Icon(Icons.arrow_back, color: Colors.black),
+                )
               : leadingIcon != null
-              ? IconButton(
-              onPressed: leadingOnPressed, icon: Icon(leadingIcon))
+              ? IconButton(onPressed: leadingOnPressed, icon: Icon(leadingIcon))
               : null,
           title: title,
           actions: actions,

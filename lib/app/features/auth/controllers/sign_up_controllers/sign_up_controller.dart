@@ -12,7 +12,6 @@ import 'package:nurahelp/app/utilities/popups/screen_loader.dart';
 import '../../../../data/services/app_service.dart';
 import '../../../../data/services/network_manager.dart';
 
-
 class SignUpController extends GetxController {
   static SignUpController get instance => Get.find();
 
@@ -64,8 +63,10 @@ class SignUpController extends GetxController {
         phone: phoneNumber.text.trim(),
         DOB: submittedDate.value,
         profilePicture: '',
+        isComplete: false,
         // inviteCode: invitationCode.text.trim(),
       );
+      // Save patient record with isComplete = false
       await appService.savePatientRecord(patient, createdUser);
       patientController.patient.value = patient;
       patientController.refresh();

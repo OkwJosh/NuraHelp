@@ -7,23 +7,22 @@ class SettingsModel {
 
   SettingsModel({required this.notifications, required this.security});
 
-  Map<dynamic, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
       'security': security.toJson(),
       'notifications': notifications.toJson(),
     };
   }
 
-  static SettingsModel empty() =>
-      SettingsModel(
-          notifications: NotificationModel.empty(),
-          security: SecurityModel.empty(),
-      );
+  static SettingsModel empty() => SettingsModel(
+    notifications: NotificationModel.empty(),
+    security: SecurityModel.empty(),
+  );
 
-  factory SettingsModel.fromJson(json) {
+  factory SettingsModel.fromJson(Map<String, dynamic> json) {
     return SettingsModel(
-      notifications: NotificationModel.fromJson(json['notifications']),
-      security: SecurityModel.fromJson(json['security']),
+      notifications: NotificationModel.fromJson(json['notifications'] ?? {}),
+      security: SecurityModel.fromJson(json['security'] ?? {}),
     );
   }
 }

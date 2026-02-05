@@ -22,19 +22,13 @@ class SymptomModel {
   factory SymptomModel.fromJson(Map<String, dynamic> json) {
     DateTime parsedDate;
 
-    print('===== PARSING SYMPTOM DATE =====');
-    print('Raw JSON: $json');
-
     try {
       // First try parsing 'date' field (ISO string from app_service)
       if (json['date'] != null && json['date'] is String) {
-        print('Found date field: ${json['date']}');
         parsedDate = DateTime.parse(json['date']);
-        print('Parsed successfully: $parsedDate');
       }
       // Then try parsing MongoDB date structure
       else if (json['createdAt'] != null) {
-        print('Found createdAt field: ${json['createdAt']}');
         var createdAtField = json['createdAt'];
 
         if (createdAtField is Map<String, dynamic> &&
@@ -63,8 +57,6 @@ class SymptomModel {
       }
     } catch (e) {
       parsedDate = DateTime.now();
-      print('❌ Error parsing date: $e - Using current time as fallback');
-      print('================================');
     }
 
     return SymptomModel(

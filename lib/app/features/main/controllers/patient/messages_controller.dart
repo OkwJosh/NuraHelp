@@ -6,6 +6,7 @@ import 'package:nurahelp/app/data/models/message_models/conversation_model.dart'
 import 'package:nurahelp/app/data/models/message_models/message_model.dart';
 import 'package:nurahelp/app/data/services/app_service.dart';
 import 'package:nurahelp/app/data/services/cache_service.dart';
+import 'package:nurahelp/app/data/services/network_manager.dart';
 import 'package:nurahelp/app/data/services/socket_service.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/messages_and_calls/direct_message.dart';
@@ -16,12 +17,22 @@ class MessagesController extends GetxController {
 
   final RxList<ConversationModel> conversations = <ConversationModel>[].obs;
   final RxBool isLoading = false.obs;
+  final RxBool hasNetworkTimeout = false.obs;
+  final RxBool hasNoInternet = false.obs; // New: Track no internet
   late SocketService socketService;
+  late AppNetworkManager networkManager;
   final appService = AppService.instance;
+
+  static const int networkTimeoutSeconds = 90; // 1.5 minutes
 
   @override
   void onInit() {
     super.onInit();
+    try {
+      networkManager = Get.find<AppNetworkManager>();
+    } catch (e) {
+      networkManager = AppNetworkManager();
+    }
     _initializeSocket();
     // Start fetching conversations asynchronously
     _initializeData();
@@ -64,6 +75,9 @@ class MessagesController extends GetxController {
   /// Refresh conversations (force API call and clear cache)
   Future<void> refreshConversations() async {
     debugPrint('🔄 [MessagesController] Force refreshing conversations...');
+    isLoading.value = true; // Show shimmer while retrying
+    hasNetworkTimeout.value = false;
+    hasNoInternet.value = false;
     await CacheService.instance.clearConversationsCache();
     await fetchConversations();
   }
@@ -200,6 +214,8 @@ class MessagesController extends GetxController {
   Future<void> fetchConversations() async {
     try {
       isLoading.value = true;
+      hasNetworkTimeout.value = false;
+      hasNoInternet.value = false;
       final user = FirebaseAuth.instance.currentUser;
 
       if (user == null) {
@@ -207,7 +223,23 @@ class MessagesController extends GetxController {
         return;
       }
 
-      final fetchedConversations = await appService.getConversations(user);
+      // Check internet before fetching
+      final isConnected = await networkManager.isConnected();
+      if (!isConnected) {
+        hasNoInternet.value = true;
+        isLoading.value = false;
+        return;
+      }
+
+      final fetchedConversations = await appService
+          .getConversations(user)
+          .timeout(
+            const Duration(seconds: networkTimeoutSeconds),
+            onTimeout: () {
+              hasNetworkTimeout.value = true;
+              throw Exception('Network timeout - unstable internet connection');
+            },
+          );
 
       debugPrint(
         '📋 [MessagesController] Fetched ${fetchedConversations.length} conversations',

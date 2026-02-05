@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:nurahelp/app/data/models/doctor_model.dart';
 import 'package:nurahelp/app/data/models/message_models/message_model.dart';
 import 'package:nurahelp/app/data/services/app_service.dart';
+import 'package:nurahelp/app/data/services/network_manager.dart';
 import 'package:nurahelp/app/data/services/socket_service.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 
@@ -16,13 +17,19 @@ class DirectMessageController extends GetxController {
   final RxList<MessageModel> messages = <MessageModel>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool isTyping = false.obs;
+  final RxBool hasNetworkTimeout = false.obs; // Track timeout
+  final RxBool hasNoInternet = false.obs; // Track no internet
   final TextEditingController messageController = TextEditingController();
 
   late SocketService socketService;
+  late AppNetworkManager networkManager;
   late String currentUserId;
   late String doctorId;
   Timer? typingTimer;
+  Timer? connectivityCheckTimer;
   final appService = AppService.instance;
+
+  static const int networkTimeoutSeconds = 90; // 1.5 minutes
 
   @override
   void onInit() {
@@ -31,9 +38,38 @@ class DirectMessageController extends GetxController {
       '🟢 [DirectMessage] Controller initialized for doctor: ${doctor.name}',
     );
     _initializeSocket();
-    // Delay message fetching slightly to ensure socket is ready
-    Future.delayed(const Duration(milliseconds: 100), () {
-      _fetchMessages();
+    _initializeNetworkManager();
+    // Only fetch messages if not already loaded (like WhatsApp)
+    if (messages.isEmpty) {
+      fetchMessages();
+    }
+  }
+
+  void _initializeNetworkManager() {
+    try {
+      networkManager = Get.find<AppNetworkManager>();
+    } catch (e) {
+      // If not found, create a new instance
+      networkManager = AppNetworkManager();
+    }
+    // Start monitoring connectivity while loading
+    _startConnectivityCheck();
+  }
+
+  void _startConnectivityCheck() {
+    connectivityCheckTimer = Timer.periodic(const Duration(seconds: 1), (
+      _,
+    ) async {
+      if (isLoading.value && messages.isEmpty) {
+        final isConnected = await networkManager.isConnected();
+        hasNoInternet.value = !isConnected;
+        debugPrint(
+          '🔌 [DirectMessage] Connectivity check: isConnected=$isConnected',
+        );
+      } else {
+        // Stop checking once loading is done
+        connectivityCheckTimer?.cancel();
+      }
     });
   }
 
@@ -104,9 +140,11 @@ class DirectMessageController extends GetxController {
     };
   }
 
-  Future<void> _fetchMessages() async {
+  Future<void> fetchMessages() async {
     try {
       isLoading.value = true;
+      hasNetworkTimeout.value = false;
+      hasNoInternet.value = false;
       final user = FirebaseAuth.instance.currentUser;
 
       if (user == null) {
@@ -118,8 +156,16 @@ class DirectMessageController extends GetxController {
         '📥 [DirectMessage] Fetching chat history for doctor: $doctorId',
       );
 
-      // Fetch chat history from API
-      final response = await appService.getChatHistory(doctorId, user);
+      // Fetch chat history from API with timeout
+      final response = await appService
+          .getChatHistory(doctorId, user)
+          .timeout(
+            const Duration(seconds: networkTimeoutSeconds),
+            onTimeout: () {
+              hasNetworkTimeout.value = true;
+              throw Exception('Network timeout - unstable internet connection');
+            },
+          );
 
       if (response['messages'] != null) {
         final List<dynamic> messagesList = response['messages'];
@@ -135,24 +181,26 @@ class DirectMessageController extends GetxController {
       await _markAsRead();
     } catch (e) {
       debugPrint('❌ [DirectMessage] Error fetching messages: $e');
-      // Retry once after a delay
-      await Future.delayed(const Duration(seconds: 1));
-      try {
-        final user = FirebaseAuth.instance.currentUser;
-        if (user != null) {
-          final response = await appService.getChatHistory(doctorId, user);
-          if (response['messages'] != null) {
-            final List<dynamic> messagesList = response['messages'];
-            messages.value = messagesList
-                .map((json) => MessageModel.fromJson(json))
-                .toList();
-            debugPrint(
-              '✅ [DirectMessage] Retry successful - loaded ${messages.length} messages',
-            );
+      // Retry once after a delay only if not a timeout
+      if (!hasNetworkTimeout.value) {
+        await Future.delayed(const Duration(seconds: 1));
+        try {
+          final user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            final response = await appService.getChatHistory(doctorId, user);
+            if (response['messages'] != null) {
+              final List<dynamic> messagesList = response['messages'];
+              messages.value = messagesList
+                  .map((json) => MessageModel.fromJson(json))
+                  .toList();
+              debugPrint(
+                '✅ [DirectMessage] Retry successful - loaded ${messages.length} messages',
+              );
+            }
           }
+        } catch (retryError) {
+          debugPrint('❌ [DirectMessage] Retry failed: $retryError');
         }
-      } catch (retryError) {
-        debugPrint('❌ [DirectMessage] Retry failed: $retryError');
       }
     } finally {
       isLoading.value = false;
@@ -200,6 +248,22 @@ class DirectMessageController extends GetxController {
 
     if (messageText.isEmpty) {
       debugPrint('❌ [DirectMessage] Message is empty, not sending');
+      return;
+    }
+
+    // Check internet connectivity before allowing send
+    if (!socketService.isConnected.value) {
+      debugPrint(
+        '❌ [DirectMessage] No internet connection, cannot send message',
+      );
+      Get.snackbar(
+        'No Internet',
+        'Please check your internet connection',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
       return;
     }
 
@@ -255,6 +319,7 @@ class DirectMessageController extends GetxController {
   void onClose() {
     messageController.dispose();
     typingTimer?.cancel();
+    connectivityCheckTimer?.cancel();
     super.onClose();
   }
 }

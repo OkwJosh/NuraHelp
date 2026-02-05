@@ -4,7 +4,6 @@ import 'package:nurahelp/app/common/dropdown/app_dropdown.dart';
 import 'package:nurahelp/app/features/main/controllers/dashboard/dashboard_controller.dart';
 import 'package:nurahelp/app/features/main/screens/settings/widgets/profile_info_section.dart';
 import 'package:nurahelp/app/modules/patient/views/settings/settings_shimmer.dart';
-import 'package:nurahelp/app/routes/app_routes.dart';
 import '../../../../utilities/constants/colors.dart';
 import '../../controllers/patient/patient_controller.dart';
 
@@ -334,7 +333,8 @@ class SettingsScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 5),
+                              SizedBox(height: 10),
+
                               SizedBox(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
@@ -353,6 +353,18 @@ class SettingsScreen extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                              SizedBox(height: 40),
+                              Center(
+                                child: Text(
+                                  'App Version 1.0.0',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontFamily: 'Poppins-Regular',
+                                    color: AppColors.black300,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 20),
                             ],
                           ),
                         ),

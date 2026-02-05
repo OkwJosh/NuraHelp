@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
-import 'package:nurahelp/app/features/main/screens/settings/edit_personal_information.dart';
 import 'package:nurahelp/app/routes/app_routes.dart';
 import 'package:nurahelp/app/utilities/constants/icons.dart';
 import 'package:nurahelp/app/utilities/constants/svg_icons.dart';
@@ -115,7 +115,11 @@ class ProfileInfoSection extends StatelessWidget {
               ),
             ),
             Text(
-              '20th August, 2000',
+              _controller.patient.value.DOB != null
+                  ? DateFormat(
+                      'dd MMMM, yyyy',
+                    ).format(_controller.patient.value.DOB!)
+                  : 'Not provided',
               style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 16),
             ),
           ],

@@ -30,60 +30,66 @@ class AppointmentsScreen extends StatelessWidget {
             Positioned(top: 0, left: 0, right: 0, child: AppBarWithBell()),
             Positioned.fill(
               top: 110,
-              child: Padding(
-                padding: EdgeInsets.only(left: 15, right: 15),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      DefaultTabController(
-                        length: 2,
-                        child: Column(
-                          children: [
-                            Container(
-                              color: AppColors.primaryColor,
-                              child: TabBar(
-                                indicatorColor: Colors.black,
-                                dividerColor: Colors.transparent,
-                                isScrollable: true,
-                                indicatorSize: TabBarIndicatorSize.tab,
-                                tabAlignment: TabAlignment.center,
-                                labelColor: Colors.black,
-                                unselectedLabelColor: Colors.grey[600],
-                                tabs: const [
-                                  Tab(
-                                    child: Text(
-                                      'Upcoming',
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins-Regular',
+              child: RefreshIndicator(
+                backgroundColor: Colors.white,
+                color: AppColors.secondaryColor,
+                onRefresh: () => dashboardController.refreshDashboardData(),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 15, right: 15),
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Column(
+                      children: [
+                        DefaultTabController(
+                          length: 2,
+                          child: Column(
+                            children: [
+                              Container(
+                                color: AppColors.primaryColor,
+                                child: TabBar(
+                                  indicatorColor: Colors.black,
+                                  dividerColor: Colors.transparent,
+                                  isScrollable: true,
+                                  indicatorSize: TabBarIndicatorSize.tab,
+                                  tabAlignment: TabAlignment.center,
+                                  labelColor: Colors.black,
+                                  unselectedLabelColor: Colors.grey[600],
+                                  tabs: const [
+                                    Tab(
+                                      child: Text(
+                                        'Upcoming',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins-Regular',
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  // Tab(child: Text('Pending',style: TextStyle(fontFamily: 'Poppins-Regular'),)),
-                                  Tab(
-                                    child: Text(
-                                      'Canceled',
-                                      style: TextStyle(
-                                        fontFamily: 'Poppins-Regular',
+                                    // Tab(child: Text('Pending',style: TextStyle(fontFamily: 'Poppins-Regular'),)),
+                                    Tab(
+                                      child: Text(
+                                        'Canceled',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins-Regular',
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            AutoScaleTabBarView(
-                              children: [
-                                UpcomingAppointmentTabContent(
-                                  patientController: _controller,
+                                  ],
                                 ),
-                                // PendingAppointmentTabContent(),
-                                CanceledAppointmentTabContent(),
-                              ],
-                            ),
-                          ],
+                              ),
+                              SizedBox(height: 16),
+                              AutoScaleTabBarView(
+                                children: [
+                                  UpcomingAppointmentTabContent(
+                                    patientController: _controller,
+                                  ),
+                                  // PendingAppointmentTabContent(),
+                                  CanceledAppointmentTabContent(),
+                                ], 
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

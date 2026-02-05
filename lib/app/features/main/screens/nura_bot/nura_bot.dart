@@ -1,32 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
-import 'package:nurahelp/app/common/appbar/appbar_with_bell.dart';
 import 'package:nurahelp/app/common/message_field/message_field.dart';
 import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
-import 'package:nurahelp/app/nav_menu.dart';
+import 'package:nurahelp/app/routes/app_routes.dart';
 import '../../../../data/models/message_models/bot_message_model.dart';
 import '../../../../utilities/constants/colors.dart';
 
-class NuraBot extends StatelessWidget {
+class NuraBot extends StatefulWidget {
   const NuraBot({super.key, this.messageFromDashboard});
 
   final String? messageFromDashboard;
 
   @override
-  Widget build(BuildContext context) {
-    final _controller = Get.put(NuraBotController());
-    final _patientController = Get.find<PatientController>();
+  State<NuraBot> createState() => _NuraBotState();
+}
 
+class _NuraBotState extends State<NuraBot> {
+  late final NuraBotController _controller;
+  late final PatientController _patientController;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.put(NuraBotController());
+    _patientController = Get.find<PatientController>();
+  }
+
+  void _handleBack() {
+    // Unfocus keyboard and clear text field before going back
+    FocusScope.of(context).unfocus();
+    _controller.messageController.clear();
+    // Navigate back to nav menu
+    Get.offAllNamed(AppRoutes.navigationMenu);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Get.back();
+        _handleBack();
         return false;
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: true, // Important
-        appBar: AppBarWithBell(showSearchBar: false), // Instead of positioned
+        resizeToAvoidBottomInset: true,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(90),
+          child: Container(
+            color: Colors.white,
+            padding: const EdgeInsets.only(
+              top: 40,
+              left: 15,
+              right: 15,
+              bottom: 10,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: _handleBack,
+                  icon: const Icon(Icons.arrow_back_ios),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+                const Spacer(),
+              ],
+            ),
+          ),
+        ),
         body: Column(
           children: [
             Expanded(

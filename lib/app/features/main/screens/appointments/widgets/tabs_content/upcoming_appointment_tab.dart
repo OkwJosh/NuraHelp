@@ -15,11 +15,19 @@ class UpcomingAppointmentTabContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final clinicalResponse = patientController.patient.value.clinicalResponse;
-      final hasAppointments =
-          clinicalResponse?.appointments.isNotEmpty ?? false;
+      final response = patientController.patient.value;
+      final hasAppointments = response?.appointments.isNotEmpty ?? false;
 
       if (!hasAppointments) {
+        return _buildNoAppointmentsView(context);
+      }
+
+      // Filter for non-canceled appointments (check status from backend)
+      final upcomingAppointments = response!.appointments
+          .where((apt) => apt.status != 'Canceled')
+          .toList();
+
+      if (upcomingAppointments.isEmpty) {
         return _buildNoAppointmentsView(context);
       }
 
@@ -28,10 +36,11 @@ class UpcomingAppointmentTabContent extends StatelessWidget {
         child: ListView.separated(
           itemBuilder: (context, index) => AppointmentCard(
             patientController: patientController,
+            appointment: upcomingAppointments[index],
             isVirtual: false,
           ),
           separatorBuilder: (context, index) => SizedBox(height: 10),
-          itemCount: clinicalResponse!.appointments.length,
+          itemCount: upcomingAppointments.length,
         ),
       );
     });
