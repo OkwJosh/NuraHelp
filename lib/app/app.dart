@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: CustomAppTheme.lightTheme,
         useInheritedMediaQuery: true,
-        initialRoute: AppRoutes.splash,
+        initialRoute: AppRoutes.login,
         getPages: AppPages.pages,
       ),
     );

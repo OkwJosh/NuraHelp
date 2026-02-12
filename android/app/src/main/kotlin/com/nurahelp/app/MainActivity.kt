@@ -1,4 +1,4 @@
-package com.example.nurahelp
+package com.nurahelp.app
 
 import io.flutter.embedding.android.FlutterActivity
 

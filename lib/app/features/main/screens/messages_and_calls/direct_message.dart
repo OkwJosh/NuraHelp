@@ -93,7 +93,7 @@ class DirectMessagePage extends StatelessWidget {
                               fontSize: 14,
                               fontFamily: 'Poppins-Light',
                               color: controller.isTyping.value
-                                  ? AppColors.primaryColor
+                                  ? AppColors.secondaryColor.withOpacity(0.6)
                                   : AppColors.greyColor.withOpacity(0.6),
                             ),
                           ),

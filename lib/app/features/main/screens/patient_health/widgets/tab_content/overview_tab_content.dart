@@ -16,596 +16,489 @@ class OverviewTabContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final healthController = Get.find<PatientHealthController>();
-    final clinicalResponse = patientController.patient.value.clinicalResponse;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmall = screenWidth < 360;
+    final baseFontSize = isSmall ? 13.0 : 14.0;
+    final titleFontSize = isSmall ? 14.0 : 16.0;
 
     return Obx(() {
+      // Access clinicalResponse INSIDE Obx so it reacts to patient changes
+      final clinicalResponse = patientController.patient.value.clinicalResponse;
+
       if (clinicalResponse?.vitals.isEmpty != false) {
-        return Column(
-          children: [
-            const Center(
-              child: Column(
-                children: [
-                  SizedBox(height: 150),
-                  Text(
-                    'No clinical overview yet',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontFamily: 'Poppins-Regular',
-                      color: AppColors.black300,
-                    ),
-                  ),
-                  SizedBox(height: 250),
-                ],
-              ),
-            ),
-          ],
-        );
-      }
-
-      return SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    healthController.setToday();
-                  },
-                  child: RoundedContainer(
-                    child: const Text(
-                      'Today',
-                      style: TextStyle(
-                        fontFamily: 'Poppins-Regular',
-                        fontSize: 14,
-                        color: AppColors.black,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 15),
-
-                CustomArrowButton(
-                  icon: Icons.arrow_back_ios_sharp,
-                  onPressed: () {
-                    healthController.previousDay();
-                  },
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  healthController.formatDate(
-                    healthController.selectedDate.value,
-                  ),
-                  style: const TextStyle(
-                    fontFamily: 'Poppins-Regular',
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                CustomArrowButton(
-                  icon: Icons.arrow_forward_ios_sharp,
-                  onPressed: () {
-                    healthController.nextDay();
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            _buildContent(clinicalResponse, healthController),
-          ],
-        ),
-      );
-    });
-  }
-
-  Widget _buildContent(
-    dynamic clinicalResponse,
-    PatientHealthController healthController,
-  ) {
-    // Filter vitals by selected date
-    final vitalsForDate = healthController.getVitalsForDate(
-      clinicalResponse!.vitals,
-    );
-
-    // Filter test results by selected date
-    final testResultsForDate = healthController.getTestResultsForDate(
-      clinicalResponse.testResults,
-    );
-
-    // Filter medications by selected date
-    final medicationsForDate = healthController.getMedicationsForDate(
-      clinicalResponse.medications,
-    );
-
-    // If no data for selected date, show message
-    if (vitalsForDate.isEmpty &&
-        testResultsForDate.isEmpty &&
-        medicationsForDate.isEmpty) {
-      return Column(
-        children: [
-          const SizedBox(height: 50),
-          Center(
+        return const Center(
+          child: Padding(
+            padding: EdgeInsets.only(top: 100),
             child: Text(
-              'No data available for ${healthController.formatDate(healthController.selectedDate.value)}',
-              style: const TextStyle(
+              'No clinical overview yet',
+              style: TextStyle(
                 fontSize: 16,
                 fontFamily: 'Poppins-Regular',
                 color: AppColors.black300,
               ),
             ),
           ),
-          const SizedBox(height: 150),
-        ],
+        );
+      }
+
+      // Filter data by selected date
+      final vitalsForDate = healthController.getVitalsForDate(
+        clinicalResponse!.vitals,
       );
-    }
+      final testResultsForDate = healthController.getTestResultsForDate(
+        clinicalResponse.testResults,
+      );
+      final medicationsForDate = healthController.getMedicationsForDate(
+        clinicalResponse.medications,
+      );
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Show vitals only if available for selected date
-          if (vitalsForDate.isNotEmpty)
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.black300, width: 0.3),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        RoundedContainer(
-                          padding: 10,
-                          borderRadius: 10,
-                          child: Row(
-                            children: [
-                              SvgIcon(AppIcons.heart, size: 20),
-                              const SizedBox(width: 10),
-                              const Text(
-                                'Vitals',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins-Medium',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 15),
-                        RoundedContainer(
-                          padding: 10,
-                          child: Text(
-                            healthController.formatDate(
-                              healthController.selectedDate.value,
-                            ),
-                            style: const TextStyle(
-                              fontFamily: 'Poppins-Regular',
-                              fontSize: 16,
-                              letterSpacing: -1,
-                            ),
-                          ),
-                        ),
-                      ],
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            _buildDateNavRow(healthController, baseFontSize),
+            const SizedBox(height: 10),
+            if (vitalsForDate.isEmpty &&
+                testResultsForDate.isEmpty &&
+                medicationsForDate.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: Center(
+                  child: Text(
+                    'No data available for ${healthController.formatDate(healthController.selectedDate.value)}',
+                    style: TextStyle(
+                      fontSize: titleFontSize,
+                      fontFamily: 'Poppins-Regular',
+                      color: AppColors.black300,
                     ),
-                    const SizedBox(height: 25),
-
-                    /// ✅ Vital Values
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${vitalsForDate.first.bglValue} mg/dt',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins-Medium',
-                              ),
-                            ),
-                            const Text(
-                              'Blood glucose level',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.black300,
-                                fontFamily: 'Poppins-Regular',
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 32),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${vitalsForDate.first.weightValue} kg',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins-Medium',
-                              ),
-                            ),
-                            const Text(
-                              'Weight',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.black300,
-                                fontFamily: 'Poppins-Regular',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${vitalsForDate.first.heartRate} bpm',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins-Medium',
-                              ),
-                            ),
-                            const Text(
-                              'Heart rate',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.black300,
-                                fontFamily: 'Poppins-Regular',
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 85),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${vitalsForDate.first.oxygenSatValue}%',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins-Medium',
-                              ),
-                            ),
-                            const Text(
-                              'Oxygen saturation',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.black300,
-                                fontFamily: 'Poppins-Regular',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${vitalsForDate.first.bodyTempValue}°F',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins-Medium',
-                              ),
-                            ),
-                            const Text(
-                              'Body temperature',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.black300,
-                                fontFamily: 'Poppins-Regular',
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(width: 32),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${vitalsForDate.first.bpValue} mmHg',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Poppins-Medium',
-                              ),
-                            ),
-                            const Text(
-                              'Blood pressure',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.black300,
-                                fontFamily: 'Poppins-Regular',
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                    textAlign: TextAlign.center,
+                  ),
                 ),
+              )
+            else ...[
+              if (vitalsForDate.isNotEmpty)
+                _buildVitalsCard(
+                  vitalsForDate,
+                  healthController,
+                  baseFontSize,
+                  titleFontSize,
+                ),
+              const SizedBox(height: 20),
+              if (testResultsForDate.isNotEmpty)
+                _buildTestResultsCard(
+                  testResultsForDate,
+                  healthController,
+                  baseFontSize,
+                  titleFontSize,
+                ),
+              const SizedBox(height: 20),
+              if (medicationsForDate.isNotEmpty)
+                _buildMedicationsCard(
+                  medicationsForDate,
+                  healthController,
+                  baseFontSize,
+                  titleFontSize,
+                ),
+              const SizedBox(height: 120),
+            ],
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildDateNavRow(
+    PatientHealthController healthController,
+    double baseFontSize,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        GestureDetector(
+          onTap: () => healthController.setToday(),
+          child: RoundedContainer(
+            child: Text(
+              'Today',
+              style: TextStyle(
+                fontFamily: 'Poppins-Regular',
+                fontSize: baseFontSize,
+                color: AppColors.black,
               ),
             ),
-          const SizedBox(height: 20),
+          ),
+        ),
+        const SizedBox(width: 10),
+        CustomArrowButton(
+          icon: Icons.arrow_back_ios_sharp,
+          onPressed: () => healthController.previousDay(),
+        ),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            healthController.formatDate(healthController.selectedDate.value),
+            style: TextStyle(
+              fontFamily: 'Poppins-Regular',
+              fontSize: baseFontSize + 2,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const SizedBox(width: 4),
+        CustomArrowButton(
+          icon: Icons.arrow_forward_ios_sharp,
+          onPressed: () => healthController.nextDay(),
+        ),
+      ],
+    );
+  }
 
-          /// Test Results - Show only if available for selected date
-          if (testResultsForDate.isNotEmpty)
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.black300, width: 0.3),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 15,
-                  bottom: 15,
+  Widget _buildVitalRow(
+    String value1,
+    String label1,
+    String value2,
+    String label2,
+    double baseFontSize,
+    double titleFontSize,
+  ) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value1,
+                style: TextStyle(
+                  fontSize: titleFontSize,
+                  fontFamily: 'Poppins-Medium',
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              ),
+              Text(
+                label1,
+                style: TextStyle(
+                  fontSize: baseFontSize,
+                  color: AppColors.black300,
+                  fontFamily: 'Poppins-Regular',
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value2,
+                style: TextStyle(
+                  fontSize: titleFontSize,
+                  fontFamily: 'Poppins-Medium',
+                ),
+              ),
+              Text(
+                label2,
+                style: TextStyle(
+                  fontSize: baseFontSize,
+                  color: AppColors.black300,
+                  fontFamily: 'Poppins-Regular',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVitalsCard(
+    List vitalsForDate,
+    PatientHealthController healthController,
+    double baseFontSize,
+    double titleFontSize,
+  ) {
+    final vital = vitalsForDate.first;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.black300, width: 0.3),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Flexible(
+                  child: RoundedContainer(
+                    padding: 10,
+                    borderRadius: 10,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        RoundedContainer(
-                          padding: 10,
-                          borderRadius: 10,
-                          child: Row(
-                            children: [
-                              SvgIcon(AppIcons.clipboard),
-                              SizedBox(width: 10),
-                              Text(
-                                'Test Results',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins-Medium',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 15),
-                        RoundedContainer(
-                          padding: 10,
-                          child: Text(
-                            healthController.formatDate(
-                              healthController.selectedDate.value,
-                            ),
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Regular',
-                              fontSize: 16,
-                              letterSpacing: -1,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 25),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                        SvgIcon(AppIcons.heart, size: 20),
+                        const SizedBox(width: 10),
                         Text(
-                          testResultsForDate.first.testName,
+                          'Vitals',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: titleFontSize,
                             fontFamily: 'Poppins-Medium',
                           ),
                         ),
-                        SizedBox(height: 5),
-                        Text(
-                          '02: 00 PM',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.black300,
-                            fontFamily: 'Poppins-Regular',
-                          ),
-                        ),
                       ],
                     ),
-                    SizedBox(height: 10),
-                    Divider(),
-                    SizedBox(height: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          testResultsForDate.first.observation,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins-Medium',
-                          ),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          testResultsForDate.first.description,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.black300,
-                            fontFamily: 'Poppins-Regular',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: RoundedContainer(
+                    padding: 10,
+                    child: Text(
+                      healthController.formatDate(
+                        healthController.selectedDate.value,
+                      ),
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: titleFontSize,
+                        letterSpacing: -1,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          SizedBox(height: 20),
-
-          ///Medications - Show only if available for selected date
-          if (medicationsForDate.isNotEmpty)
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: AppColors.black300, width: 0.3),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 15,
-                  bottom: 15,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        RoundedContainer(
-                          padding: 10,
-                          borderRadius: 10,
-                          child: Row(
-                            children: [
-                              SvgIcon(AppIcons.clipboard),
-                              SizedBox(width: 10),
-                              Text(
-                                'Medications',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins-Medium',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 15),
-                        RoundedContainer(
-                          padding: 10,
-                          child: Text(
-                            healthController.formatDate(
-                              healthController.selectedDate.value,
-                            ),
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Regular',
-                              fontSize: 16,
-                              letterSpacing: -1,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 25),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          medicationsForDate.first.medName,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins-Regular',
-                          ),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          '${medicationsForDate.first.noOfCapsules}. 02:00 PM',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.black300,
-                            fontFamily: 'Poppins-Regular',
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    Divider(),
-                    // SizedBox(height: 10),
-                    // Column(
-                    //   crossAxisAlignment: CrossAxisAlignment.start,
-                    //   children: [
-                    //     Text(
-                    //       'Routine Medicine',
-                    //       style: TextStyle(
-                    //         fontSize: 16,
-                    //         fontFamily: 'Poppins-Regular',
-                    //       ),
-                    //     ),
-                    //     SizedBox(height: 5),
-                    //     Text(
-                    //       'No observations or notes',
-                    //       style: TextStyle(
-                    //         fontSize: 14,
-                    //         color: AppColors.black300,
-                    //         fontFamily: 'Poppins-Regular',
-                    //       ),
-                    //     ),
-                    //     SizedBox(height: 20),
-                    //     Text(
-                    //       'Indever 20',
-                    //       style: TextStyle(
-                    //         fontSize: 16,
-                    //         fontFamily: 'Poppins-Regular',
-                    //       ),
-                    //     ),
-                    //     SizedBox(height: 5),
-                    //     Text(
-                    //       '1 Pill. 02:20 PM',
-                    //       style: TextStyle(
-                    //         fontSize: 14,
-                    //         color: AppColors.black300,
-                    //         fontFamily: 'Poppins-Regular',
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
-                    // SizedBox(height: 10),
-                    // Divider(),
-                    SizedBox(height: 10),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Observation',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Poppins-Regular',
-                          ),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          medicationsForDate.first.observation,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.black300,
-                            fontFamily: 'Poppins-Regular',
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+            const SizedBox(height: 25),
+            _buildVitalRow(
+              '${vital.bglValue} mg/dt',
+              'Blood glucose level',
+              '${vital.weightValue} kg',
+              'Weight',
+              baseFontSize,
+              titleFontSize,
             ),
-          SizedBox(height: 210),
-        ],
+            const SizedBox(height: 24),
+            _buildVitalRow(
+              '${vital.heartRate} bpm',
+              'Heart rate',
+              '${vital.oxygenSatValue}%',
+              'Oxygen saturation',
+              baseFontSize,
+              titleFontSize,
+            ),
+            const SizedBox(height: 24),
+            _buildVitalRow(
+              '${vital.bodyTempValue}°F',
+              'Body temperature',
+              '${vital.bpValue} mmHg',
+              'Blood pressure',
+              baseFontSize,
+              titleFontSize,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  String _formatDate(DateTime date) {
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  Widget _buildTestResultsCard(
+    List testResultsForDate,
+    PatientHealthController healthController,
+    double baseFontSize,
+    double titleFontSize,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.black300, width: 0.3),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Flexible(
+                  child: RoundedContainer(
+                    padding: 10,
+                    borderRadius: 10,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SvgIcon(AppIcons.clipboard),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Test Results',
+                          style: TextStyle(
+                            fontSize: titleFontSize,
+                            fontFamily: 'Poppins-Medium',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: RoundedContainer(
+                    padding: 10,
+                    child: Text(
+                      healthController.formatDate(
+                        healthController.selectedDate.value,
+                      ),
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: titleFontSize,
+                        letterSpacing: -1,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 25),
+            Text(
+              testResultsForDate.first.testName,
+              style: TextStyle(
+                fontSize: titleFontSize,
+                fontFamily: 'Poppins-Medium',
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              '02: 00 PM',
+              style: TextStyle(
+                fontSize: baseFontSize,
+                color: AppColors.black300,
+                fontFamily: 'Poppins-Regular',
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Divider(),
+            const SizedBox(height: 10),
+            Text(
+              testResultsForDate.first.observation,
+              style: TextStyle(
+                fontSize: titleFontSize,
+                fontFamily: 'Poppins-Medium',
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              testResultsForDate.first.description,
+              style: TextStyle(
+                fontSize: baseFontSize,
+                color: AppColors.black300,
+                fontFamily: 'Poppins-Regular',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMedicationsCard(
+    List medicationsForDate,
+    PatientHealthController healthController,
+    double baseFontSize,
+    double titleFontSize,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.black300, width: 0.3),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Flexible(
+                  child: RoundedContainer(
+                    padding: 10,
+                    borderRadius: 10,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SvgIcon(AppIcons.clipboard),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Medications',
+                          style: TextStyle(
+                            fontSize: titleFontSize,
+                            fontFamily: 'Poppins-Medium',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: RoundedContainer(
+                    padding: 10,
+                    child: Text(
+                      healthController.formatDate(
+                        healthController.selectedDate.value,
+                      ),
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Regular',
+                        fontSize: titleFontSize,
+                        letterSpacing: -1,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 25),
+            Text(
+              medicationsForDate.first.medName,
+              style: TextStyle(
+                fontSize: titleFontSize,
+                fontFamily: 'Poppins-Regular',
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              '${medicationsForDate.first.noOfCapsules}. 02:00 PM',
+              style: TextStyle(
+                fontSize: baseFontSize,
+                color: AppColors.black300,
+                fontFamily: 'Poppins-Regular',
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Divider(),
+            const SizedBox(height: 10),
+            Text(
+              'Observation',
+              style: TextStyle(
+                fontSize: titleFontSize,
+                fontFamily: 'Poppins-Regular',
+              ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              medicationsForDate.first.observation,
+              style: TextStyle(
+                fontSize: baseFontSize,
+                color: AppColors.black300,
+                fontFamily: 'Poppins-Regular',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

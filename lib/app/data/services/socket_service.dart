@@ -8,6 +8,8 @@ class SocketService extends GetxService {
 
   late IO.Socket socket;
   final RxBool isConnected = false.obs;
+  String? _baseUrl;
+  String? _userId;
 
   // Lists of callbacks for different events (support multiple listeners)
   final List<Function(MessageModel)> _newMessageListeners = [];
@@ -57,6 +59,9 @@ class SocketService extends GetxService {
   }
 
   Future<SocketService> init(String baseUrl, String userId) async {
+    _baseUrl = baseUrl;
+    _userId = userId;
+
     socket = IO.io(
       baseUrl,
       IO.OptionBuilder()
@@ -65,13 +70,22 @@ class SocketService extends GetxService {
           .enableReconnection()
           .setReconnectionDelay(1000)
           .setReconnectionDelayMax(5000)
-          .setReconnectionAttempts(5)
           .build(),
     );
 
     _setupListeners(userId);
 
     return this;
+  }
+
+  /// Force reconnect the socket (e.g. when network is restored)
+  void reconnect() {
+    debugPrint('🔄 [SocketService] Reconnecting socket...');
+    if (socket.connected) {
+      debugPrint('🟢 [SocketService] Already connected, skipping reconnect');
+      return;
+    }
+    socket.connect();
   }
 
   void _setupListeners(String userId) {
@@ -83,8 +97,18 @@ class SocketService extends GetxService {
     });
 
     socket.onDisconnect((_) {
-      debugPrint('Socket disconnected');
+      debugPrint('🔴 Socket disconnected');
       isConnected.value = false;
+    });
+
+    socket.onReconnect((_) {
+      debugPrint('🟢 Socket reconnected');
+      isConnected.value = true;
+      socket.emit('join', userId);
+    });
+
+    socket.onReconnectError((error) {
+      debugPrint('🔴 Socket reconnect error: $error');
     });
 
     socket.onError((error) {

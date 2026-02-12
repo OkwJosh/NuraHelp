@@ -7,18 +7,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:205476088949:android:a30a19d49915aa1b73bc3c",
+        "mobilesdk_app_id": "1:205476088949:android:9a1bb82b829b596a73bc3c",
         "android_client_info": {
-          "package_name": "com.example.nurahelp"
+          "package_name": "com.nurahelp.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "205476088949-e3cr32botd5405im6soajvipdto7ncv5.apps.googleusercontent.com",
+          "client_id": "205476088949-hplk6hrm5oh9k5dapc2emgkm4c44nr6p.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.nurahelp",
-            "certificate_hash": "195dd15a822af4ccdfc78cb71ff5901decb15cf7"
+            "package_name": "com.nurahelp.app",
+            "certificate_hash": "752b5fd60a6b44d74b58ed9c654ae2157c065e3e"
           }
         },
         {

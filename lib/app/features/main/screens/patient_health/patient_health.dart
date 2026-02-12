@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/features/main/controllers/dashboard/dashboard_controller.dart';
-import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_health_controller.dart';
 import 'package:nurahelp/app/features/main/screens/patient_health/widgets/patient_info_header.dart';
@@ -13,15 +12,22 @@ import 'package:nurahelp/app/utilities/constants/colors.dart';
 import '../../../../common/appbar/appbar_with_bell.dart';
 
 class PatientHealthScreen extends StatelessWidget {
-  PatientHealthScreen({super.key});
+  PatientHealthScreen({super.key}) {
+    // Ensure PatientHealthController is available for child widgets
+    Get.put(PatientHealthController());
+  }
 
   final _controller = Get.find<PatientController>();
-  final _nuraBotController = Get.find<NuraBotController>();
   final _dashboardController = Get.find<DashboardController>();
-  final _healthController = Get.put(PatientHealthController());
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmall = screenWidth < 360;
+    final baseFontSize = isSmall ? 13.0 : 14.0;
+    final titleFontSize = isSmall ? 14.0 : 16.0;
+    final horizontalPadding = isSmall ? 10.0 : 15.0;
+
     return Obx(() {
       if (_dashboardController.isLoading.value) {
         return const HealthShimmer();
@@ -39,7 +45,9 @@ class PatientHealthScreen extends StatelessWidget {
                 /// Header Section
                 SliverToBoxAdapter(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.only(top: 10),
                       child: Column(
@@ -54,23 +62,28 @@ class PatientHealthScreen extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _controller.patient.value.email,
-                                    style: const TextStyle(
-                                      fontFamily: 'Poppins-Regular',
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _controller.patient.value.email,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins-Regular',
+                                        fontSize: baseFontSize,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    _controller.patient.value.phone,
-                                    style: const TextStyle(
-                                      fontFamily: 'Poppins-Regular',
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      _controller.patient.value.phone,
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins-Regular',
+                                        fontSize: baseFontSize,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -82,16 +95,19 @@ class PatientHealthScreen extends StatelessWidget {
                 ),
 
                 /// TabBar and Content
-                SliverToBoxAdapter(
+                SliverFillRemaining(
+                  hasScrollBody: true,
                   child: DefaultTabController(
                     length: 3,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: horizontalPadding,
+                      ),
                       child: Column(
                         children: [
                           Container(
                             color: AppColors.primaryColor,
-                            child: const TabBar(
+                            child: TabBar(
                               indicatorColor: Colors.black,
                               dividerColor: Colors.transparent,
                               isScrollable: true,
@@ -105,7 +121,7 @@ class PatientHealthScreen extends StatelessWidget {
                                     'Overview',
                                     style: TextStyle(
                                       fontFamily: 'Poppins-Medium',
-                                      fontSize: 16,
+                                      fontSize: titleFontSize,
                                     ),
                                   ),
                                 ),
@@ -114,7 +130,7 @@ class PatientHealthScreen extends StatelessWidget {
                                     'Test Result',
                                     style: TextStyle(
                                       fontFamily: 'Poppins-Medium',
-                                      fontSize: 16,
+                                      fontSize: titleFontSize,
                                     ),
                                   ),
                                 ),
@@ -123,7 +139,7 @@ class PatientHealthScreen extends StatelessWidget {
                                     'Medication',
                                     style: TextStyle(
                                       fontFamily: 'Poppins-Medium',
-                                      fontSize: 16,
+                                      fontSize: titleFontSize,
                                     ),
                                   ),
                                 ),
@@ -132,9 +148,8 @@ class PatientHealthScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
 
-                          /// ✅ Tab Content
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height - 250,
+                          /// Tab Content
+                          Expanded(
                             child: TabBarView(
                               children: [
                                 OverviewTabContent(

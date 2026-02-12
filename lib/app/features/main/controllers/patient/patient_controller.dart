@@ -365,6 +365,7 @@ class PatientController extends GetxController {
   }
 
   Future<void> cancelAppointment(String appointmentId) async {
+    AppScreenLoader.openLoadingDialog('Canceling appointment');
     try {
       final user = FirebaseAuth.instance.currentUser;
 
@@ -403,7 +404,7 @@ class PatientController extends GetxController {
           appointments[appointmentIndex] = updatedAppointment;
 
           patient.refresh(); // Trigger UI refresh
-
+          AppScreenLoader.stopLoading();
           Get.snackbar(
             'Success',
             'Appointment canceled successfully',
@@ -413,6 +414,7 @@ class PatientController extends GetxController {
             duration: Duration(seconds: 2),
           );
         } else {
+          AppScreenLoader.stopLoading();
           Get.snackbar(
             'Error',
             'Failed to cancel appointment (Status: ${response.statusCode})',
@@ -424,6 +426,7 @@ class PatientController extends GetxController {
         }
       }
     } catch (e) {
+      AppScreenLoader.stopLoading();
       Get.snackbar(
         'Error',
         'An error occurred: ${e.toString()}',

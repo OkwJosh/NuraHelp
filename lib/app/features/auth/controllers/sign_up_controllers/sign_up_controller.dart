@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/data/repositories/auth_repository.dart';
+import 'package:nurahelp/app/data/services/cache_service.dart';
 import 'package:nurahelp/app/data/services/socket_service.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/routes/app_routes.dart';
@@ -105,10 +106,28 @@ class SignUpController extends GetxController {
   void logout() async {
     try {
       AppScreenLoader.openLoadingDialog('Logging out');
+
+      // Clear all cached data so the next account starts fresh
+      await CacheService.instance.clearAllCache();
+
+      // Disconnect socket before signing out
+      try {
+        final socketService = Get.find<SocketService>();
+        socketService.disconnect();
+        Get.delete<SocketService>(force: true);
+      } catch (_) {}
+
+      // Reset patient controller in-memory data
+      try {
+        final patientController = Get.find<PatientController>();
+        patientController.patient.value = PatientModel.empty();
+      } catch (_) {}
+
       await _authRepo.logout();
       AppScreenLoader.stopLoading();
       Get.offAllNamed(AppRoutes.login);
     } catch (e) {
+      AppScreenLoader.stopLoading();
       throw 'Something went wrong';
     }
   }

@@ -34,27 +34,23 @@ class _MedicationTabContentState extends State<MedicationTabContent> {
     final healthController = Get.find<PatientHealthController>();
     final clinicalResponse =
         widget.patientController.patient.value.clinicalResponse;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmall = screenWidth < 360;
+    final titleFontSize = isSmall ? 14.0 : 16.0;
 
     if (clinicalResponse?.medications.isEmpty != false) {
-      return Column(
-        children: [
-          const Center(
-            child: Column(
-              children: [
-                SizedBox(height: 150),
-                Text(
-                  'No medications prescribed yet',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'Poppins-Regular',
-                    color: AppColors.black300,
-                  ),
-                ),
-                SizedBox(height: 250),
-              ],
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.only(top: 100),
+          child: Text(
+            'No medications prescribed yet',
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: 'Poppins-Regular',
+              color: AppColors.black300,
             ),
           ),
-        ],
+        ),
       );
     }
 
@@ -83,47 +79,38 @@ class _MedicationTabContentState extends State<MedicationTabContent> {
           ),
         ),
         SizedBox(height: 10),
-        Obx(() {
-          // Filter medications based on Ongoing/History toggle
-          final filteredMedications = healthController.getMedicationsByStatus(
-            clinicalResponse!.medications,
-            isOngoing.value,
-          );
+        Expanded(
+          child: Obx(() {
+            final filteredMedications = healthController.getMedicationsByStatus(
+              clinicalResponse!.medications,
+              isOngoing.value,
+            );
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (filteredMedications.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 50),
-                  child: Center(
-                    child: Text(
-                      isOngoing.value
-                          ? 'No ongoing medications'
-                          : 'No medication history',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins-Regular',
-                        color: AppColors.black300,
-                      ),
-                    ),
+            if (filteredMedications.isEmpty) {
+              return Center(
+                child: Text(
+                  isOngoing.value
+                      ? 'No ongoing medications'
+                      : 'No medication history',
+                  style: TextStyle(
+                    fontSize: titleFontSize,
+                    fontFamily: 'Poppins-Regular',
+                    color: AppColors.black300,
                   ),
-                )
-              else
-                ...filteredMedications
-                    .map(
-                      (medication) => Column(
-                        children: [
-                          MedicationCard(medication: medication),
-                          const SizedBox(height: 10),
-                        ],
-                      ),
-                    )
-                    .toList(),
-              const SizedBox(height: 100),
-            ],
-          );
-        }),
+                ),
+              );
+            }
+
+            return ListView.separated(
+              padding: const EdgeInsets.only(bottom: 100),
+              itemCount: filteredMedications.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                return MedicationCard(medication: filteredMedications[index]);
+              },
+            );
+          }),
+        ),
       ],
     );
   }
@@ -164,6 +151,12 @@ class MedicationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmall = screenWidth < 360;
+    final titleFontSize = isSmall ? 14.0 : 15.0;
+    final baseFontSize = isSmall ? 13.0 : 14.0;
+    final badgeFontSize = isSmall ? 14.0 : 16.0;
+
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(10),
@@ -189,14 +182,14 @@ class MedicationCard extends StatelessWidget {
                           medication.medName,
                           style: TextStyle(
                             fontFamily: 'Poppins-Medium',
-                            fontSize: 15,
+                            fontSize: titleFontSize,
                           ),
                         ),
                         SizedBox(height: 2),
                         Text(
                           medication.description,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: baseFontSize,
                             fontFamily: 'Poppins-Regular',
                             color: AppColors.black300,
                             letterSpacing: -0.3,
@@ -205,22 +198,26 @@ class MedicationCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  SizedBox(width: 20),
+                  SizedBox(width: 10),
                   Iconify(Uil.ellipsis_v),
                 ],
               ),
               SizedBox(height: 20),
-              Row(
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
                 children: [
                   RoundedContainer(
                     padding: 10,
                     backgroundColor: AppColors.lightsecondaryColor,
                     child: Text(
                       '${medication.noOfCapsules} capsules',
-                      style: TextStyle(color: AppColors.deepSecondaryColor),
+                      style: TextStyle(
+                        color: AppColors.deepSecondaryColor,
+                        fontSize: badgeFontSize,
+                      ),
                     ),
                   ),
-                  SizedBox(width: 25),
                   RoundedContainer(
                     padding: 10,
                     backgroundColor: AppColors.lightsecondaryColor,
@@ -228,7 +225,7 @@ class MedicationCard extends StatelessWidget {
                       _formatDateRange(),
                       style: TextStyle(
                         color: AppColors.deepSecondaryColor,
-                        fontSize: 16,
+                        fontSize: badgeFontSize,
                         letterSpacing: 0,
                       ),
                     ),

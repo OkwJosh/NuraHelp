@@ -14,6 +14,12 @@ class PatientInfoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmall = screenWidth < 360;
+    final avatarSize = isSmall ? 38.0 : 45.0;
+    final nameFontSize = isSmall ? 14.0 : 16.0;
+    final detailFontSize = isSmall ? 12.0 : 14.0;
+
     return Column(
       children: [
         Row(
@@ -29,15 +35,15 @@ class PatientInfoHeader extends StatelessWidget {
                           borderRadius: BorderRadius.circular(100),
                           border: Border.all(color: Colors.black),
                         ),
-                        child: const AppShimmerEffect(
-                          height: 45,
-                          width: 45,
+                        child: AppShimmerEffect(
+                          height: avatarSize,
+                          width: avatarSize,
                           radius: 150,
                         ),
                       )
                     : Container(
-                        width: 45,
-                        height: 45,
+                        width: avatarSize,
+                        height: avatarSize,
                         padding: EdgeInsets.all(
                           patientController
                                   .patient
@@ -68,15 +74,15 @@ class PatientInfoHeader extends StatelessWidget {
                                 .profilePicture!
                                 .isEmpty
                             ? CircleAvatar(
-                                radius: 22.5,
+                                radius: avatarSize / 2,
                                 backgroundColor: Colors.white,
                                 child: SvgIcon(AppIcons.profile, size: 100),
                               )
                             : ClipRRect(
                                 borderRadius: BorderRadius.circular(90),
                                 child: CachedNetworkImage(
-                                  height: 100,
-                                  width: 100,
+                                  height: avatarSize,
+                                  width: avatarSize,
                                   imageUrl: patientController
                                       .patient
                                       .value
@@ -93,9 +99,9 @@ class PatientInfoHeader extends StatelessWidget {
                                                 color: Colors.black,
                                               ),
                                             ),
-                                            child: const AppShimmerEffect(
-                                              width: 30,
-                                              height: 30,
+                                            child: AppShimmerEffect(
+                                              width: avatarSize,
+                                              height: avatarSize,
                                               radius: 90,
                                             ),
                                           ),
@@ -106,46 +112,34 @@ class PatientInfoHeader extends StatelessWidget {
                       ),
               ),
             ),
-            SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  patientController.patient.value.name,
-                  style: TextStyle(
-                    fontFamily: 'Poppins-Semibold',
-                    fontSize: 16,
-                    color: AppColors.black600,
+            SizedBox(width: isSmall ? 6 : 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    patientController.patient.value.name,
+                    style: TextStyle(
+                      fontFamily: 'Poppins-Semibold',
+                      fontSize: nameFontSize,
+                      color: AppColors.black600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                Row(
-                  children: [
-                    Text(
-                      'Male',
-                      style: TextStyle(
-                        fontFamily: 'Poppins-Regular',
-                        fontSize: 14,
+                  Wrap(
+                    spacing: 10,
+                    children: [
+                      Text(
+                        'Age ${patientController.getAge(patientController.patient.value.DOB)}',
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Regular',
+                          fontSize: detailFontSize,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      'Age ${patientController.getAge(patientController.patient.value.DOB)}',
-                      style: TextStyle(
-                        fontFamily: 'Poppins-Regular',
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      'O+',
-                      style: TextStyle(
-                        fontFamily: 'Poppins-Regular',
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

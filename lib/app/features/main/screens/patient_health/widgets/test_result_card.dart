@@ -28,6 +28,11 @@ class TestResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmall = screenWidth < 360;
+    final titleFontSize = isSmall ? 14.0 : 16.0;
+    final baseFontSize = isSmall ? 12.0 : 14.0;
+
     return Material(
       color: Colors.white,
       elevation: 0.1,
@@ -49,84 +54,74 @@ class TestResultCard extends StatelessWidget {
             children: [
               Text(
                 testName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins-Medium',
-                  fontSize: 16,
+                  fontSize: titleFontSize,
                 ),
               ),
               Text(
                 _formatDate(date),
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins-Regular',
-                  fontSize: 14,
+                  fontSize: baseFontSize,
                   color: AppColors.black300,
                 ),
               ),
               const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
-                  Row(
-                    children: [
-                      ElevatedButton(
-                        onPressed: () => _viewPDF(context, viewLink),
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 10,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            SvgIcon(AppIcons.eye, color: Colors.white),
-                            const SizedBox(width: 5),
-                            const Text(
-                              'View report',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
+                  ElevatedButton(
+                    onPressed: () => _viewPDF(context, viewLink),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
                       ),
-                      const SizedBox(width: 5),
-                      OutlinedButton(
-                        onPressed: () => _downloadFile(context, downloadLink),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(
-                            color: AppColors.secondaryColor,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 10,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SvgIcon(AppIcons.eye, color: Colors.white),
+                        const SizedBox(width: 5),
+                        Text(
+                          'View report',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: baseFontSize,
                           ),
                         ),
-                        child: Row(
-                          children: [
-                            SvgIcon(
-                              AppIcons.download,
-                              color: AppColors.secondaryColor,
-                            ),
-                            const SizedBox(width: 5),
-                            const Text(
-                              'Download',
-                              style: TextStyle(
-                                color: AppColors.secondaryColor,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  // const SizedBox(width: 5),
-                  // IconButton(
-                  //   style: IconButton.styleFrom(padding: EdgeInsets.zero),
-                  //   onPressed: () {},
-                  //   icon: SvgIcon(AppIcons.ellipsis),
-                  // ),
+                  OutlinedButton(
+                    onPressed: () => _downloadFile(context, downloadLink),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppColors.secondaryColor),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 10,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SvgIcon(
+                          AppIcons.download,
+                          color: AppColors.secondaryColor,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          'Download',
+                          style: TextStyle(
+                            color: AppColors.secondaryColor,
+                            fontSize: baseFontSize,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 15),
