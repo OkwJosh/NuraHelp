@@ -101,92 +101,49 @@ class AppService extends GetxService {
   Future<List<AppointmentModel>> fetchAppointments(User? user) async {
     return _withErrorHandling<List<AppointmentModel>>(() async {
       final appointmentsUrl = Uri.parse('$baseUrl/api/v1/appointments');
+
+      // Use a tighter timeout for a more responsive UI
       final response = await http
           .get(appointmentsUrl, headers: await _getHeaders(user, false))
-          .timeout(const Duration(seconds: 30));
+          .timeout(const Duration(seconds: 20));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (data is Map<String, dynamic> && data['appointments'] is List) {
-          final List<dynamic> rawList = data['appointments'] as List<dynamic>;
 
-          final appointments = rawList
+        if (data is Map<String, dynamic> && data['appointments'] is List) {
+          final List<dynamic> rawList = data['appointments'];
+
+          // Pure mapping logic: Convert JSON to Model list
+          return rawList
               .map(
                 (item) =>
                     AppointmentModel.fromJson(item as Map<String, dynamic>),
               )
               .toList();
-
-          // 🔥 SYNC CLINICAL CACHE: Update the local cache with these detailed appointments
-          final clinicalCache =
-              CacheService.instance.getCachedClinicalData() ?? {};
-          clinicalCache['appointments'] = rawList;
-          await CacheService.instance.cacheClinicalData(clinicalCache);
-
-          return appointments;
         }
       } else {
-        throw Exception('Failed to fetch appointments: ${response.statusCode}');
+        throw Exception(
+          'Failed to fetch appointments: Status ${response.statusCode}',
+        );
       }
       return [];
     }, 'fetchAppointments');
   }
 
-  Future<PatientModel> fetchPatientRecord(
-  User? user, {
-  bool forceRefresh = false,
-}) async {
-  PatientModel patient;
+  Future<PatientModel> fetchPatientRecord(User? user) async {
+    return _withErrorHandling<PatientModel>(() async {
+      final url = Uri.parse('$baseUrl/patient/auth/v1/profile');
+      final response = await http
+          .get(url, headers: await _getHeaders(user, true))
+          .timeout(const Duration(seconds: 20));
 
-  if (!forceRefresh) {
-    final cachedData = CacheService.instance.getCachedPatient();
-    if (cachedData != null) {
-      try {
-        patient = LoginResponse.fromJson({
-          'message': 'cached',
-          'patient': cachedData,
-          'settings': CacheService.instance.getCachedSettings() ?? {},
-        }).patient;
-
-        // 🔥 FIX: Clear stale appointments before fetching fresh ones
-        patient.appointments = [];
-        
-        final appointments = await fetchAppointments(user);
-        patient.appointments = appointments;
-        
-        return patient;
-      } catch (e) {
-        // Error parsing cached patient, fall through to API fetch
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return LoginResponse.fromJson(data).patient;
       }
-    }
+      throw Exception('Failed to fetch profile: ${response.statusCode}');
+    }, 'fetchPatientRecord');
   }
-
-  return _withErrorHandling<PatientModel>(() async {
-    // 1. Fetch Profile
-    final url = Uri.parse('$baseUrl/patient/auth/v1/profile');
-    final response = await http
-        .get(url, headers: await _getHeaders(user, true))
-        .timeout(const Duration(seconds: 30));
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final patient = LoginResponse.fromJson(data).patient;
-
-      patient.appointments = [];
-      
-      // 2. Fetch Detailed Appointments (Source of Truth for "Canceled" status)
-      final appointments = await fetchAppointments(user);
-      patient.appointments = appointments;
-
-      await CacheService.instance.cachePatient(data['patient']);
-      return patient;
-    } else {
-      throw Exception(
-        'Failed to fetch patient record: ${response.statusCode}',
-      );
-    }
-  }, 'fetchPatientRecord');
-}
 
   Future<void> savePatientRecord(PatientModel patient, User? user) async {
     return _withErrorHandling<void>(() async {
@@ -240,6 +197,21 @@ class AppService extends GetxService {
         );
       }
     }, 'updatePatientField');
+  }
+
+  Future<(PatientModel, List<AppointmentModel>, SettingsModel)>
+  getDashboardData(User? user) async {
+    final results = await Future.wait([
+      fetchPatientRecord(user),
+      fetchAppointments(user),
+      fetchPatientSettings(user),
+    ]);
+
+    return (
+      results[0] as PatientModel,
+      results[1] as List<AppointmentModel>,
+      results[2] as SettingsModel,
+    );
   }
 
   // ---------------------------------------------------------------------------

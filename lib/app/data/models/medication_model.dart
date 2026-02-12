@@ -29,6 +29,18 @@ class MedicationModel {
     date: DateTime.now(),
   );
 
+  Map<String, dynamic> toJson() {
+    return {
+      'name': medName,
+      'description': description,
+      'observation': observation,
+      'capsules': noOfCapsules,
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
+      'date': date.toIso8601String(),
+    };
+  }
+
   factory MedicationModel.fromJson(Map<String, dynamic> json) {
     final duration = json['duration'] as String? ?? '';
     final parsedDates = _parseDuration(duration);
@@ -55,7 +67,6 @@ class MedicationModel {
       // Format: "01 Feb - 16 Feb 2026"
       final parts = duration.split(' - ');
       if (parts.length != 2) {
-
         return {'start': null, 'end': null};
       }
 
@@ -112,7 +123,6 @@ class MedicationModel {
   }
 
   static DateTime _parseDate(String fieldName, dynamic dateValue) {
-    
     try {
       if (dateValue == null) {
         return DateTime.now();

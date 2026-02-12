@@ -27,6 +27,18 @@ class VitalModel {
     date: DateTime.now(),
   );
 
+  Map<String, dynamic> toJson() {
+    return {
+      'bgl': bglValue,
+      'weight': weightValue,
+      'heartRate': heartRate,
+      'oxygen': oxygenSatValue,
+      'bodyTemp': bodyTempValue,
+      'bp': bpValue,
+      'date': date.toIso8601String(),
+    };
+  }
+
   factory VitalModel.fromJson(Map<String, dynamic> json) {
     return VitalModel(
       bglValue: json['bgl'] ?? '',

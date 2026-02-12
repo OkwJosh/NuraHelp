@@ -5,7 +5,7 @@ class AppointmentModel {
   final String appointmentFinishTime;
   final DateTime appointmentDate;
   final String image;
-  final String status; // 'Not Canceled' or 'Canceled'
+  String status; // 'Not Canceled' or 'Canceled'
 
   AppointmentModel({
     required this.id,
@@ -40,7 +40,7 @@ class AppointmentModel {
     final image = json['image'] ?? '';
 
     // Handle null or missing status field with fallback
-    final status = json['status']?.toString() ?? 'Unknown';
+    final status = json['status']?.toString() ?? 'Canceled';
 
     return AppointmentModel(
       id: id,

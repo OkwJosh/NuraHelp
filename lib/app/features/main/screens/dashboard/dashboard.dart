@@ -55,21 +55,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Show no internet screen if internet is down
-      if (dashboardController.hasNoInternet.value) {
+      // 1. Critical Error: No Internet and NO cached data
+      if (dashboardController.hasNoInternet.value &&
+          controller.patient.value.name.isEmpty) {
         return NoInternetScreen(
-          onRetry: () {
-            dashboardController.refreshDashboardData();
-          },
+          onRetry: () => dashboardController.refreshDashboardData(),
         );
       }
 
-      // Show shimmer while loading
-      if (dashboardController.isLoading.value) {
+      // 2. Loading State: Show shimmer if we're loading and have no cached data to show
+      if (dashboardController.isLoading.value &&
+          controller.patient.value.name.isEmpty) {
         return const DashboardShimmer();
       }
 
-      // Show actual dashboard when loaded
+      // 3. Reactive UI: Show the dashboard (it will update live as parallel calls finish)
       return _buildDashboard(context);
     });
   }

@@ -21,6 +21,15 @@ class ClinicalResponse {
     testResults: [],
   );
 
+
+  Map<String, dynamic> toJson() {
+    return {
+      'vitals': vitals.map((v) => v.toJson()).toList(),
+      'medications': medications.map((m) => m.toJson()).toList(),
+      'testResults': testResults.map((t) => t.toJson()).toList(),
+    };
+  }
+
   factory ClinicalResponse.fromJson(Map<String, dynamic> json) {
     final appointmentsList =
         (json['appointments'] as List<dynamic>?)?.map((item) {

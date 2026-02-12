@@ -24,6 +24,17 @@ class TestResultModel {
     date: DateTime.now(),
   );
 
+  Map<String, dynamic> toJson() {
+    return {
+      'name': testName,
+      'description': description,
+      'observation': observation,
+      'viewLink': viewLink,
+      'downloadLink': downloadLink,
+      'date': date.toIso8601String(),
+    };
+  }
+
   factory TestResultModel.fromJson(Map<String, dynamic> json) {
     DateTime _parseDate(dynamic dateValue) {
       try {

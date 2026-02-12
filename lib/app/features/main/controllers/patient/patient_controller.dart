@@ -8,6 +8,7 @@ import 'package:nurahelp/app/data/models/patient_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/notification_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/security_model.dart';
 import 'package:nurahelp/app/data/models/settings_model/settings_model.dart';
+import 'package:nurahelp/app/data/services/cache_service.dart';
 import 'package:nurahelp/app/data/services/network_manager.dart';
 import 'package:nurahelp/app/utilities/loaders/loaders.dart';
 import 'package:nurahelp/app/utilities/popups/screen_loader.dart';
@@ -135,35 +136,40 @@ class PatientController extends GetxController {
   Future<void> proceedToDashboard() async {
     final isConnected = await AppNetworkManager.instance.isConnected();
     if (!isConnected) {
-      AppScreenLoader.stopLoading();
       AppToasts.warningSnackBar(
-        title: 'No Internet Connection',
-        message: 'Connect to the internet to continue',
+        title: 'No Internet',
+        message: 'Please connect to continue.',
       );
       return;
     }
-    try {
-      AppScreenLoader.openLoadingDialog('Setting up ');
-      if (!onboardingFormKey.currentState!.validate() ||
-          !enableHeyNuraVoice.value) {
-        AppScreenLoader.stopLoading();
-        return;
-      }
-      final currentUser = FirebaseAuth.instance.currentUser;
-      final newPatient = await appService.fetchPatientRecord(currentUser);
-      final settings = await appService.fetchPatientSettings(currentUser);
 
+    try {
+      AppScreenLoader.openLoadingDialog('Syncing Medical Records...');
+      final currentUser = FirebaseAuth.instance.currentUser;
+
+      // 🔥 PARALLEL FETCH: All requests start at the same time
+      final results = await Future.wait([
+        appService.fetchPatientRecord(currentUser),
+        appService.fetchPatientSettings(currentUser),
+        appService.fetchAppointments(currentUser), // The new pure fetcher
+      ]);
+
+      final newPatient = results[0] as PatientModel;
+      final freshAppointments = results[2] as List<AppointmentModel>;
+
+      // Merge data into the reactive model
+      newPatient.appointments = freshAppointments;
       patient.value = newPatient;
-      enableMessageAlerts.value = settings.notifications.messageAlerts;
-      enableAppointmentReminders.value =
-          settings.notifications.appointmentReminders;
-      enable2Fa.value = settings.security.twoFactorAuth;
-      Get.offAll(() => NavigationMenu(), duration: Duration(seconds: 0));
+      patient.refresh();
+
+      // Cache the fully merged object ONCE
+      await CacheService.instance.cachePatient(newPatient.toJson());
+
+      AppScreenLoader.stopLoading();
+      Get.offAll(() => NavigationMenu());
     } catch (e) {
       AppScreenLoader.stopLoading();
-      throw AppToasts.errorSnackBar(
-        title: 'Something went wrong ${e.toString()}',
-      );
+      AppToasts.errorSnackBar(title: 'Sync Failed', message: e.toString());
     }
   }
 
@@ -365,76 +371,43 @@ class PatientController extends GetxController {
   }
 
   Future<void> cancelAppointment(String appointmentId) async {
-    AppScreenLoader.openLoadingDialog('Canceling appointment');
+    AppScreenLoader.openLoadingDialog('Canceling appointment...');
     try {
       final user = FirebaseAuth.instance.currentUser;
-
-      final headers = await _getHeaders(user, false);
-
-      final url = Uri.parse('$baseUrl/api/v1/appointments/cancel/');
-
-      final requestBody = jsonEncode({'appointmentId': appointmentId});
-
-      final response = await http.put(url, headers: headers, body: requestBody);
+      final response = await http.put(
+        Uri.parse('$baseUrl/api/v1/appointments/cancel/'),
+        headers: await _getHeaders(user, false),
+        body: jsonEncode({'appointmentId': appointmentId}),
+      );
 
       if (response.statusCode == 200) {
-        // Add to canceled appointments set (since backend doesn't return status)
-        canceledAppointmentIds.add(appointmentId);
+        // 1. Update the local reactive list
+        final index =
+            patient.value.appointments?.indexWhere(
+              (a) => a.id == appointmentId,
+            ) ??
+            -1;
+        if (index != -1) {
+          // Use copyWith if available, otherwise modify the object
+          patient.value.appointments![index].status = 'Canceled';
+          canceledAppointmentIds.add(appointmentId);
 
-        // Update the appointment status in the local model
-        final appointments = patient.value.appointments ?? [];
+          // 2. Trigger GetX refresh
+          patient.refresh();
 
-        final appointmentIndex = appointments.indexWhere(
-          (a) => a.id == appointmentId,
-        );
-
-        if (appointmentIndex != -1) {
-          final updatedAppointment = AppointmentModel(
-            id: appointments[appointmentIndex].id,
-            purpose: appointments[appointmentIndex].purpose,
-            appointmentDate: appointments[appointmentIndex].appointmentDate,
-            appointmentStartTime:
-                appointments[appointmentIndex].appointmentStartTime,
-            appointmentFinishTime:
-                appointments[appointmentIndex].appointmentFinishTime,
-            image: appointments[appointmentIndex].image,
-            status: 'Canceled',
-          );
-
-          appointments[appointmentIndex] = updatedAppointment;
-
-          patient.refresh(); // Trigger UI refresh
-          AppScreenLoader.stopLoading();
-          Get.snackbar(
-            'Success',
-            'Appointment canceled successfully',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green,
-            colorText: Colors.white,
-            duration: Duration(seconds: 2),
-          );
-        } else {
-          AppScreenLoader.stopLoading();
-          Get.snackbar(
-            'Error',
-            'Failed to cancel appointment (Status: ${response.statusCode})',
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-            duration: Duration(seconds: 2),
-          );
+          // 3. 🔥 CRITICAL: Update Cache so the status persists
+          await CacheService.instance.cachePatient(patient.value.toJson());
         }
+
+        AppScreenLoader.stopLoading();
+        AppToasts.successSnackBar(
+          title: 'Success',
+          message: 'Appointment canceled',
+        );
       }
     } catch (e) {
       AppScreenLoader.stopLoading();
-      Get.snackbar(
-        'Error',
-        'An error occurred: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-        duration: Duration(seconds: 2),
-      );
+      AppToasts.errorSnackBar(title: 'Error', message: e.toString());
     }
   }
 }

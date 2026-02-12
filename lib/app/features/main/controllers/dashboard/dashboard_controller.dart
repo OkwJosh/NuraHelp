@@ -1,91 +1,92 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:nurahelp/app/data/models/appointment_model.dart';
+import 'package:nurahelp/app/data/models/clinical_response.dart';
+import 'package:nurahelp/app/data/models/patient_model.dart';
+import 'package:nurahelp/app/data/models/settings_model/settings_model.dart';
 import 'package:nurahelp/app/data/services/app_service.dart';
+import 'package:nurahelp/app/data/services/cache_service.dart';
 import 'package:nurahelp/app/data/services/network_manager.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/symptom_insight_controller/symptom_insight_controller.dart';
 import 'package:nurahelp/app/routes/app_routes.dart';
 
-/// Controller for dashboard to fetch data on first load
 class DashboardController extends GetxController {
   static DashboardController get instance => Get.find();
 
   final appService = AppService.instance;
+  final cacheService = CacheService.instance;
   final patientController = Get.find<PatientController>();
   final symptomController = Get.find<SymptomInsightController>();
-  final isLoading = true.obs;
+  final hasNoInternet = false.obs;
+  final isLoading = false.obs;
+  final lastUpdated = Rxn<DateTime>();
   final hasError = false.obs;
-  final hasNetworkTimeout = false.obs;
-  final hasNoInternet = false.obs; // New: Track no internet
-
-  late AppNetworkManager networkManager;
-
-  static const int networkTimeoutSeconds = 90; // 1.5 minutes
+  final networkManager = AppNetworkManager.instance;
 
   @override
   void onInit() {
     super.onInit();
-    try {
-      networkManager = Get.find<AppNetworkManager>();
-    } catch (e) {
-      networkManager = AppNetworkManager();
-    }
-    _fetchDashboardData();
+    _initializeDashboard();
   }
 
-  Future<void> _fetchDashboardData() async {
-    try {
-      isLoading.value = true;
-      hasError.value = false;
-      hasNetworkTimeout.value = false;
-      hasNoInternet.value = false;
+  Future<void> _initializeDashboard() async {
+    // 1. FAST-START: Immediately load whatever is in the cache
+    _hydrateFromCache();
 
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) {
-        hasError.value = true;
-        return;
+    // 2. FETCH FRESH: Parallel network calls
+    await refreshDashboardData();
+  }
+
+  void _hydrateFromCache() {
+    final cachedPatient = cacheService.getCachedPatient();
+    if (cachedPatient != null) {
+      final patient = PatientModel.fromJson(cachedPatient);
+      // Populate clinical data if cached
+      final cachedClinical = cacheService.getCachedClinicalData();
+      if (cachedClinical != null) {
+        patient.clinicalResponse = ClinicalResponse.fromJson(cachedClinical);
       }
+      patientController.patient.value = patient;
+    }
+  }
 
-      // Check internet before fetching
+  Future<void> refreshDashboardData() async {
+    try {
+      // 1. Check current connectivity
       final isConnected = await networkManager.isConnected();
+
       if (!isConnected) {
+        // 3. Update the state: This immediately triggers the UI change
         hasNoInternet.value = true;
         isLoading.value = false;
         return;
       }
 
-      // Fetch all data with timeout (will use cache if available)
-      final patient = await appService
-          .fetchPatientRecord(currentUser)
-          .timeout(
-            const Duration(seconds: networkTimeoutSeconds),
-            onTimeout: () {
-              hasNetworkTimeout.value = true;
-              throw Exception('Network timeout - unstable internet connection');
-            },
-          );
-      final settings = await appService
-          .fetchPatientSettings(currentUser)
-          .timeout(
-            const Duration(seconds: networkTimeoutSeconds),
-            onTimeout: () {
-              hasNetworkTimeout.value = true;
-              throw Exception('Network timeout - unstable internet connection');
-            },
-          );
-      final clinicalInfo = await appService
-          .getClinicalData(user: currentUser)
-          .timeout(
-            const Duration(seconds: networkTimeoutSeconds),
-            onTimeout: () {
-              hasNetworkTimeout.value = true;
-              throw Exception('Network timeout - unstable internet connection');
-            },
-          );
+      isLoading.value = true;
+      hasNoInternet.value = false;
+      hasError.value = false;
 
-      // Check if user needs to complete OTP verification
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+      // PARALLEL EXECUTION (The Promise.all equivalent)
+      // We run all three network requests simultaneously
+      final results = await Future.wait([
+        appService.fetchPatientRecord(currentUser),
+        appService.fetchAppointments(currentUser),
+        appService.fetchPatientSettings(currentUser),
+        appService.getClinicalData(user: currentUser),
+        symptomController.fetchSymptoms(), // Also run this in parallel
+      ]);
+
+      final patient = results[0] as PatientModel;
+      final freshAppointments = results[1] as List<AppointmentModel>;
+      final settings = results[2] as SettingsModel;
+      final clinicalInfo = results[3] as ClinicalResponse;
+
+      // Check OTP Status
       if (!patient.isComplete) {
-        isLoading.value = false;
         Get.offAllNamed(
           AppRoutes.otpVerification,
           arguments: currentUser.email,
@@ -93,82 +94,31 @@ class DashboardController extends GetxController {
         return;
       }
 
-      // Update patient controller
+      // Update State (Single Source of Truth)
       patient.clinicalResponse = clinicalInfo;
       patientController.patient.value = patient;
+      patientController.patient.value.appointments = freshAppointments;
+      patientController.patient.refresh();
+
+      // Map settings to controller
       patientController.enableMessageAlerts.value =
           settings.notifications.messageAlerts;
       patientController.enableAppointmentReminders.value =
           settings.notifications.appointmentReminders;
       patientController.enable2Fa.value = settings.security.twoFactorAuth;
 
-      // Fetch symptoms data
-      await symptomController.fetchSymptoms();
+      // Persist to Cache (Update background storage)
+      await cacheService.cachePatient(patient.toJson());
+      await cacheService.cacheSettings(settings.toJson());
+      await cacheService.cacheClinicalData(clinicalInfo.toJson());
+
+      lastUpdated.value = DateTime.now();
     } catch (e) {
       hasError.value = true;
-    } finally {
-      isLoading.value = false;
-    }
-  }
-
-  Future<void> refreshDashboardData() async {
-    try {
-      isLoading.value = true;
-      hasError.value = false;
-      hasNetworkTimeout.value = false;
-      hasNoInternet.value = false;
-
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) return;
-
-      // Check internet before fetching
-      final isConnected = await networkManager.isConnected();
-      if (!isConnected) {
-        hasNoInternet.value = true;
-        isLoading.value = false;
-        return;
-      }
-
-      final patient = await appService
-          .fetchPatientRecord(currentUser, forceRefresh: true)
-          .timeout(
-            const Duration(seconds: networkTimeoutSeconds),
-            onTimeout: () {
-              hasNetworkTimeout.value = true;
-              throw Exception('Network timeout - unstable internet connection');
-            },
-          );
-      final settings = await appService
-          .fetchPatientSettings(currentUser, forceRefresh: true)
-          .timeout(
-            const Duration(seconds: networkTimeoutSeconds),
-            onTimeout: () {
-              hasNetworkTimeout.value = true;
-              throw Exception('Network timeout - unstable internet connection');
-            },
-          );
-      final clinicalInfo = await appService
-          .getClinicalData(user: currentUser, forceRefresh: true)
-          .timeout(
-            const Duration(seconds: networkTimeoutSeconds),
-            onTimeout: () {
-              hasNetworkTimeout.value = true;
-              throw Exception('Network timeout - unstable internet connection');
-            },
-          );
-
-      patient.clinicalResponse = clinicalInfo;
-      patientController.patient.value = patient;
-      patientController.enableMessageAlerts.value =
-          settings.notifications.messageAlerts;
-      patientController.enableAppointmentReminders.value =
-          settings.notifications.appointmentReminders;
-      patientController.enable2Fa.value = settings.security.twoFactorAuth;
-
-      // Refresh symptoms data
-      await symptomController.fetchSymptoms();
-    } catch (e) {
-      hasError.value = true;
+      Get.snackbar(
+        "Sync Warning",
+        "Showing offline data. Check your connection.",
+      );
     } finally {
       isLoading.value = false;
     }
