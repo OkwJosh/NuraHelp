@@ -17,7 +17,12 @@ class MessagesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PatientController>();
-    final messagesController = Get.put(MessagesController());
+    final messagesController = Get.put(MessagesController(), permanent: true);
+
+    // If conversations already cached, silently refresh in background
+    if (messagesController.conversations.isNotEmpty) {
+      messagesController.fetchConversations();
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -77,7 +82,9 @@ class MessagesScreen extends StatelessWidget {
                   );
                 }
 
-                if (messagesController.isLoading.value) {
+                // Only show shimmer on first load (no cached conversations)
+                if (messagesController.isLoading.value &&
+                    messagesController.conversations.isEmpty) {
                   return const MessagesShimmer();
                 }
 

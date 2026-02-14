@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:nurahelp/app/data/models/message_models/bot_message_model.dart';
 import 'package:nurahelp/app/data/services/file_picker_service.dart';
@@ -51,32 +52,47 @@ class AttachmentBubble extends StatelessWidget {
     );
   }
 
-  /// Build image preview with circular progress indicator during upload
+  /// Build image preview — handles both local files and network URLs
   Widget _buildImagePreview() {
+    final path = message.attachmentPath!;
+    final isLocal = !path.startsWith('http');
+
     return Stack(
       alignment: Alignment.center,
       children: [
-        // Image
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: CachedNetworkImage(
-            imageUrl: message.attachmentPath!,
-            width: 200,
-            height: 200,
-            fit: BoxFit.cover,
-            errorWidget: (context, url, error) => Container(
-              width: 200,
-              height: 200,
-              color: Colors.grey[300],
-              child: const Icon(Icons.broken_image),
-            ),
-            placeholder: (context, url) => Container(
-              width: 200,
-              height: 200,
-              color: Colors.grey[200],
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-          ),
+          child: isLocal
+              ? Image.file(
+                  File(path),
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    width: 200,
+                    height: 200,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.broken_image),
+                  ),
+                )
+              : CachedNetworkImage(
+                  imageUrl: path,
+                  width: 200,
+                  height: 200,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Container(
+                    width: 200,
+                    height: 200,
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.broken_image),
+                  ),
+                  placeholder: (context, url) => Container(
+                    width: 200,
+                    height: 200,
+                    color: Colors.grey[200],
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                ),
         ),
 
         // Upload progress overlay

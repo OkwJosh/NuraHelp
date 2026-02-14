@@ -24,10 +24,16 @@ class FilePickerService {
   /// Format file size to human readable format
   String formatFileSize(int bytes) {
     if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB"];
-    final i = (bytes.toString().length / 3).floor();
-    final newSize = bytes / (1000 * (1 << (i * 10)));
-    return "${newSize.toStringAsFixed(2)} ${suffixes[i]}";
+    const suffixes = ["B", "KB", "MB", "GB", "TB"];
+    int i = 0;
+    double size = bytes.toDouble();
+    
+    while (size >= 1024 && i < suffixes.length - 1) {
+      size /= 1024;
+      i++;
+    }
+    
+    return "${size.toStringAsFixed(2)} ${suffixes[i]}";
   }
 
   /// Pick file from device storage

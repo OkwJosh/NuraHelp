@@ -1,16 +1,61 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 class FileManagementService extends GetxService {
   static FileManagementService get instance => Get.find();
 
+  static const String _downloadedFilesKey = 'downloaded_files_map';
+
   final RxMap<String, double> downloadProgress = <String, double>{}.obs;
   final RxSet<String> downloadedFiles = <String>{}.obs;
+
+  /// Maps messageId → local file name for persistence across restarts
+  final Map<String, String> _messageFileMap = {};
+
+  /// Initialize: restore downloaded files from persisted storage and verify they still exist on disk
+  Future<FileManagementService> init() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonStr = prefs.getString(_downloadedFilesKey);
+      if (jsonStr != null) {
+        final Map<String, dynamic> map = jsonDecode(jsonStr);
+        final directory = await getApplicationDocumentsDirectory();
+
+        for (final entry in map.entries) {
+          final messageId = entry.key;
+          final fileName = entry.value as String;
+          final filePath = '${directory.path}/$fileName';
+          if (await File(filePath).exists()) {
+            downloadedFiles.add(messageId);
+            _messageFileMap[messageId] = fileName;
+          }
+        }
+        debugPrint(
+          '✅ Restored ${downloadedFiles.length} downloaded files from cache',
+        );
+      }
+    } catch (e) {
+      debugPrint('⚠️ Failed to restore downloaded files: $e');
+    }
+    return this;
+  }
+
+  /// Persist the message→fileName map to SharedPreferences
+  Future<void> _persistDownloadedFiles() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_downloadedFilesKey, jsonEncode(_messageFileMap));
+    } catch (e) {
+      debugPrint('⚠️ Failed to persist downloaded files: $e');
+    }
+  }
 
   /// Download file from URL and save to local storage
   Future<String?> downloadFile({
@@ -19,6 +64,12 @@ class FileManagementService extends GetxService {
     required String messageId,
   }) async {
     try {
+      // Validate file URL before proceeding
+      if (fileUrl.isEmpty) {
+        debugPrint('❌ Invalid file URL: empty string');
+        return null;
+      }
+
       downloadProgress[messageId] = 0.0;
 
       // 1. RESOLVE URL: Check if it's a raw path (e.g., "uploads/...")
@@ -36,14 +87,33 @@ class FileManagementService extends GetxService {
         }
       }
 
+      // Validate resolved URL
+      try {
+        Uri.parse(resolvedUrl);
+      } catch (e) {
+        debugPrint('❌ Invalid URL format: $resolvedUrl');
+        downloadProgress.remove(messageId);
+        return null;
+      }
+
       // 2. DOWNLOAD: Now use the http/https URL
       final response = await http.get(Uri.parse(resolvedUrl));
 
       if (response.statusCode == 200) {
         final directory = await getApplicationDocumentsDirectory();
 
-        // Sanitize filename to prevent path traversal issues
-        final cleanName = fileName.replaceAll(RegExp(r'[^\w\s\.]'), '_');
+        // Enhanced sanitization to prevent path traversal and other issues
+        final cleanName = fileName
+            .replaceAll(RegExp(r'[^\w\s\.-]'), '_')
+            .replaceAll(RegExp(r'\.{2,}'), '.') // Prevent ".." attacks
+            .replaceAll(RegExp(r'^\.+'), '') // Remove leading dots
+            .trim();
+
+        // Validate cleaned filename
+        if (cleanName.isEmpty) {
+          throw Exception('Invalid filename after sanitization');
+        }
+
         final filePath = '${directory.path}/$cleanName';
 
         final file = File(filePath);
@@ -53,6 +123,8 @@ class FileManagementService extends GetxService {
         // Update state
         downloadProgress[messageId] = 1.0;
         downloadedFiles.add(messageId);
+        _messageFileMap[messageId] = cleanName;
+        await _persistDownloadedFiles();
 
         debugPrint('✅ File downloaded to: $filePath');
         return filePath;
@@ -125,9 +197,15 @@ class FileManagementService extends GetxService {
   /// Get file size in human-readable format
   String getFileSizeString(int bytes) {
     if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB"];
-    final i = (bytes.toString().length / 3).floor();
-    final newSize = bytes / (1000 * (1 << (i * 10)));
-    return "${newSize.toStringAsFixed(2)} ${suffixes[i]}";
+    const suffixes = ["B", "KB", "MB", "GB", "TB"];
+    int i = 0;
+    double size = bytes.toDouble();
+
+    while (size >= 1024 && i < suffixes.length - 1) {
+      size /= 1024;
+      i++;
+    }
+
+    return "${size.toStringAsFixed(2)} ${suffixes[i]}";
   }
 }

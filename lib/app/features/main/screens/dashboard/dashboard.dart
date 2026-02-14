@@ -203,12 +203,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               patient: controller.patient.value,
                             );
                           },
-                          onMicButtonPressed: () {},
-                          onAttachButtonPressed: () {
-                            Get.snackbar(
-                              'Attachment',
-                              'Feature not implemented yet',
+                          onMicButtonPressed: () {
+                            // Navigate to NuraBot then start recording
+                            Get.to(
+                              () => const NuraBot(),
+                              transition: Transition.rightToLeftWithFade,
                             );
+                            // Small delay so the NuraBot screen mounts first
+                            Future.delayed(
+                              const Duration(milliseconds: 300),
+                              () => nuraController.startVoiceRecording(),
+                            );
+                          },
+                          onAttachButtonPressed: () {
+                            nuraController.showAttachmentOptions();
                           },
                         ),
                         const SizedBox(height: 30),

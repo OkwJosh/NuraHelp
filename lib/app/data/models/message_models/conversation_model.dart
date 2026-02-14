@@ -1,3 +1,5 @@
+import 'package:nurahelp/app/data/models/message_models/message_model.dart';
+
 class ConversationModel {
   final String userId; // the other user's ID
   final String userName; // other user's name
@@ -67,7 +69,7 @@ class ConversationModel {
       userPhone: userObject['phone'],
       userHospital: userObject['hospital'],
       userSpecialty: userObject['specialty'],
-      lastMessage: json['lastMessage'] ?? '',
+      lastMessage: _resolveLastMessage(json['lastMessage'] ?? ''),
       lastTimestamp: json['lastTimestamp'] != null
           ? (json['lastTimestamp'] is String
                 ? DateTime.parse(json['lastTimestamp'])
@@ -84,6 +86,11 @@ class ConversationModel {
   bool get hasUnread => unreadCount > 0;
   bool get isDoctor => userType == 'Doctor';
   bool get isPatient => userType == 'Patient';
+
+  /// Converts internal filenames to friendly text for preview
+  static String _resolveLastMessage(String text) {
+    return MessageModel.friendlyPreview(text);
+  }
 
   // Check if the last message was sent by the current user
   bool isLastMessageMine(String currentUserId) => lastSender == currentUserId;

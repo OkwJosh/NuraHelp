@@ -4,7 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:nurahelp/app/common/widgets/full_screen_image_viewer.dart';
 import 'package:nurahelp/app/common/widgets/message_status_tick.dart';
+import 'package:nurahelp/app/common/widgets/voice_note_player.dart';
 import 'package:nurahelp/app/data/models/message_models/message_model.dart';
 import 'package:nurahelp/app/data/services/file_management_service.dart';
 import 'package:nurahelp/app/utilities/constants/colors.dart';
@@ -12,6 +14,10 @@ import 'package:nurahelp/app/utilities/constants/colors.dart';
 class ChatBubble extends StatelessWidget {
   final MessageModel message;
   final bool isMe;
+
+  // Static cache for Firebase Storage URLs to prevent redundant fetches
+  static final Map<String, String> _urlCache = {};
+  static const int _maxCacheSize = 100; // Limit cache size
 
   const ChatBubble({super.key, required this.message, required this.isMe});
 
@@ -73,41 +79,131 @@ class ChatBubble extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildContent(context),
-            Padding(
-              padding: const EdgeInsets.only(right: 6, bottom: 4, top: 2),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
+        child: message.isDeleted
+            ? _buildDeletedContent()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Spacer(),
-                  Text(
-                    '${message.timestamp.toLocal().hour}:${message.timestamp.toLocal().minute.toString().padLeft(2, '0')}',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontFamily: 'Poppins-Light',
-                      color: isMe ? Colors.white70 : Colors.grey[600],
+                  // Reply header (if replying to another message)
+                  if (message.replyToMessage != null) _buildReplyHeader(),
+                  _buildContent(context),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 6, bottom: 4, top: 2),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const Spacer(),
+                        if (message.isEdited)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4),
+                            child: Text(
+                              'edited',
+                              style: TextStyle(
+                                fontSize: 9,
+                                fontStyle: FontStyle.italic,
+                                fontFamily: 'Poppins-Light',
+                                color: isMe ? Colors.white54 : Colors.grey[500],
+                              ),
+                            ),
+                          ),
+                        Text(
+                          '${message.timestamp.toLocal().hour}:${message.timestamp.toLocal().minute.toString().padLeft(2, '0')}',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontFamily: 'Poppins-Light',
+                            color: isMe ? Colors.white70 : Colors.grey[600],
+                          ),
+                        ),
+                        if (isMe) ...[
+                          const SizedBox(width: 4),
+                          MessageStatusTick(
+                            delivered: message.delivered,
+                            read: message.read,
+                            isUploading: message.isUploading,
+                            color: isMe ? Colors.white70 : Colors.grey[600],
+                            size: 14,
+                          ),
+                        ],
+                      ],
                     ),
                   ),
-                  if (isMe) ...[
-                    const SizedBox(width: 4),
-                    MessageStatusTick(
-                      delivered: message.delivered,
-                      read: message.read,
-                      isUploading:
-                          message.isUploading, // Pass the uploading state
-                      color: isMe ? Colors.white70 : Colors.grey[600],
-                      size: 14,
-                    ),
-                  ],
                 ],
               ),
+      ),
+    );
+  }
+
+  /// Placeholder shown for deleted messages.
+  Widget _buildDeletedContent() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.block,
+            size: 14,
+            color: isMe ? Colors.white54 : Colors.grey[500],
+          ),
+          const SizedBox(width: 6),
+          Text(
+            'This message was deleted',
+            style: TextStyle(
+              fontSize: 13,
+              fontStyle: FontStyle.italic,
+              fontFamily: 'Poppins-Regular',
+              color: isMe ? Colors.white54 : Colors.grey[500],
             ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Reply header shown above message content when it's a reply.
+  Widget _buildReplyHeader() {
+    return Container(
+      margin: const EdgeInsets.only(left: 4, right: 4, top: 4, bottom: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: isMe
+            ? Colors.white.withOpacity(0.15)
+            : Colors.grey.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border(
+          left: BorderSide(
+            color: isMe ? Colors.white70 : AppColors.secondaryColor,
+            width: 3,
+          ),
         ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            message.replyToSender == message.sender
+                ? 'You'
+                : message.replyToSender ?? '',
+            style: TextStyle(
+              fontSize: 11,
+              fontFamily: 'Poppins-SemiBold',
+              color: isMe ? Colors.white70 : AppColors.secondaryColor,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            message.replyToMessage ?? '',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11,
+              fontFamily: 'Poppins-Regular',
+              color: isMe ? Colors.white60 : Colors.grey[600],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -115,7 +211,16 @@ class ChatBubble extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     // 1. IMAGE BUBBLE
     if (message.isImage && message.hasAttachment) {
-      final attachmentPath = message.attachments!.first;
+      // Prefer attachmentPreview (full URL) when the attachment path is a server path
+      String attachmentPath = message.attachments!.first;
+      if (!attachmentPath.startsWith('http') &&
+          !attachmentPath.startsWith('/') &&
+          !attachmentPath.startsWith('file://') &&
+          !RegExp(r'^[a-zA-Z]:').hasMatch(attachmentPath) &&
+          message.attachmentPreview != null &&
+          message.attachmentPreview!.startsWith('http')) {
+        attachmentPath = message.attachmentPreview!;
+      }
 
       // Determine image type:
       // Local: starts with / (Unix) or C:/ (Windows) or file://
@@ -128,37 +233,102 @@ class ChatBubble extends StatelessWidget {
       final isHttp =
           attachmentPath.startsWith('http://') ||
           attachmentPath.startsWith('https://');
-      final isFirebase = !isLocal && !isHttp;
 
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: isLocal
-                ? _buildImageWidget(attachmentPath, imageType: 'local')
-                : isHttp
-                ? _buildImageWidget(attachmentPath, imageType: 'http')
-                : _buildImageWidget(attachmentPath, imageType: 'firebase'),
-          ),
-          if (message.isUploading)
-            Container(
-              width: 200,
-              height: 150,
-              decoration: BoxDecoration(
-                color: Colors.black38,
+      final imageType = isLocal
+          ? 'local'
+          : isHttp
+          ? 'http'
+          : 'firebase';
+
+      return GestureDetector(
+        onTap: message.isUploading
+            ? null
+            : () {
+                // For firebase images, resolve URL first then open viewer
+                if (imageType == 'firebase') {
+                  _resolveFirebaseImageUrl(attachmentPath).then((resolved) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => FullScreenImageViewer(
+                          imagePath: resolved,
+                          imageType: 'http',
+                          heroTag: 'img_${message.id}',
+                        ),
+                      ),
+                    );
+                  });
+                } else {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => FullScreenImageViewer(
+                        imagePath: attachmentPath,
+                        imageType: imageType,
+                        heroTag: 'img_${message.id}',
+                      ),
+                    ),
+                  );
+                }
+              },
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Hero(
+              tag: 'img_${message.id}',
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: CircularProgressIndicator(color: Colors.white),
+                child: _buildImageWidget(attachmentPath, imageType: imageType),
               ),
             ),
-        ],
+            if (message.isUploading)
+              Container(
+                width: 200,
+                height: 150,
+                decoration: BoxDecoration(
+                  color: Colors.black38,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                ),
+              ),
+          ],
+        ),
       );
     }
 
-    // 2. DOCUMENT BUBBLE
-    if (message.attachmentType != 'text' && message.attachmentType != null) {
+    // 2. VOICE NOTE BUBBLE
+    if (message.isVoice && message.hasAttachment) {
+      // Prefer attachmentPreview (full URL) over attachments path
+      final attachmentPath = message.attachments!.first;
+      final audioUrl =
+          (message.attachmentPreview != null &&
+              message.attachmentPreview!.isNotEmpty)
+          ? message.attachmentPreview!
+          : attachmentPath.startsWith('http')
+          ? attachmentPath
+          : attachmentPath; // fallback, will resolve via Firebase later
+
+      // The message text may be "duration|size" or a filename from the server
+      // If it's a filename (contains 'voice_note' or ends in .m4a), pass null duration
+      final msgText = message.message;
+      final isFilename =
+          msgText.contains('voice_note') ||
+          msgText.toLowerCase().endsWith('.m4a');
+      final duration = isFilename ? null : msgText;
+
+      return VoiceNotePlayer(
+        audioUrl: audioUrl,
+        messageId: message.id,
+        isMe: isMe,
+        duration: duration,
+        isUploading: message.isUploading,
+      );
+    }
+
+    // 3. DOCUMENT BUBBLE
+    if (message.attachmentType != 'text' &&
+        message.attachmentType != null &&
+        message.attachmentType != 'voice') {
       final parts = message.message.split('|');
       final fileName = parts.isNotEmpty ? parts[0] : "Document";
       final fileSize = parts.length > 1 ? parts[1] : "";
@@ -599,18 +769,49 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
-  /// Resolve Firebase Storage path to download URL
+  /// Resolve Firebase Storage path to download URL with caching
   Future<String> _resolveFirebaseImageUrl(String firebasePath) async {
+    // Check cache first
+    if (_urlCache.containsKey(firebasePath)) {
+      debugPrint('🟢 [ChatBubble] Using cached URL for: $firebasePath');
+      return _urlCache[firebasePath]!;
+    }
+
     try {
       debugPrint('🔄 Resolving Firebase image: $firebasePath');
       final downloadUrl = await FirebaseStorage.instance
           .ref(firebasePath)
           .getDownloadURL();
       debugPrint('✅ Resolved Firebase URL: $downloadUrl');
+
+      // Cache the URL with size management
+      _cacheUrl(firebasePath, downloadUrl);
+
       return downloadUrl;
     } catch (e) {
       debugPrint('❌ Error resolving Firebase URL: $e');
       rethrow;
     }
+  }
+
+  /// Cache URL with automatic cleanup when limit is reached
+  static void _cacheUrl(String key, String value) {
+    if (_urlCache.length >= _maxCacheSize) {
+      // Remove oldest entries (first 20% of cache)
+      final keysToRemove = _urlCache.keys.take(_maxCacheSize ~/ 5).toList();
+      for (final k in keysToRemove) {
+        _urlCache.remove(k);
+      }
+      debugPrint(
+        '🧼 [ChatBubble] Cache cleaned, removed ${keysToRemove.length} entries',
+      );
+    }
+    _urlCache[key] = value;
+  }
+
+  /// Clear the entire URL cache (useful for memory management)
+  static void clearCache() {
+    _urlCache.clear();
+    debugPrint('🧼 [ChatBubble] URL cache cleared');
   }
 }

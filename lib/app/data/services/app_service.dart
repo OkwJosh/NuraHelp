@@ -438,12 +438,20 @@ class AppService extends GetxService {
   // Add these methods to your AppService class
 
   // Get chat history with a specific user
+  // Pass [after] (ISO 8601) to fetch only messages newer than that timestamp.
   Future<Map<String, dynamic>> getChatHistory(
     String receiverId,
-    User? user,
-  ) async {
+    User? user, {
+    DateTime? after,
+  }) async {
     return _withErrorHandling<Map<String, dynamic>>(() async {
-      final url = Uri.parse('$baseUrl/chat/v1/history/$receiverId');
+      final queryParams = <String, String>{};
+      if (after != null) {
+        queryParams['after'] = after.toUtc().toIso8601String();
+      }
+      final url = Uri.parse(
+        '$baseUrl/chat/v1/history/$receiverId',
+      ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
       final response = await http
           .get(url, headers: await _getHeaders(user, true))
           .timeout(const Duration(seconds: 30));
@@ -544,8 +552,9 @@ class AppService extends GetxService {
   Future<Map<String, dynamic>> uploadChatFile(
     XFile file,
     String receiver,
-    User? user,
-  ) async {
+    User? user, {
+    Function(double)? onProgress,
+  }) async {
     return _withErrorHandling<Map<String, dynamic>>(() async {
       final url = Uri.parse('$baseUrl/api/v1/upload'); // Your backend endpoint
 
@@ -564,7 +573,33 @@ class AppService extends GetxService {
       final streamedResponse = await request.send().timeout(
         const Duration(seconds: 60),
       );
-      final response = await http.Response.fromStream(streamedResponse);
+
+      // Collect response bytes, optionally tracking upload progress
+      final List<int> bytes = [];
+      if (onProgress != null) {
+        int bytesReceived = 0;
+        final contentLength = streamedResponse.contentLength ?? 0;
+
+        await for (final chunk in streamedResponse.stream) {
+          bytes.addAll(chunk);
+          if (contentLength > 0) {
+            bytesReceived += chunk.length;
+            final progress = (bytesReceived / contentLength).clamp(0.0, 1.0);
+            onProgress(progress);
+          }
+        }
+      } else {
+        await for (final chunk in streamedResponse.stream) {
+          bytes.addAll(chunk);
+        }
+      }
+
+      final response = http.Response.bytes(
+        bytes,
+        streamedResponse.statusCode,
+        headers: streamedResponse.headers,
+        request: streamedResponse.request,
+      );
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body); // Should return the file URL

@@ -10,6 +10,8 @@ import 'package:nurahelp/app/data/models/message_models/message_model.dart';
 import 'package:nurahelp/app/data/services/app_service.dart';
 import 'package:nurahelp/app/data/services/network_manager.dart';
 import 'package:nurahelp/app/data/services/socket_service.dart';
+import 'package:nurahelp/app/data/services/file_management_service.dart';
+import 'package:nurahelp/app/data/services/audio_recorder_service.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 
 class DirectMessageController extends GetxController {
@@ -31,6 +33,22 @@ class DirectMessageController extends GetxController {
   Timer? typingTimer;
   Timer? connectivityCheckTimer;
   final appService = AppService.instance;
+  late AudioRecorderService audioRecorderService;
+
+  // Map temp message IDs to real server IDs
+  final Map<String, String> _tempToRealIdMap = {};
+
+  // Upload progress tracking
+  final RxMap<String, double> uploadProgress = <String, double>{}.obs;
+
+  // Voice recording state
+  final RxBool isRecordingVoice = false.obs;
+
+  // Reply state
+  final Rxn<MessageModel> replyingTo = Rxn<MessageModel>();
+
+  // Edit state
+  final Rxn<MessageModel> editingMessage = Rxn<MessageModel>();
 
   static const int networkTimeoutSeconds = 90; // 1.5 minutes
 
@@ -42,10 +60,26 @@ class DirectMessageController extends GetxController {
     );
     _initializeSocket();
     _initializeNetworkManager();
-    // Only fetch messages if not already loaded (like WhatsApp)
-    if (messages.isEmpty) {
-      fetchMessages();
+    _initializeAudioRecorder();
+    fetchMessages(); // First load → full fetch; subsequent → incremental
+  }
+
+  /// Call this when the page is re-opened to pick up any missed messages.
+  void onPageResumed() {
+    if (messages.isNotEmpty) {
+      fetchMessages(); // incremental – only fetches new messages
     }
+  }
+
+  void _initializeAudioRecorder() {
+    try {
+      audioRecorderService = Get.find<AudioRecorderService>();
+    } catch (e) {
+      // If not found, create and register a new instance
+      audioRecorderService = AudioRecorderService();
+      Get.put(audioRecorderService);
+    }
+    debugPrint('🎤 [DirectMessage] Audio recorder service initialized');
   }
 
   void _initializeNetworkManager() {
@@ -60,7 +94,7 @@ class DirectMessageController extends GetxController {
   }
 
   void _startConnectivityCheck() {
-    connectivityCheckTimer = Timer.periodic(const Duration(seconds: 1), (
+    connectivityCheckTimer = Timer.periodic(const Duration(seconds: 3), (
       _,
     ) async {
       if (isLoading.value && messages.isEmpty) {
@@ -141,6 +175,10 @@ class DirectMessageController extends GetxController {
       debugPrint('👓 [DirectMessage] Message read: $messageId');
       _updateMessageStatus(messageId, read: true);
     };
+
+    // TODO: Uncomment when backend supports delete/edit events
+    // socketService.addMessageDeletedListener(_onMessageDeleted);
+    // socketService.addMessageEditedListener(_onMessageEdited);
   }
 
   Future<void> fetchMessages() async {
@@ -155,13 +193,23 @@ class DirectMessageController extends GetxController {
         return;
       }
 
+      // Determine the timestamp of the latest cached message so we can
+      // request only newer messages from the server.
+      DateTime? after;
+      if (messages.isNotEmpty) {
+        after = messages
+            .map((m) => m.timestamp)
+            .reduce((a, b) => a.isAfter(b) ? a : b);
+      }
+
       debugPrint(
-        '📥 [DirectMessage] Fetching chat history for doctor: $doctorId',
+        '📥 [DirectMessage] Fetching chat history for doctor: $doctorId'
+        '${after != null ? ' (after ${after.toIso8601String()})' : ' (full)'}',
       );
 
       // Fetch chat history from API with timeout
       final response = await appService
-          .getChatHistory(doctorId, user)
+          .getChatHistory(doctorId, user, after: after)
           .timeout(
             const Duration(seconds: networkTimeoutSeconds),
             onTimeout: () {
@@ -172,10 +220,30 @@ class DirectMessageController extends GetxController {
 
       if (response['messages'] != null) {
         final List<dynamic> messagesList = response['messages'];
-        messages.value = messagesList
+        final newMessages = messagesList
             .map((json) => MessageModel.fromJson(json))
             .toList();
-        debugPrint('✅ [DirectMessage] Loaded ${messages.length} messages');
+
+        if (after == null) {
+          // First load – replace everything
+          messages.value = newMessages;
+          debugPrint('✅ [DirectMessage] Loaded ${messages.length} messages');
+        } else {
+          // Incremental – deduplicate by id and append only truly new ones
+          final existingIds = messages.map((m) => m.id).toSet();
+          final onlyNew = newMessages
+              .where((m) => !existingIds.contains(m.id))
+              .toList();
+          if (onlyNew.isNotEmpty) {
+            messages.addAll(onlyNew);
+            messages.refresh();
+            debugPrint(
+              '✅ [DirectMessage] Appended ${onlyNew.length} new messages (total ${messages.length})',
+            );
+          } else {
+            debugPrint('✅ [DirectMessage] No new messages since last fetch');
+          }
+        }
       } else {
         debugPrint('⚠️ [DirectMessage] No messages in response');
       }
@@ -184,8 +252,8 @@ class DirectMessageController extends GetxController {
       await _markAsRead();
     } catch (e) {
       debugPrint('❌ [DirectMessage] Error fetching messages: $e');
-      // Retry once after a delay only if not a timeout
-      if (!hasNetworkTimeout.value) {
+      // Retry once after a delay only if not a timeout and no cached messages
+      if (!hasNetworkTimeout.value && messages.isEmpty) {
         await Future.delayed(const Duration(seconds: 1));
         try {
           final user = FirebaseAuth.instance.currentUser;
@@ -244,6 +312,12 @@ class DirectMessageController extends GetxController {
   }
 
   void sendMessage() {
+    // If we're in edit mode, confirm the edit instead
+    if (editingMessage.value != null) {
+      confirmEdit();
+      return;
+    }
+
     final messageText = messageController.text.trim();
     debugPrint('🔵 [DirectMessage] sendMessage called');
     debugPrint('🔵 [DirectMessage] Message text: "$messageText"');
@@ -279,6 +353,9 @@ class DirectMessageController extends GetxController {
       senderType: 'Patient',
       receiver: doctorId,
       message: messageText,
+      replyToId: replyingTo.value?.id,
+      replyToMessage: replyingTo.value?.displayText,
+      replyToSender: replyingTo.value?.sender,
     );
 
     // Add message to local list immediately for better UX
@@ -291,6 +368,9 @@ class DirectMessageController extends GetxController {
       message: messageText,
       timestamp: DateTime.now(),
       read: false,
+      replyToId: replyingTo.value?.id,
+      replyToMessage: replyingTo.value?.displayText,
+      replyToSender: replyingTo.value?.sender,
     );
 
     messages.add(message);
@@ -299,6 +379,7 @@ class DirectMessageController extends GetxController {
     );
 
     messageController.clear();
+    clearReply();
     debugPrint('🧹 [DirectMessage] Message controller cleared');
 
     // Stop typing indicator
@@ -318,12 +399,283 @@ class DirectMessageController extends GetxController {
     });
   }
 
+  /// Start voice recording
+  Future<void> startVoiceRecording() async {
+    try {
+      await audioRecorderService.startRecording();
+      isRecordingVoice.value = true;
+      debugPrint('🎤 [DirectMessage] Voice recording started');
+    } catch (e) {
+      debugPrint('❌ [DirectMessage] Error starting voice recording: $e');
+      Get.snackbar(
+        'Recording Error',
+        'Failed to start voice recording',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  /// Stop and send voice recording
+  Future<void> stopAndSendVoiceRecording() async {
+    try {
+      final audioPath = await audioRecorderService.stopRecording();
+      isRecordingVoice.value = false;
+
+      if (audioPath != null && audioPath.isNotEmpty) {
+        final audioFile = File(audioPath);
+        if (await audioFile.exists()) {
+          await _sendVoiceNote(audioFile);
+        } else {
+          throw Exception('Audio file not found');
+        }
+      } else {
+        throw Exception('Recording path is empty');
+      }
+    } catch (e) {
+      debugPrint('❌ [DirectMessage] Error sending voice note: $e');
+      isRecordingVoice.value = false;
+      Get.snackbar(
+        'Send Error',
+        'Failed to send voice note',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  /// Cancel voice recording
+  Future<void> cancelVoiceRecording() async {
+    try {
+      await audioRecorderService.cancelRecording();
+      isRecordingVoice.value = false;
+      debugPrint('🗑️ [DirectMessage] Voice recording cancelled');
+    } catch (e) {
+      debugPrint('❌ [DirectMessage] Error cancelling voice recording: $e');
+      isRecordingVoice.value = false;
+    }
+  }
+
+  /// Send voice note file
+  Future<void> _sendVoiceNote(File audioFile) async {
+    try {
+      // Check internet connectivity
+      if (!socketService.isConnected.value) {
+        debugPrint('❌ [DirectMessage] No internet connection');
+        Get.snackbar(
+          'No Internet',
+          'Please check your internet connection',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 2),
+        );
+        return;
+      }
+
+      // Get audio duration and file size
+      final fileSize = await audioFile.length();
+      final formattedSize = FileManagementService.instance.getFileSizeString(
+        fileSize,
+      );
+      final duration = audioRecorderService.recordingDuration.value;
+      final formattedDuration = audioRecorderService.formatDuration(duration);
+
+      // 1. Optimistic UI Update
+      final tempId = "temp_${DateTime.now().millisecondsSinceEpoch}";
+      uploadProgress[tempId] = 0.0;
+
+      final tempMessage = MessageModel(
+        id: tempId,
+        sender: currentUserId,
+        senderType: 'Patient',
+        receiver: doctorId,
+        receiverType: 'Doctor',
+        message: '$formattedDuration|$formattedSize', // duration|size format
+        attachments: [audioFile.path],
+        attachmentType: 'voice',
+        timestamp: DateTime.now(),
+        read: false,
+        delivered: false,
+        isUploading: true,
+      );
+
+      messages.add(tempMessage);
+      messages.refresh();
+
+      // 2. Upload to Firebase/Backend
+      final user = FirebaseAuth.instance.currentUser;
+      final uploadResponse = await appService.uploadChatFile(
+        XFile(audioFile.path),
+        doctorId,
+        user,
+        onProgress: (progress) {
+          uploadProgress[tempId] = progress;
+          debugPrint(
+            '📤 [DirectMessage] Voice upload progress: ${(progress * 100).toStringAsFixed(1)}%',
+          );
+        },
+      );
+
+      uploadProgress[tempId] = 1.0;
+      final String fileUrl = uploadResponse['url'];
+
+      // NOTE: Do NOT call socketService.sendMessage() here.
+      // The upload endpoint already creates the message on the server
+      // and broadcasts via socket (newMessage event). Calling sendMessage
+      // again would create a duplicate message.
+
+      // 3. Update local message with server URL
+      _replaceTempWithRealMessage(tempId, fileUrl: fileUrl);
+      uploadProgress.remove(tempId);
+
+      debugPrint('✅ [DirectMessage] Voice note sent successfully');
+    } catch (e) {
+      debugPrint('❌ [DirectMessage] Voice note upload error: $e');
+      messages.removeWhere((m) => m.id.startsWith("temp_"));
+
+      // Clean up progress tracker
+      final failedIds = uploadProgress.keys
+          .where((id) => id.startsWith("temp_"))
+          .toList();
+      for (final id in failedIds) {
+        uploadProgress.remove(id);
+      }
+
+      Get.snackbar(
+        'Upload Error',
+        'Could not send voice note. Please try again.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
   @override
   void onClose() {
     messageController.dispose();
     typingTimer?.cancel();
     connectivityCheckTimer?.cancel();
+    // TODO: Uncomment when backend supports delete/edit events
+    // socketService.removeMessageDeletedListener(_onMessageDeleted);
+    // socketService.removeMessageEditedListener(_onMessageEdited);
     super.onClose();
+  }
+
+  // ─── Reply / Delete / Edit ────────────────────────────────────────
+
+  /// Set the message we're replying to (shows reply bar in UI)
+  void setReplyTo(MessageModel message) {
+    replyingTo.value = message;
+  }
+
+  /// Clear reply state
+  void clearReply() {
+    replyingTo.value = null;
+  }
+
+  /// Start editing a message (sets text in input + edit state)
+  void startEditing(MessageModel message) {
+    if (!message.canEdit || message.sender != currentUserId) return;
+    editingMessage.value = message;
+    messageController.text = message.message;
+  }
+
+  /// Cancel editing
+  void cancelEditing() {
+    editingMessage.value = null;
+    messageController.clear();
+  }
+
+  /// Confirm edit – sends update via socket and updates local list
+  void confirmEdit() {
+    final msg = editingMessage.value;
+    if (msg == null) return;
+
+    final newText = messageController.text.trim();
+    if (newText.isEmpty || newText == msg.message) {
+      cancelEditing();
+      return;
+    }
+
+    // TODO: Uncomment when backend supports editMessage
+    // socketService.editMessage(msg.id, newText, currentUserId, doctorId);
+
+    // Optimistic local update
+    _applyEditLocally(msg.id, newText);
+
+    editingMessage.value = null;
+    messageController.clear();
+  }
+
+  /// Delete a message for everyone
+  void deleteMessageForEveryone(String messageId) {
+    // TODO: Uncomment when backend supports deleteMessage
+    // socketService.deleteMessage(messageId, currentUserId, doctorId);
+
+    // Optimistic local update
+    _applyDeleteLocally(messageId);
+  }
+
+  // ─── Socket event handlers ───────────────────────────────────────
+
+  // TODO: Uncomment when backend supports delete/edit events
+  // void _onMessageDeleted(String messageId) {
+  //   debugPrint('🗑️ [DirectMessage] Message deleted: $messageId');
+  //   _applyDeleteLocally(messageId);
+  // }
+
+  // void _onMessageEdited(String messageId, String newText) {
+  //   debugPrint('✏️ [DirectMessage] Message edited: $messageId');
+  //   _applyEditLocally(messageId, newText);
+  // }
+
+  void _applyDeleteLocally(String messageId) {
+    final index = messages.indexWhere((m) => m.id == messageId);
+    if (index != -1) {
+      final old = messages[index];
+      messages[index] = MessageModel(
+        id: old.id,
+        sender: old.sender,
+        senderType: old.senderType,
+        receiver: old.receiver,
+        receiverType: old.receiverType,
+        message: old.message,
+        attachments: old.attachments,
+        attachmentType: old.attachmentType,
+        attachmentPreview: old.attachmentPreview,
+        timestamp: old.timestamp,
+        read: old.read,
+        delivered: old.delivered,
+        isDeleted: true,
+      );
+      messages.refresh();
+    }
+  }
+
+  void _applyEditLocally(String messageId, String newText) {
+    final index = messages.indexWhere((m) => m.id == messageId);
+    if (index != -1) {
+      final old = messages[index];
+      messages[index] = MessageModel(
+        id: old.id,
+        sender: old.sender,
+        senderType: old.senderType,
+        receiver: old.receiver,
+        receiverType: old.receiverType,
+        message: newText,
+        attachments: old.attachments,
+        attachmentType: old.attachmentType,
+        attachmentPreview: old.attachmentPreview,
+        timestamp: old.timestamp,
+        read: old.read,
+        delivered: old.delivered,
+        isEdited: true,
+      );
+      messages.refresh();
+    }
   }
 
   Future<void> pickAndSendFile() async {
@@ -568,12 +920,18 @@ class DirectMessageController extends GetxController {
   /// Send file (image or document)
   Future<void> _sendFile(XFile file) async {
     try {
+      // Calculate file type and size once
+      final fileType = _getFileType(file.name);
+      final fileSize = File(file.path).lengthSync();
+      final formattedSize = FileManagementService.instance.getFileSizeString(
+        fileSize,
+      );
+
       // 1. Optimistic UI Update
       final tempId = "temp_${DateTime.now().millisecondsSinceEpoch}";
-      final fileType = _getFileType(file.name);
-      final fileSize = File(
-        file.path,
-      ).lengthSync(); // Get actual file size in bytes
+
+      // Initialize upload progress
+      uploadProgress[tempId] = 0.0;
 
       final tempMessage = MessageModel(
         id: tempId,
@@ -581,9 +939,7 @@ class DirectMessageController extends GetxController {
         senderType: 'Patient',
         receiver: doctorId,
         receiverType: 'Doctor',
-        message: fileType == 'image'
-            ? ''
-            : '${file.name}|${_formatFileSize(fileSize)}',
+        message: fileType == 'image' ? '' : '${file.name}|$formattedSize',
         attachments: [file.path],
         attachmentType: fileType,
         timestamp: DateTime.now(),
@@ -595,35 +951,49 @@ class DirectMessageController extends GetxController {
       messages.add(tempMessage);
       messages.refresh();
 
-      // 2. API Upload
+      // 2. API Upload with progress tracking
       final user = FirebaseAuth.instance.currentUser;
       final uploadResponse = await appService.uploadChatFile(
         file,
         doctorId,
         user,
+        onProgress: (progress) {
+          uploadProgress[tempId] = progress;
+          debugPrint(
+            '📤 [DirectMessage] Upload progress: ${(progress * 100).toStringAsFixed(1)}%',
+          );
+        },
       );
+
+      // Mark upload as complete
+      uploadProgress[tempId] = 1.0;
 
       final String fileUrl = uploadResponse['url'];
 
-      // 3. Socket Broadcast
-      socketService.sendMessage(
-        sender: currentUserId,
-        senderType: 'Patient',
-        receiver: doctorId,
-        message: fileType == 'image'
-            ? ''
-            : '${file.name}|${_formatFileSize(fileSize)}',
-        attachments: [fileUrl],
-        attachmentType: fileType,
-      );
+      // NOTE: Do NOT call socketService.sendMessage() here.
+      // The upload endpoint already creates the message on the server
+      // and broadcasts via socket (newMessage event). Calling sendMessage
+      // again would create a duplicate message.
 
-      // 4. Update local message with server URL (don't refetch to avoid duplicates)
+      // 3. Update local message with server URL
       _replaceTempWithRealMessage(tempId, fileUrl: fileUrl);
 
-      debugPrint('✅ [DirectMessage] ${fileType} sent and synced');
+      // Clean up progress tracker
+      uploadProgress.remove(tempId);
+
+      debugPrint('✅ [DirectMessage] $fileType sent and synced');
     } catch (e) {
       debugPrint('❌ [DirectMessage] File upload error: $e');
       messages.removeWhere((m) => m.id.startsWith("temp_"));
+
+      // Clean up progress tracker on error
+      final failedIds = uploadProgress.keys
+          .where((id) => id.startsWith("temp_"))
+          .toList();
+      for (final id in failedIds) {
+        uploadProgress.remove(id);
+      }
+
       Get.snackbar(
         'Upload Error',
         'Could not send file. Please check your connection.',
@@ -631,15 +1001,6 @@ class DirectMessageController extends GetxController {
         colorText: Colors.white,
       );
     }
-  }
-
-  /// Format file size to human-readable format
-  String _formatFileSize(int bytes) {
-    if (bytes <= 0) return "0 B";
-    const suffixes = ["B", "KB", "MB", "GB"];
-    final i = (bytes.toString().length / 3).floor();
-    final newSize = bytes / (1000 * (1 << (i * 10)));
-    return "${newSize.toStringAsFixed(2)} ${suffixes[i]}";
   }
 
   // Add this helper to determine the file type for the socket/API
@@ -653,13 +1014,19 @@ class DirectMessageController extends GetxController {
     return 'file';
   }
 
-  /// Update local message with real URL from server
-  void _replaceTempWithRealMessage(String tempId, {required String fileUrl}) {
+  /// Update local message with real URL and optionally server ID
+  void _replaceTempWithRealMessage(
+    String tempId, {
+    required String fileUrl,
+    String? serverId,
+  }) {
     final index = messages.indexWhere((m) => m.id == tempId);
     if (index != -1) {
       final oldMessage = messages[index];
+      final finalId = serverId ?? tempId; // Use server ID if provided
+
       final updatedMessage = MessageModel(
-        id: oldMessage.id,
+        id: finalId,
         sender: oldMessage.sender,
         senderType: oldMessage.senderType,
         receiver: oldMessage.receiver,
@@ -673,6 +1040,12 @@ class DirectMessageController extends GetxController {
         isUploading: false,
       );
       messages[index] = updatedMessage;
+
+      // Store mapping if server ID is different
+      if (serverId != null && serverId != tempId) {
+        _tempToRealIdMap[tempId] = finalId;
+      }
+
       messages.refresh();
       debugPrint('✅ [DirectMessage] Temp message updated with server URL');
     }

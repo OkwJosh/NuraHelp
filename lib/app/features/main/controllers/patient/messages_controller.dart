@@ -142,13 +142,18 @@ class MessagesController extends GetxController {
       );
 
       // Create updated conversation
+      final displayMessage = message.isVoice
+          ? '🎤 Voice note'
+          : message.isImage
+          ? '📷 Photo'
+          : MessageModel.friendlyPreview(message.message);
       final updatedConversation = ConversationModel(
         userId: conversation.userId,
         userName: conversation.userName,
         userProfilePic: conversation.userProfilePic,
         userType: conversation.userType,
         userEmail: conversation.userEmail,
-        lastMessage: message.message,
+        lastMessage: displayMessage,
         lastTimestamp: message.timestamp,
         lastSender: message.sender,
         unreadCount: message.sender == currentUserId
@@ -179,12 +184,17 @@ class MessagesController extends GetxController {
       debugPrint('📬 [MessagesController] Doctor ID: ${doctor?.id}');
 
       if (doctor != null && doctor.id == otherUserId) {
+        final displayMsg = message.isVoice
+            ? '🎤 Voice note'
+            : message.isImage
+            ? '📷 Photo'
+            : MessageModel.friendlyPreview(message.message);
         final newConversation = ConversationModel(
           userId: doctor.id!,
           userName: doctor.name,
           userProfilePic: doctor.profilePicture,
           userType: 'Doctor',
-          lastMessage: message.message,
+          lastMessage: displayMsg,
           lastTimestamp: message.timestamp,
           lastSender: message.sender,
           unreadCount: message.sender == currentUserId ? 0 : 1,

@@ -42,13 +42,14 @@ dependencies:
   socket_io_client: ^3.1.4
   syncfusion_flutter_pdfviewer: ^30.1.41
   open_file: ^3.5.4
-  #  zego_uikit_prebuilt_call: ^4.18.0
+  record: ^6.2.0
+  audioplayers: ^6.5.1  
+#  zego_uikit_prebuilt_call: ^4.18.0
 #  zego_uikit_signaling_plugin: ^2.8.16
 #  shelf_web_socket: ^3.0.0
-
-
-
   path_provider: any
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

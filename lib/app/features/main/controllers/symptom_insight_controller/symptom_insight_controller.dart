@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/data/services/app_service.dart';
+import 'package:nurahelp/app/data/services/network_manager.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/utilities/loaders/loaders.dart';
 import '../../../../data/models/symptom_model.dart';
@@ -87,6 +88,13 @@ class SymptomInsightController extends GetxController {
   Future<void> fetchSymptoms() async {
     try {
       isLoading.value = true;
+
+      final isConnected = await AppNetworkManager.instance.isConnected();
+      if (!isConnected) {
+        isLoading.value = false;
+        return;
+      }
+
       final user = FirebaseAuth.instance.currentUser;
 
       final fetchedSymptoms = await _appService.getPatientSymptoms(
@@ -174,7 +182,26 @@ class SymptomInsightController extends GetxController {
   }
 
   Future<void> logSymptoms() async {
+    // Validate: must have at least one symptom
+    if (uniqueSymptoms.isEmpty) {
+      AppToasts.warningSnackBar(
+        title: 'No Symptoms',
+        message: 'Add at least one symptom before submitting',
+      );
+      return;
+    }
+
     try {
+      // Check connectivity before making API call
+      final isConnected = await AppNetworkManager.instance.isConnected();
+      if (!isConnected) {
+        AppToasts.warningSnackBar(
+          title: 'No Internet',
+          message: 'Connect to the internet to log symptoms',
+        );
+        return;
+      }
+
       AppScreenLoader.openLoadingDialog('Logging Symptoms');
       final user = FirebaseAuth.instance.currentUser;
 
@@ -216,7 +243,6 @@ class SymptomInsightController extends GetxController {
       startDate = today.subtract(const Duration(days: 29));
       endDate = today;
     } else {
-      // FIXED: Rolling 7-day window
       startDate = today.subtract(const Duration(days: 6));
       endDate = today;
     }
@@ -230,6 +256,7 @@ class SymptomInsightController extends GetxController {
       return !historyDate.isBefore(startDate) && !historyDate.isAfter(endDate);
     }).toList();
 
+    // Group data: symptomName → dateKey → list of values
     final Map<String, Map<String, List<int>>> groupedData = {};
 
     for (var history in recentHistories) {
@@ -248,23 +275,37 @@ class SymptomInsightController extends GetxController {
       assignColorForSymptom(symptomName);
     }
 
+    // Generate all dates in range
+    final totalDays = endDate.difference(startDate).inDays;
+    final allDates = List.generate(
+      totalDays + 1,
+      (i) => startDate.add(Duration(days: i)),
+    );
+
+    // For each symptom, fill in 0 for missing days
     groupedData.forEach((symptomName, dateData) {
-      newSpots.putIfAbsent(symptomName, () => []);
+      final spots = <FlSpot>[];
 
-      final sortedDates = dateData.keys.toList()..sort();
+      for (final date in allDates) {
+        final dateKey = date.toIso8601String();
+        final values = dateData[dateKey];
+        final double value;
 
-      for (var dateKey in sortedDates) {
-        final date = DateTime.parse(dateKey);
-        final values = dateData[dateKey]!;
-        final averageValue = values.reduce((a, b) => a + b) / values.length;
+        if (values != null && values.isNotEmpty) {
+          value = values.reduce((a, b) => a + b) / values.length;
+        } else {
+          value = 0; // Zero-fill for days not logged
+        }
 
         final xPos = isMonthlyView.value
             ? xAxisValueMonthly(date, startDate)
             : xAxisValueDaily(date, startDate);
-        final yPos = yAxisValue(averageValue.round());
+        final yPos = yAxisValue(value.round());
 
-        newSpots[symptomName]!.add(FlSpot(xPos, yPos));
+        spots.add(FlSpot(xPos, yPos));
       }
+
+      newSpots[symptomName] = spots;
     });
 
     symptomSpots.assignAll(newSpots);
@@ -343,21 +384,12 @@ class SymptomInsightController extends GetxController {
     generateSpots(symptoms);
   }
 
-
   Future<void> refreshSymptomData() async {
     try {
-      isLoading.value = true;
       hasError.value = false;
-
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) return;
-
-     
-
+      await fetchSymptoms();
     } catch (e) {
       hasError.value = true;
-    } finally {
-      isLoading.value = false;
     }
   }
 

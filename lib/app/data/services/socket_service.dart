@@ -18,6 +18,9 @@ class SocketService extends GetxService {
   final List<Function(String)> _messagesReadListeners = [];
   final List<Function(String messageId)> _messageDeliveredListeners = [];
   final List<Function(String messageId)> _messageReadListeners = [];
+  final List<Function(String messageId)> _messageDeletedListeners = [];
+  final List<Function(String messageId, String newText)>
+  _messageEditedListeners = [];
 
   // Backward compatibility with single callbacks
   Function(MessageModel)? onNewMessage;
@@ -56,6 +59,30 @@ class SocketService extends GetxService {
 
   void removeMessageReadListener(Function(String messageId) listener) {
     _messageReadListeners.remove(listener);
+  }
+
+  void addMessageDeletedListener(Function(String messageId) listener) {
+    if (!_messageDeletedListeners.contains(listener)) {
+      _messageDeletedListeners.add(listener);
+    }
+  }
+
+  void removeMessageDeletedListener(Function(String messageId) listener) {
+    _messageDeletedListeners.remove(listener);
+  }
+
+  void addMessageEditedListener(
+    Function(String messageId, String newText) listener,
+  ) {
+    if (!_messageEditedListeners.contains(listener)) {
+      _messageEditedListeners.add(listener);
+    }
+  }
+
+  void removeMessageEditedListener(
+    Function(String messageId, String newText) listener,
+  ) {
+    _messageEditedListeners.remove(listener);
   }
 
   Future<SocketService> init(String baseUrl, String userId) async {
@@ -181,6 +208,31 @@ class SocketService extends GetxService {
         }
       }
     });
+
+    // TODO: Uncomment when backend supports messageDeleted event
+    // Listen for message deleted event
+    // socket.on('messageDeleted', (data) {
+    //   debugPrint('🗑️ Message deleted: $data');
+    //   if (data['messageId'] != null) {
+    //     final messageId = data['messageId'].toString();
+    //     for (var listener in _messageDeletedListeners) {
+    //       listener(messageId);
+    //     }
+    //   }
+    // });
+
+    // TODO: Uncomment when backend supports messageEdited event
+    // Listen for message edited event
+    // socket.on('messageEdited', (data) {
+    //   debugPrint('✏️ Message edited: $data');
+    //   if (data['messageId'] != null && data['message'] != null) {
+    //     final messageId = data['messageId'].toString();
+    //     final newText = data['message'].toString();
+    //     for (var listener in _messageEditedListeners) {
+    //       listener(messageId, newText);
+    //     }
+    //   }
+    // });
   }
 
   // SocketService
@@ -189,8 +241,11 @@ class SocketService extends GetxService {
     required String senderType,
     required String receiver,
     required String message,
-    List<String>? attachments, // Added for file URLs
-    String? attachmentType, // Added (image, document, etc.)
+    List<String>? attachments,
+    String? attachmentType,
+    String? replyToId,
+    String? replyToMessage,
+    String? replyToSender,
   }) {
     debugPrint('🟡 [SocketService] sendMessage called');
 
@@ -200,13 +255,17 @@ class SocketService extends GetxService {
     }
 
     // Build the payload dynamically to include attachments if they exist
-    final payload = {
+    final payload = <String, dynamic>{
       'sender': sender,
       'senderType': senderType,
       'receiver': receiver,
       'message': message,
       'attachments': attachments ?? [],
       'attachmentType': attachmentType ?? 'text',
+      // TODO: Uncomment when backend supports reply fields
+      // if (replyToId != null) 'replyToId': replyToId,
+      // if (replyToMessage != null) 'replyToMessage': replyToMessage,
+      // if (replyToSender != null) 'replyToSender': replyToSender,
     };
 
     debugPrint(
@@ -240,6 +299,36 @@ class SocketService extends GetxService {
 
     socket.emit('messagesRead', {'reader': reader, 'sender': sender});
   }
+
+  /// Delete a message for everyone
+  /// TODO: Uncomment when backend supports deleteMessage
+  // void deleteMessage(String messageId, String sender, String receiver) {
+  //   if (!isConnected.value) return;
+  //
+  //   socket.emit('deleteMessage', {
+  //     'messageId': messageId,
+  //     'sender': sender,
+  //     'receiver': receiver,
+  //   });
+  // }
+
+  /// Edit a message
+  /// TODO: Uncomment when backend supports editMessage
+  // void editMessage(
+  //   String messageId,
+  //   String newText,
+  //   String sender,
+  //   String receiver,
+  // ) {
+  //   if (!isConnected.value) return;
+  //
+  //   socket.emit('editMessage', {
+  //     'messageId': messageId,
+  //     'message': newText,
+  //     'sender': sender,
+  //     'receiver': receiver,
+  //   });
+  // }
 
   // Disconnect
   void disconnect() {

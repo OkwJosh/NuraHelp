@@ -129,12 +129,15 @@ class SymptomInsightsScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 10),
                             ElevatedButton(
-                              onPressed: () => controller.logSymptoms(),
+                              onPressed: controller.uniqueSymptoms.isEmpty
+                                  ? null
+                                  : () => controller.logSymptoms(),
                               style: ElevatedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 20,
                                   vertical: 12,
                                 ),
+                                disabledBackgroundColor: Colors.grey.shade300,
                               ),
                               child: const Text(
                                 'Submit',

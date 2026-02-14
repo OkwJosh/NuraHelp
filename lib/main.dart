@@ -22,7 +22,7 @@ void main() async {
   // Initialize services
   await Get.putAsync(() => CacheService().init(), permanent: true);
   Get.put(AppService(), permanent: true);
-  Get.put(FileManagementService(), permanent: true);
+  await Get.putAsync(() => FileManagementService().init(), permanent: true);
   Get.put(FileController(), permanent: true);
   Get.put(PatientController());
   Get.put(NuraBotController());

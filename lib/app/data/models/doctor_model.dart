@@ -15,10 +15,19 @@ class DoctorModel {
 
   factory DoctorModel.fromJson(Map<String, dynamic> json) {
     return DoctorModel(
-      id: json['_id'] ?? json['id'],
-      name: json['name'],
-      specialty: json['specialty'],
-      profilePicture: json['profilePicture'],
+      id: json['_id']?.toString() ?? json['id']?.toString(),
+      name: json['name']?.toString() ?? '',
+      specialty: json['specialty']?.toString() ?? '',
+      profilePicture: json['profilePicture']?.toString() ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'name': name,
+      'specialty': specialty,
+      'profilePicture': profilePicture,
+    };
   }
 }

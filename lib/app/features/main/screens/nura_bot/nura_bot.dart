@@ -4,10 +4,10 @@ import 'package:lottie/lottie.dart';
 import 'package:nurahelp/app/common/message_field/message_field.dart';
 import 'package:nurahelp/app/common/attachment_preview/attachment_preview.dart';
 import 'package:nurahelp/app/common/attachment_bubble/attachment_bubble.dart';
+import 'package:nurahelp/app/common/widgets/voice_recording_widget.dart';
 import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
-import 'package:nurahelp/app/data/controllers/file_controller.dart';
-import 'package:nurahelp/app/routes/app_routes.dart';
+import 'package:nurahelp/app/features/main/controllers/dashboard/dashboard_controller.dart';
 import '../../../../data/models/message_models/bot_message_model.dart';
 import '../../../../utilities/constants/colors.dart';
 
@@ -35,8 +35,12 @@ class _NuraBotState extends State<NuraBot> {
     // Unfocus keyboard and clear text field before going back
     FocusScope.of(context).unfocus();
     _controller.messageController.clear();
-    // Navigate back to nav menu
-    Get.offAllNamed(AppRoutes.navigationMenu);
+    // Silently refresh appointments in the background
+    if (Get.isRegistered<DashboardController>()) {
+      DashboardController.instance.silentRefreshAppointments();
+    }
+    // Navigate back (preserves existing controllers & state)
+    Get.back();
   }
 
   @override
@@ -109,36 +113,46 @@ class _NuraBotState extends State<NuraBot> {
               }),
             ),
             Obx(() {
-              final fileController = FileController.instance;
               return Column(
                 children: [
                   // Attachment preview
-                  if (fileController.selectedFile.value != null)
+                  if (_controller.selectedFile.value != null)
                     AttachmentPreview(
-                      file: fileController.selectedFile.value!,
-                      // fileName: fileController.selectedFileName.value,
-                      // mimeType: fileController.selectedFileMimeType.value,
-                      // fileSize: fileController.selectedFileSize.value,
-                      onRemove: () => fileController.clearAttachment(),
+                      file: _controller.selectedFile.value!,
+                      fileName: _controller.selectedFileName.value,
+                      mimeType: _controller.selectedFileMimeType.value,
+                      fileSize: _controller.selectedFileSize.value,
+                      onRemove: () => _controller.clearAttachment(),
                     ),
-                  // Message input field
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      right: 1,
-                      left: 10,
-                      bottom: 15,
-                    ),
-                    child: IntrinsicHeight(
-                      child: CustomTextField(
-                        controller: _controller.messageController,
-                        onSendButtonPressed: () => _controller.sendBotMessage(
-                          patient: _patientController.patient.value,
+
+                  // Voice recording widget OR normal text field
+                  if (_controller.isRecordingVoice.value)
+                    VoiceRecordingWidget(
+                      onCancel: _controller.cancelVoiceRecording,
+                      onSend: () => _controller.stopAndSendVoiceRecording(
+                        patient: _patientController.patient.value,
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        right: 1,
+                        left: 10,
+                        bottom: 15,
+                      ),
+                      child: IntrinsicHeight(
+                        child: CustomTextField(
+                          controller: _controller.messageController,
+                          onSendButtonPressed: () => _controller.sendBotMessage(
+                            patient: _patientController.patient.value,
+                          ),
+                          onMicButtonPressed: () =>
+                              _controller.startVoiceRecording(),
+                          onAttachButtonPressed: () =>
+                              _controller.showAttachmentOptions(),
                         ),
-                        onMicButtonPressed: () {},
-                        onAttachButtonPressed: () {},
                       ),
                     ),
-                  ),
                 ],
               );
             }),
@@ -175,8 +189,21 @@ class MessageBubble extends StatelessWidget {
           if (message.hasAttachment)
             AttachmentBubble(message: message, isUserMessage: isUserMessage),
 
-          // Display text message
-          if ((message.message?.isNotEmpty ?? false))
+          // Display loading indicator or text message
+          if (message.isLoading && message.sender == SenderType.bot)
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.bluishWhiteColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: Lottie.asset(
+                'assets/animations/chat_loading.json',
+                width: 60,
+                height: 36,
+              ),
+            )
+          else if ((message.message?.isNotEmpty ?? false))
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.85,
@@ -188,23 +215,17 @@ class MessageBubble extends StatelessWidget {
                       : AppColors.bluishWhiteColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: message.isLoading && message.sender == SenderType.bot
-                    ? Lottie.asset(
-                        'assets/animations/chat_loading.json',
-                        width: 350,
-                        height: 100,
-                      )
-                    : Text(
-                        message.message!,
-                        style: TextStyle(
-                          color: isUserMessage ? Colors.white : AppColors.black,
-                          fontSize: 14,
-                          fontFamily: isUserMessage
-                              ? 'Poppins-Regular'
-                              : 'Poppins-Light',
-                        ),
-                      ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Text(
+                  message.message!,
+                  style: TextStyle(
+                    color: isUserMessage ? Colors.white : AppColors.black,
+                    fontSize: 14,
+                    fontFamily: isUserMessage
+                        ? 'Poppins-Regular'
+                        : 'Poppins-Light',
+                  ),
+                ),
               ),
             ),
           SizedBox.shrink(),

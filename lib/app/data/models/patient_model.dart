@@ -48,27 +48,38 @@ class PatientModel {
 
   Map<String, dynamic> toJson() {
     return {
+      '_id': id,
       'name': name,
       'email': email,
       'phone': phone,
-      'DOB': DOB?.millisecondsSinceEpoch,
+      'DOB': DOB?.toIso8601String(),
       'profilePicture': profilePicture,
       'isComplete': isComplete,
+      if (doctor != null) 'doctor': doctor!.toJson(),
     };
   }
 
   factory PatientModel.fromJson(Map<String, dynamic> json) {
+    DateTime? parsedDOB;
+    final rawDOB = json['DOB'];
+    if (rawDOB is String) {
+      parsedDOB = DateTime.tryParse(rawDOB);
+    } else if (rawDOB is int) {
+      parsedDOB = DateTime.fromMillisecondsSinceEpoch(rawDOB);
+    }
+
     return PatientModel(
-      id: json['_id'],
-      name: json['name'],
-      email: json['email'],
-      phone: json['phone'],
-      DOB: json['DOB'] != null ? DateTime.parse(json['DOB']) : null,
-      doctor: json['doctor'] != null
+      id: json['_id']?.toString(),
+      name: json['name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      DOB: parsedDOB,
+      doctor: json['doctor'] != null && json['doctor'] is Map<String, dynamic>
           ? DoctorModel.fromJson(json['doctor'])
           : null,
-      profilePicture: json['profilePicture'],
-      appointments:[], // Appointments are fetched separately from /api/v1/appointments
+      profilePicture: json['profilePicture']?.toString(),
+      appointments:
+          [], // Appointments are fetched separately from /api/v1/appointments
       clinicalResponse: null,
       isComplete: json['isComplete'] ?? false,
     );

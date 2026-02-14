@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/data/models/appointment_model.dart';
 import 'package:nurahelp/app/data/models/clinical_response.dart';
@@ -121,6 +122,24 @@ class DashboardController extends GetxController {
       );
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /// Silently refresh appointments without showing loading state.
+  /// Called when returning from other screens (e.g. Nura Assistant).
+  Future<void> silentRefreshAppointments() async {
+    try {
+      final isConnected = await networkManager.isConnected();
+      if (!isConnected) return;
+
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) return;
+
+      final freshAppointments = await appService.fetchAppointments(currentUser);
+      patientController.patient.value.appointments = freshAppointments;
+      patientController.patient.refresh();
+    } catch (e) {
+      debugPrint('⚠️ Silent appointment refresh failed: $e');
     }
   }
 }

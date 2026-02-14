@@ -23,36 +23,37 @@ class NuraBotService {
     required String threadId,
     required String query,
     File? file,
-  }) async{
+  }) async {
     final url = Uri.parse('$baseUrl/chat');
-    if(file != null){
-      var request = http.MultipartRequest('POST',url);
+    if (file != null) {
+      var request = http.MultipartRequest('POST', url);
       request.fields['thread_id'] = threadId;
       request.fields['message'] = query.trim();
       request.files.add(
-        await http.MultipartFile.fromPath('document_file', file.path));
+        await http.MultipartFile.fromPath('document_file', file.path),
+      );
 
       final streamedResponse = await request.send();
       final responseBody = await streamedResponse.stream.bytesToString();
 
-      if(streamedResponse.statusCode == 200 || streamedResponse.statusCode == 201) {
+      if (streamedResponse.statusCode == 200 ||
+          streamedResponse.statusCode == 201) {
         final data = jsonDecode(responseBody);
         return BotMessageModel.fromJson(data);
-      }else{
+      } else {
         throw Exception('Failed to send query: ${streamedResponse.statusCode}');
       }
-    }else{
-      final response = await http.post(url,
-      body: jsonEncode({
-        'thread_id':threadId,
-        'message':query.trim(),
-      }),
+    } else {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'thread_id': threadId, 'message': query.trim()}),
       );
 
-      if(response.statusCode == 200 || response.statusCode ==201){
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
         return BotMessageModel.fromJson(data);
-      }else{
+      } else {
         throw Exception('Failed to send query: ${response.statusCode}');
       }
     }
