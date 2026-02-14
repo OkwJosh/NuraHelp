@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:nurahelp/app/common/search_bar/search_bar.dart';
+import 'package:nurahelp/app/features/main/controllers/notification/notification_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/notification/notification.dart';
@@ -77,12 +78,48 @@ class AppBarWithBell extends StatelessWidget implements PreferredSizeWidget {
                         Get.to(() => NotificationScreen());
                       }
                     },
-                    icon: SvgIcon(
-                      shouldSwitch ? AppIcons.send : AppIcons.notification,
-                      color: shouldSwitch
-                          ? AppColors.secondaryColor
-                          : AppColors.black,
-                      size: shouldSwitch ? 22 : 25,
+                    icon: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        SvgIcon(
+                          shouldSwitch ? AppIcons.send : AppIcons.notification,
+                          color: shouldSwitch
+                              ? AppColors.secondaryColor
+                              : AppColors.black,
+                          size: shouldSwitch ? 22 : 25,
+                        ),
+                        if (!shouldSwitch)
+                          Obx(() {
+                            final count = Get.find<NotificationController>()
+                                .unreadCount
+                                .value;
+                            if (count == 0) return const SizedBox.shrink();
+                            return Positioned(
+                              right: -4,
+                              top: -4,
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: const BoxDecoration(
+                                  color: AppColors.error400,
+                                  shape: BoxShape.circle,
+                                ),
+                                constraints: const BoxConstraints(
+                                  minWidth: 16,
+                                  minHeight: 16,
+                                ),
+                                child: Text(
+                                  count > 9 ? '9+' : '$count',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 9,
+                                    fontFamily: 'Poppins-SemiBold',
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            );
+                          }),
+                      ],
                     ),
                   ),
                 );

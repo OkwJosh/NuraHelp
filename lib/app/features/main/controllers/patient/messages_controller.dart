@@ -7,6 +7,7 @@ import 'package:nurahelp/app/data/models/message_models/message_model.dart';
 import 'package:nurahelp/app/data/services/app_service.dart';
 import 'package:nurahelp/app/data/services/cache_service.dart';
 import 'package:nurahelp/app/data/services/network_manager.dart';
+import 'package:nurahelp/app/data/services/notification_service.dart';
 import 'package:nurahelp/app/data/services/socket_service.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 import 'package:nurahelp/app/features/main/screens/messages_and_calls/direct_message.dart';
@@ -82,6 +83,50 @@ class MessagesController extends GetxController {
     await fetchConversations();
   }
 
+  /// Reset the local unread count for a conversation and persist the change.
+  /// Called when the user enters a direct message screen.
+  void resetUnreadCount(String otherUserId) {
+    final index = conversations.indexWhere(
+      (conv) => conv.userId == otherUserId,
+    );
+    if (index == -1) return;
+
+    final conversation = conversations[index];
+    if (conversation.unreadCount == 0) return; // nothing to reset
+
+    final updated = ConversationModel(
+      userId: conversation.userId,
+      userName: conversation.userName,
+      userProfilePic: conversation.userProfilePic,
+      userType: conversation.userType,
+      userEmail: conversation.userEmail,
+      lastMessage: conversation.lastMessage,
+      lastTimestamp: conversation.lastTimestamp,
+      lastSender: conversation.lastSender,
+      unreadCount: 0,
+      lastMessageDelivered: conversation.lastMessageDelivered,
+      lastMessageRead: true,
+    );
+
+    final updatedList = conversations.toList();
+    updatedList[index] = updated;
+    conversations.value = updatedList;
+
+    // Persist so cache does not overwrite on next fetch
+    _persistConversationsToCache();
+    debugPrint('✅ [MessagesController] Reset unread for $otherUserId');
+  }
+
+  /// Persist current conversation list to cache so stale counts don't return.
+  void _persistConversationsToCache() {
+    try {
+      final jsonList = conversations.map((c) => c.toJson()).toList();
+      CacheService.instance.cacheConversations(jsonList);
+    } catch (e) {
+      debugPrint('⚠️ [MessagesController] Cache persist error: $e');
+    }
+  }
+
   void _handleMessagesRead(String readerId) {
     debugPrint('👁️ [MessagesController] Messages read by: $readerId');
 
@@ -127,6 +172,9 @@ class MessagesController extends GetxController {
         ? message.receiver
         : message.sender;
     debugPrint('📬 [MessagesController] Other User (Doctor) ID: $otherUserId');
+
+    // Check if this is an incoming message from doctor
+    final isIncomingMessage = message.sender != currentUserId;
 
     // Update conversation list with new message
     final index = conversations.indexWhere(
@@ -218,6 +266,49 @@ class MessagesController extends GetxController {
         // Fallback: fetch from API if doctor info not available
         fetchConversations();
       }
+    }
+
+    // ─── PUSH LOCAL NOTIFICATION FOR INCOMING MESSAGES ──────────
+    if (isIncomingMessage) {
+      _showIncomingMessageNotification(message, patientController);
+    }
+
+    // Keep cache in sync with local unread counts
+    _persistConversationsToCache();
+  }
+
+  /// Shows a local notification for an incoming doctor message.
+  /// Only fires if message alerts are enabled and user is NOT on the DM screen.
+  void _showIncomingMessageNotification(
+    MessageModel message,
+    PatientController patientController,
+  ) {
+    try {
+      // Respect user notification preferences
+      if (!patientController.enableMessageAlerts.value) return;
+
+      // Don't notify if user is currently on the direct message screen
+      final currentRoute = Get.currentRoute;
+      if (currentRoute.contains('/direct-message')) return;
+
+      final doctor = patientController.patient.value.doctor;
+      final senderName = doctor != null && doctor.id == message.sender
+          ? 'Dr. ${doctor.name}'
+          : 'Your Doctor';
+
+      final preview = message.isVoice
+          ? '🎤 Voice note'
+          : message.isImage
+          ? '📷 Photo'
+          : MessageModel.friendlyPreview(message.message);
+
+      NotificationService.instance.showDoctorMessageNotification(
+        title: 'New message from $senderName',
+        body: preview,
+        payload: '{"type":"doctor_message","senderId":"${message.sender}"}',
+      );
+    } catch (e) {
+      debugPrint('⚠️ [MessagesController] Notification error: $e');
     }
   }
 

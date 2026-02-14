@@ -12,6 +12,7 @@ import 'package:nurahelp/app/data/services/network_manager.dart';
 import 'package:nurahelp/app/data/services/socket_service.dart';
 import 'package:nurahelp/app/data/services/file_management_service.dart';
 import 'package:nurahelp/app/data/services/audio_recorder_service.dart';
+import 'package:nurahelp/app/features/main/controllers/patient/messages_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
 
 class DirectMessageController extends GetxController {
@@ -248,8 +249,9 @@ class DirectMessageController extends GetxController {
         debugPrint('⚠️ [DirectMessage] No messages in response');
       }
 
-      // Mark all messages as read
+      // Mark all messages as read & reset local unread badge
       await _markAsRead();
+      _resetLocalUnread();
     } catch (e) {
       debugPrint('❌ [DirectMessage] Error fetching messages: $e');
       // Retry once after a delay only if not a timeout and no cached messages
@@ -285,6 +287,17 @@ class DirectMessageController extends GetxController {
       socketService.markMessagesAsRead(currentUserId, doctorId);
     } catch (e) {
       debugPrint('Error marking messages as read: $e');
+    }
+  }
+
+  /// Resets the unread badge in the conversations list for this doctor.
+  void _resetLocalUnread() {
+    try {
+      if (Get.isRegistered<MessagesController>()) {
+        MessagesController.instance.resetUnreadCount(doctorId);
+      }
+    } catch (e) {
+      debugPrint('⚠️ [DirectMessage] Could not reset unread count: $e');
     }
   }
 
@@ -555,6 +568,8 @@ class DirectMessageController extends GetxController {
 
   @override
   void onClose() {
+    // Reset unread badge when leaving the conversation
+    _resetLocalUnread();
     messageController.dispose();
     typingTimer?.cancel();
     connectivityCheckTimer?.cancel();

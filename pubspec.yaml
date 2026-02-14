@@ -48,6 +48,8 @@ dependencies:
 #  zego_uikit_signaling_plugin: ^2.8.16
 #  shelf_web_socket: ^3.0.0
   path_provider: any
+  firebase_messaging: ^16.1.1
+  flutter_local_notifications: ^18.0.1
 
 
 dev_dependencies:

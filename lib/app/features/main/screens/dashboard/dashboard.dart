@@ -162,7 +162,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             // Always show quick action cards when doctor is linked
                             _buildMessageDoctorCard(context, controller),
                             const SizedBox(width: 10),
-                            _buildCheckBPCard(context, controller),
+                            _buildCheckHeartRateCard(context, controller),
                           ],
                         ],
                       ),
@@ -368,7 +368,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildCheckBPCard(
+  Widget _buildCheckHeartRateCard(
     BuildContext context,
     PatientController patientController,
   ) {
@@ -388,12 +388,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Check Your BP',
+              'Check Your Heart Rate',
               style: TextStyle(fontSize: 16, fontFamily: 'Poppins-SemiBold'),
             ),
             const SizedBox(height: 8),
             Text(
-              'Monitor your blood pressure readings',
+              'Monitor your heart rate readings',
               style: TextStyle(
                 fontSize: 14,
                 fontFamily: 'Poppins-Light',
@@ -406,7 +406,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: ElevatedButton.icon(
                 onPressed: () {
                   Get.to(
-                    () => const ComingSoonScreen(featureName: 'Blood Pressure'),
+                    () => const ComingSoonScreen(featureName: 'Heart Rate'),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -418,7 +418,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 icon: const Icon(Icons.favorite_outline, color: Colors.white),
                 label: const Text(
-                  'Check BP',
+                  'Check Heart Rate',
                   style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'Poppins-Medium',
