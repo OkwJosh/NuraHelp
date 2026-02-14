@@ -6,6 +6,7 @@ import 'package:nurahelp/app/common/message_field/message_field.dart';
 import 'package:nurahelp/app/common/shimmer/shimmer_effect.dart';
 import 'package:nurahelp/app/common/widgets/coming_soon_screen.dart';
 import 'package:nurahelp/app/common/widgets/no_internet_screen.dart';
+import 'package:nurahelp/app/data/controllers/file_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/dashboard/dashboard_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
@@ -27,6 +28,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late final PatientController controller;
   late final NuraBotController nuraController;
   late final DashboardController dashboardController;
+  late final FileController fileController;
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     controller = Get.find<PatientController>();
     nuraController = Get.find<NuraBotController>();
     dashboardController = Get.put(DashboardController());
+    fileController = Get.find<FileController>();
 
     // Unfocus text field when entering dashboard
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -201,7 +204,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             );
                           },
                           onMicButtonPressed: () {},
-                          onAttachButtonPressed: () {},
+                          onAttachButtonPressed: () {
+                            Get.snackbar(
+                              'Attachment',
+                              'Feature not implemented yet',
+                            );
+                          },
                         ),
                         const SizedBox(height: 30),
                       ],

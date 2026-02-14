@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nurahelp/app/common/message_field/message_field.dart';
+import 'package:nurahelp/app/common/attachment_preview/attachment_preview.dart';
+import 'package:nurahelp/app/common/attachment_bubble/attachment_bubble.dart';
 import 'package:nurahelp/app/features/main/controllers/nura_bot/nura_bot_controller.dart';
 import 'package:nurahelp/app/features/main/controllers/patient/patient_controller.dart';
+import 'package:nurahelp/app/data/controllers/file_controller.dart';
 import 'package:nurahelp/app/routes/app_routes.dart';
 import '../../../../data/models/message_models/bot_message_model.dart';
 import '../../../../utilities/constants/colors.dart';
@@ -105,20 +108,40 @@ class _NuraBotState extends State<NuraBot> {
                 );
               }),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 1, left: 10, bottom: 15),
-              child: IntrinsicHeight(
-                child: CustomTextField(
-                  controller: _controller.messageController,
-                  onSendButtonPressed: () => _controller.sendBotMessage(
-                    patient: _patientController.patient.value,
+            Obx(() {
+              final fileController = FileController.instance;
+              return Column(
+                children: [
+                  // Attachment preview
+                  if (fileController.selectedFile.value != null)
+                    AttachmentPreview(
+                      file: fileController.selectedFile.value!,
+                      // fileName: fileController.selectedFileName.value,
+                      // mimeType: fileController.selectedFileMimeType.value,
+                      // fileSize: fileController.selectedFileSize.value,
+                      onRemove: () => fileController.clearAttachment(),
+                    ),
+                  // Message input field
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 1,
+                      left: 10,
+                      bottom: 15,
+                    ),
+                    child: IntrinsicHeight(
+                      child: CustomTextField(
+                        controller: _controller.messageController,
+                        onSendButtonPressed: () => _controller.sendBotMessage(
+                          patient: _patientController.patient.value,
+                        ),
+                        onMicButtonPressed: () {},
+                        onAttachButtonPressed: () {},
+                      ),
+                    ),
                   ),
-                  onMicButtonPressed: () {},
-                  onAttachButtonPressed: () {},
-                  showBorder: false,
-                ),
-              ),
-            ),
+                ],
+              );
+            }),
           ],
         ),
       ),
@@ -138,46 +161,52 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isUserMessage = message.sender == SenderType.user;
+
     return Padding(
       padding: EdgeInsets.only(bottom: 5),
       child: Column(
         spacing: 3,
-        crossAxisAlignment: message.sender == SenderType.user
+        crossAxisAlignment: isUserMessage
             ? CrossAxisAlignment.end
             : CrossAxisAlignment.start,
         children: [
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.85,
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: message.sender == SenderType.user
-                    ? AppColors.secondaryColor
-                    : AppColors.bluishWhiteColor,
-                borderRadius: BorderRadius.circular(10),
+          // Display attachment if present
+          if (message.hasAttachment)
+            AttachmentBubble(message: message, isUserMessage: isUserMessage),
+
+          // Display text message
+          if ((message.message?.isNotEmpty ?? false))
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.85,
               ),
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              child: message.isLoading && message.sender == SenderType.bot
-                  ? Lottie.asset(
-                      'assets/animations/chat_loading.json',
-                      width: 350,
-                      height: 100,
-                    )
-                  : Text(
-                      message.message!,
-                      style: TextStyle(
-                        color: message.sender == SenderType.user
-                            ? Colors.white
-                            : AppColors.black,
-                        fontSize: 14,
-                        fontFamily: message.sender == SenderType.user
-                            ? 'Poppins-Regular'
-                            : 'Poppins-Light',
+              child: Container(
+                decoration: BoxDecoration(
+                  color: isUserMessage
+                      ? AppColors.secondaryColor
+                      : AppColors.bluishWhiteColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: message.isLoading && message.sender == SenderType.bot
+                    ? Lottie.asset(
+                        'assets/animations/chat_loading.json',
+                        width: 350,
+                        height: 100,
+                      )
+                    : Text(
+                        message.message!,
+                        style: TextStyle(
+                          color: isUserMessage ? Colors.white : AppColors.black,
+                          fontSize: 14,
+                          fontFamily: isUserMessage
+                              ? 'Poppins-Regular'
+                              : 'Poppins-Light',
+                        ),
                       ),
-                    ),
+              ),
             ),
-          ),
           SizedBox.shrink(),
         ],
       ),

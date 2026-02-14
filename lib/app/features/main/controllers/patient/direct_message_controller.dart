@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nurahelp/app/data/models/doctor_model.dart';
 import 'package:nurahelp/app/data/models/message_models/message_model.dart';
 import 'package:nurahelp/app/data/services/app_service.dart';
@@ -321,5 +324,357 @@ class DirectMessageController extends GetxController {
     typingTimer?.cancel();
     connectivityCheckTimer?.cancel();
     super.onClose();
+  }
+
+  Future<void> pickAndSendFile() async {
+    // Show bottom sheet to select file type
+    final context = Get.context;
+    if (context == null) return;
+
+    // Import the bottom sheet widget
+    _showFileSelectionBottomSheet(context);
+  }
+
+  /// Show bottom sheet for file type selection
+  void _showFileSelectionBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle bar
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+              margin: const EdgeInsets.only(bottom: 20),
+            ),
+
+            // Title
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Text(
+                'Select File Type',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontFamily: 'Poppins-SemiBold',
+                  color: Colors.black,
+                ),
+              ),
+            ),
+
+            // Image option
+            GestureDetector(
+              onTap: () {
+                Get.back();
+                _pickImage();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 20,
+                ),
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[100],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(Icons.image, color: Colors.blue, size: 24),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Image',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Poppins-Medium',
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            'JPG, PNG, GIF, WebP',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Poppins-Light',
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Document option
+            GestureDetector(
+              onTap: () {
+                Get.back();
+                _pickDocument();
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 20,
+                ),
+                margin: const EdgeInsets.only(bottom: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey[300]!),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.orange[100],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(
+                        Icons.description,
+                        color: Colors.orange,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Document',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Poppins-Medium',
+                              color: Colors.black,
+                            ),
+                          ),
+                          Text(
+                            'PDF, DOC, DOCX, XLS, XLSX',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontFamily: 'Poppins-Light',
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Cancel button
+            GestureDetector(
+              onTap: () => Get.back(),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Center(
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Poppins-Medium',
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Pick image from gallery
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 70,
+      );
+
+      if (pickedFile == null) return;
+
+      await _sendFile(XFile(pickedFile.path));
+    } catch (e) {
+      debugPrint('❌ [DirectMessage] Image picker error: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to pick image: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  /// Pick document (PDF, DOC, DOCX, XLS, XLSX)
+  Future<void> _pickDocument() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc', 'docx', 'xls', 'xlsx'],
+        withData: false,
+      );
+
+      if (result == null || result.files.isEmpty) return;
+
+      final file = result.files.first;
+      final xFile = XFile(file.path!);
+      await _sendFile(xFile);
+    } catch (e) {
+      debugPrint('❌ [DirectMessage] Document picker error: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to pick document: $e',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  /// Send file (image or document)
+  Future<void> _sendFile(XFile file) async {
+    try {
+      // 1. Optimistic UI Update
+      final tempId = "temp_${DateTime.now().millisecondsSinceEpoch}";
+      final fileType = _getFileType(file.name);
+      final fileSize = File(
+        file.path,
+      ).lengthSync(); // Get actual file size in bytes
+
+      final tempMessage = MessageModel(
+        id: tempId,
+        sender: currentUserId,
+        senderType: 'Patient',
+        receiver: doctorId,
+        receiverType: 'Doctor',
+        message: fileType == 'image'
+            ? ''
+            : '${file.name}|${_formatFileSize(fileSize)}',
+        attachments: [file.path],
+        attachmentType: fileType,
+        timestamp: DateTime.now(),
+        read: false,
+        delivered: false,
+        isUploading: true,
+      );
+
+      messages.add(tempMessage);
+      messages.refresh();
+
+      // 2. API Upload
+      final user = FirebaseAuth.instance.currentUser;
+      final uploadResponse = await appService.uploadChatFile(
+        file,
+        doctorId,
+        user,
+      );
+
+      final String fileUrl = uploadResponse['url'];
+
+      // 3. Socket Broadcast
+      socketService.sendMessage(
+        sender: currentUserId,
+        senderType: 'Patient',
+        receiver: doctorId,
+        message: fileType == 'image'
+            ? ''
+            : '${file.name}|${_formatFileSize(fileSize)}',
+        attachments: [fileUrl],
+        attachmentType: fileType,
+      );
+
+      // 4. Update local message with server URL (don't refetch to avoid duplicates)
+      _replaceTempWithRealMessage(tempId, fileUrl: fileUrl);
+
+      debugPrint('✅ [DirectMessage] ${fileType} sent and synced');
+    } catch (e) {
+      debugPrint('❌ [DirectMessage] File upload error: $e');
+      messages.removeWhere((m) => m.id.startsWith("temp_"));
+      Get.snackbar(
+        'Upload Error',
+        'Could not send file. Please check your connection.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  /// Format file size to human-readable format
+  String _formatFileSize(int bytes) {
+    if (bytes <= 0) return "0 B";
+    const suffixes = ["B", "KB", "MB", "GB"];
+    final i = (bytes.toString().length / 3).floor();
+    final newSize = bytes / (1000 * (1 << (i * 10)));
+    return "${newSize.toStringAsFixed(2)} ${suffixes[i]}";
+  }
+
+  // Add this helper to determine the file type for the socket/API
+  String _getFileType(String fileName) {
+    final extension = fileName.split('.').last.toLowerCase();
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].contains(extension)) {
+      return 'image';
+    } else if (['pdf', 'doc', 'docx', 'xls', 'xlsx'].contains(extension)) {
+      return 'document';
+    }
+    return 'file';
+  }
+
+  /// Update local message with real URL from server
+  void _replaceTempWithRealMessage(String tempId, {required String fileUrl}) {
+    final index = messages.indexWhere((m) => m.id == tempId);
+    if (index != -1) {
+      final oldMessage = messages[index];
+      final updatedMessage = MessageModel(
+        id: oldMessage.id,
+        sender: oldMessage.sender,
+        senderType: oldMessage.senderType,
+        receiver: oldMessage.receiver,
+        receiverType: oldMessage.receiverType,
+        message: oldMessage.message,
+        attachments: [fileUrl],
+        attachmentType: oldMessage.attachmentType,
+        timestamp: oldMessage.timestamp,
+        read: oldMessage.read,
+        delivered: true,
+        isUploading: false,
+      );
+      messages[index] = updatedMessage;
+      messages.refresh();
+      debugPrint('✅ [DirectMessage] Temp message updated with server URL');
+    }
   }
 }

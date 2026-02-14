@@ -33,6 +33,7 @@ dependencies:
   flutter_dotenv: ^5.2.1
   google_sign_in: ^7.1.1
   image_picker: ^1.1.2
+  file_picker: ^8.1.2
   firebase_storage: ^13.0.6
   shimmer: ^3.0.0
   cached_network_image: ^3.4.1
@@ -40,6 +41,7 @@ dependencies:
   shared_preferences: ^2.5.3
   socket_io_client: ^3.1.4
   syncfusion_flutter_pdfviewer: ^30.1.41
+  open_file: ^3.5.4
   #  zego_uikit_prebuilt_call: ^4.18.0
 #  zego_uikit_signaling_plugin: ^2.8.16
 #  shelf_web_socket: ^3.0.0

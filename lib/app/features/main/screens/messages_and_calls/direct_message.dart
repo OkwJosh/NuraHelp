@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:nurahelp/app/common/appbar/appbar.dart';
-import 'package:nurahelp/app/common/widgets/message_status_tick.dart';
+import 'package:nurahelp/app/common/widgets/chat_bubble.dart';
 import 'package:nurahelp/app/common/widgets/no_internet_screen.dart';
 import 'package:nurahelp/app/common/widgets/unstable_internet_screen.dart';
 import 'package:nurahelp/app/data/models/doctor_model.dart';
@@ -165,14 +165,11 @@ class DirectMessagePage extends StatelessWidget {
                         .messages[controller.messages.length - 1 - index];
                     final isMe = message.senderType == 'Patient';
 
-                    // Check if we need to show date header
+                    // [Date Header Logic - Keep existing logic here]
                     bool showDateHeader = false;
                     if (index == controller.messages.length - 1) {
-                      // Always show date for first message (oldest)
                       showDateHeader = true;
                     } else {
-                      // Check if date changed from previous message
-                      // In a reversed list, the "previous" message has a smaller index
                       final actualIndex =
                           controller.messages.length - 1 - index;
                       if (actualIndex > 0) {
@@ -197,77 +194,7 @@ class DirectMessagePage extends StatelessWidget {
                     return Column(
                       children: [
                         if (showDateHeader) _buildDateHeader(message.timestamp),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: isMe
-                                ? MainAxisAlignment.end
-                                : MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                constraints: BoxConstraints(
-                                  maxWidth:
-                                      MediaQuery.of(context).size.width * 0.7,
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 15,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: isMe
-                                      ? AppColors.secondaryColor
-                                      : Colors.white,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: const Radius.circular(15),
-                                    topRight: const Radius.circular(15),
-                                    bottomLeft: Radius.circular(isMe ? 15 : 0),
-                                    bottomRight: Radius.circular(isMe ? 0 : 15),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      message.message,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontFamily: 'Poppins-Regular',
-                                        color: isMe
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          '${message.timestamp.toLocal().hour}:${message.timestamp.toLocal().minute.toString().padLeft(2, '0')}',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontFamily: 'Poppins-Light',
-                                            color: isMe
-                                                ? Colors.white70
-                                                : Colors.grey[600],
-                                          ),
-                                        ),
-                                        if (isMe) ...[
-                                          const SizedBox(width: 4),
-                                          MessageStatusTick(
-                                            delivered: message.delivered,
-                                            read: message.read,
-                                            color: Colors.white70,
-                                            size: 14,
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        ChatBubble(message: message, isMe: isMe),
                       ],
                     );
                   },
@@ -287,7 +214,7 @@ class DirectMessagePage extends StatelessWidget {
                 },
                 onSendButtonPressed: controller.sendMessage,
                 onMicButtonPressed: () {},
-                onAttachButtonPressed: () {},
+                onAttachButtonPressed: () => controller.pickAndSendFile(),
               ),
             ),
           ],

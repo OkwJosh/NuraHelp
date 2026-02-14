@@ -11,6 +11,14 @@ class BotMessageModel {
   MessageType? messageType;
   File? documentFile;
   bool isLoading;
+  
+  // Attachment fields
+  String? attachmentPath; // Firebase Storage URL or local path
+  String? attachmentName;
+  String? attachmentType; // file type: pdf, doc, image, etc.
+  double uploadProgress; // 0.0 to 1.0
+  bool isUploading;
+  String? attachmentSize; // File size as string (e.g., "2.5 MB")
 
   BotMessageModel({
     this.userId,
@@ -20,6 +28,12 @@ class BotMessageModel {
     this.messageType,
     this.sender,
     this.isLoading = false,
+    this.attachmentPath,
+    this.attachmentName,
+    this.attachmentType,
+    this.uploadProgress = 0.0,
+    this.isUploading = false,
+    this.attachmentSize,
   });
 
   static BotMessageModel empty() => BotMessageModel(
@@ -38,10 +52,17 @@ class BotMessageModel {
       messageType: MessageType.text,
     );
   }
-
-
-
-
-
-
+  
+  // Helper getters
+  bool get hasAttachment => attachmentPath != null && attachmentPath!.isNotEmpty;
+  bool get isImage => attachmentType?.startsWith('image/') ?? false;
+  bool get isDocument => attachmentType?.startsWith('application/') ?? false;
+  bool get isPdf => attachmentType == 'application/pdf';
 }
+
+
+
+
+
+
+

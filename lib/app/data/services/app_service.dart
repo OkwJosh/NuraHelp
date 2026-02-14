@@ -540,13 +540,14 @@ class AppService extends GetxService {
     }
   }
 
+  // app_service.dart
   Future<Map<String, dynamic>> uploadChatFile(
     XFile file,
     String receiver,
     User? user,
   ) async {
     return _withErrorHandling<Map<String, dynamic>>(() async {
-      final url = Uri.parse('$baseUrl/api/v1/upload');
+      final url = Uri.parse('$baseUrl/api/v1/upload'); // Your backend endpoint
 
       final request = http.MultipartRequest('POST', url);
       request.headers.addAll(await _getHeaders(user, true));
@@ -566,10 +567,9 @@ class AppService extends GetxService {
       final response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Failed to upload file: ${response.statusCode}');
+        return jsonDecode(response.body); // Should return the file URL
       }
+      throw Exception('Failed to upload file');
     }, 'uploadChatFile');
   }
 

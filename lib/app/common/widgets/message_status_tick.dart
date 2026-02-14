@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Widget to display message status ticks
-/// - Single grey tick: Sent
-/// - Double grey ticks: Delivered
-/// - Double green ticks: Read
 class MessageStatusTick extends StatelessWidget {
   final bool delivered;
   final bool read;
+  final bool isUploading; // Add this
   final Color? color;
   final double size;
 
@@ -14,23 +11,33 @@ class MessageStatusTick extends StatelessWidget {
     super.key,
     required this.delivered,
     required this.read,
+    this.isUploading = false, // Default false
     this.color,
     this.size = 16,
   });
 
   @override
   Widget build(BuildContext context) {
-    // If read, show double green ticks
-    if (read) {
-      return _buildDoubleTick(Colors.green, size);
+    // 1. Uploading State (Clock Icon)
+    if (isUploading) {
+      return Icon(
+        Icons.access_time,
+        color: color ?? Colors.grey[400],
+        size: size,
+      );
     }
 
-    // If delivered, show double grey ticks
+    // 2. Read State (Blue/Green Double Tick)
+    if (read) {
+      return _buildDoubleTick(Colors.blueAccent, size); // WhatsApp uses Blue
+    }
+
+    // 3. Delivered State (Grey Double Tick)
     if (delivered) {
       return _buildDoubleTick(color ?? Colors.grey[400]!, size);
     }
 
-    // Otherwise, show single grey tick (sent)
+    // 4. Sent State (Single Grey Tick)
     return _buildSingleTick(color ?? Colors.grey[400]!, size);
   }
 

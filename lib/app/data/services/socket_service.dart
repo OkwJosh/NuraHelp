@@ -183,34 +183,41 @@ class SocketService extends GetxService {
     });
   }
 
-  // Send a message
+  // SocketService
   void sendMessage({
     required String sender,
     required String senderType,
     required String receiver,
     required String message,
+    List<String>? attachments, // Added for file URLs
+    String? attachmentType, // Added (image, document, etc.)
   }) {
     debugPrint('🟡 [SocketService] sendMessage called');
-    debugPrint('🟡 [SocketService] Connected: ${isConnected.value}');
 
     if (!isConnected.value) {
       debugPrint('❌ [SocketService] Cannot send message: Socket not connected');
       return;
     }
 
+    // Build the payload dynamically to include attachments if they exist
     final payload = {
       'sender': sender,
       'senderType': senderType,
       'receiver': receiver,
       'message': message,
+      'attachments': attachments ?? [],
+      'attachmentType': attachmentType ?? 'text',
     };
 
-    debugPrint('📤 [SocketService] Emitting sendMessage event');
-    debugPrint('📤 [SocketService] Payload: $payload');
+    debugPrint(
+      '📤 [SocketService] Emitting sendMessage event with payload: $payload',
+    );
 
     socket.emit('sendMessage', payload);
 
-    debugPrint('✅ [SocketService] Message sent to $receiver');
+    debugPrint(
+      '✅ [SocketService] Message (with attachments) sent to $receiver',
+    );
   }
 
   // Send typing indicator

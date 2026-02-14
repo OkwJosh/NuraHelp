@@ -1,16 +1,18 @@
 class MessageModel {
-  final String id; // message ID from MongoDB
-  final String sender; // sender user ID
-  final String senderType; // "Doctor" or "Patient"
-  final String receiver; // receiver user ID
-  final String receiverType; // "Doctor" or "Patient"
-  final String message; // message text
-  final String? attachments; // file path in Firebase Storage
+  final String id;
+  final String sender;
+  final String senderType;
+  final String receiver;
+  final String receiverType;
+  final String message;
+  // FIX: Changed from String? to List<String>? for future-proofing
+  final List<String>? attachments;
   final String? attachmentType;
   final String? attachmentPreview;
   final DateTime timestamp;
   final bool read;
-  final bool delivered; // message delivered status
+  final bool delivered;
+  final bool isUploading; // Added for UI progress state
 
   MessageModel({
     required this.id,
@@ -24,10 +26,10 @@ class MessageModel {
     this.attachmentPreview,
     required this.timestamp,
     required this.read,
-    this.delivered = true, // default to true
+    this.delivered = true,
+    this.isUploading = false,
   });
 
-  // toJson method
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -39,14 +41,21 @@ class MessageModel {
       'attachments': attachments,
       'attachmentType': attachmentType,
       'attachmentPreview': attachmentPreview,
-      'timestamp': timestamp.millisecondsSinceEpoch,
+      'timestamp': timestamp.toIso8601String(), // ISO format is safer for APIs
       'read': read,
       'delivered': delivered,
     };
   }
 
-  // fromJson factory
   factory MessageModel.fromJson(Map<String, dynamic> json) {
+    // Helper to handle single string or list from different API versions
+    List<String>? parsedAttachments;
+    if (json['attachments'] is String) {
+      parsedAttachments = [json['attachments']];
+    } else if (json['attachments'] is List) {
+      parsedAttachments = List<String>.from(json['attachments']);
+    }
+
     return MessageModel(
       id: json['_id'] ?? json['id'] ?? '',
       sender: json['sender'] ?? '',
@@ -54,7 +63,7 @@ class MessageModel {
       receiver: json['receiver'] ?? '',
       receiverType: json['receiverType'] ?? '',
       message: json['message'] ?? '',
-      attachments: json['attachments'],
+      attachments: parsedAttachments,
       attachmentType: json['attachmentType'],
       attachmentPreview: json['attachmentPreview'],
       timestamp: json['timestamp'] != null
@@ -68,7 +77,8 @@ class MessageModel {
   }
 
   // Helper getters
-  bool get isImage => attachmentType?.startsWith('image/') ?? false;
-  bool get isDocument => attachmentType?.startsWith('application/') ?? false;
-  bool get hasAttachment => attachments != null;
+  bool get isImage =>
+      attachmentType == 'image' ||
+      (attachmentType?.startsWith('image/') ?? false);
+  bool get hasAttachment => attachments != null && attachments!.isNotEmpty;
 }
